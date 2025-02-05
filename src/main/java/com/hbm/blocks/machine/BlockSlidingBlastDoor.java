@@ -11,12 +11,10 @@ import com.hbm.blocks.BlockDummyable;
 import com.hbm.blocks.ModBlocks;
 import com.hbm.interfaces.IKeypadHandler;
 import com.hbm.lib.ForgeDirection;
-import com.hbm.main.MainRegistry;
 import com.hbm.tileentity.TileEntitySlidingBlastDoorKeypad;
 import com.hbm.tileentity.machine.TileEntitySlidingBlastDoor;
 import com.hbm.util.KeypadClient;
 
-import micdoodle8.mods.galacticraft.api.block.IPartialSealableBlock;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.util.ITooltipFlag;
@@ -34,8 +32,7 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.fml.common.Optional;
 
-@Optional.InterfaceList({@Optional.Interface(iface = "micdoodle8.mods.galacticraft.api.block.IPartialSealableBlock", modid = "galacticraftcore")})
-public class BlockSlidingBlastDoor extends BlockDummyable implements IRadResistantBlock, IPartialSealableBlock {
+public class BlockSlidingBlastDoor extends BlockDummyable implements IRadResistantBlock {
 
 	public BlockSlidingBlastDoor(Material materialIn, String s) {
 		super(materialIn, s);

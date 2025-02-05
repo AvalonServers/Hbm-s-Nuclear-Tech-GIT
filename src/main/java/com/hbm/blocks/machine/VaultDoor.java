@@ -13,7 +13,6 @@ import com.hbm.items.ModItems;
 import com.hbm.items.tool.ItemLock;
 import com.hbm.tileentity.machine.TileEntityVaultDoor;
 
-import micdoodle8.mods.galacticraft.api.block.IPartialSealableBlock;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockHorizontal;
@@ -33,10 +32,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraftforge.fml.common.Optional;
 
-@Optional.InterfaceList({@Optional.Interface(iface = "micdoodle8.mods.galacticraft.api.block.IPartialSealableBlock", modid = "galacticraftcore")})
-public class VaultDoor extends BlockContainer implements IBomb, IMultiBlock, IRadResistantBlock, IPartialSealableBlock {
+public class VaultDoor extends BlockContainer implements IBomb, IMultiBlock, IRadResistantBlock {
 
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	

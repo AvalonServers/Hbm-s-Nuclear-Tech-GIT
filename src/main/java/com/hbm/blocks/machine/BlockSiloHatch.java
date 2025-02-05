@@ -13,7 +13,6 @@ import com.hbm.items.tool.ItemLock;
 import com.hbm.tileentity.machine.TileEntitySiloHatch;
 
 import com.hbm.util.I18nUtil;
-import micdoodle8.mods.galacticraft.api.block.IPartialSealableBlock;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.BlockHorizontal;
@@ -34,8 +33,7 @@ import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.Optional;
 
-@Optional.InterfaceList({@Optional.Interface(iface = "micdoodle8.mods.galacticraft.api.block.IPartialSealableBlock", modid = "galacticraftcore")})
-public class BlockSiloHatch extends BlockContainer implements IBomb, IMultiBlock, IRadResistantBlock, IPartialSealableBlock {
+public class BlockSiloHatch extends BlockContainer implements IBomb, IMultiBlock, IRadResistantBlock {
 
 	public static final PropertyDirection FACING = BlockHorizontal.FACING;
 	
