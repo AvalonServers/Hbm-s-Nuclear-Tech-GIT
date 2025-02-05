@@ -21,7 +21,7 @@ public class PowerNet implements IPowerNet {
 	private HashMap<Integer, Integer> proxies = new HashMap();
 	private List<IEnergyConnector> subscribers = new ArrayList();
 
-	public static List<PowerNet> trackingInstances = null;
+//	public static List<PowerNet> trackingInstances = null;
 	protected long totalTransfer = 0;
 
 	@Override
@@ -133,16 +133,18 @@ public class PowerNet implements IPowerNet {
 	@Override
 	public long transferPower(long power) {
 		
-		List<PowerNet> cache = new ArrayList();
-		if(trackingInstances != null && !trackingInstances.isEmpty()) {
-			cache.addAll(trackingInstances);
-		}
+//		List<PowerNet> cache = new ArrayList();
+//		if(trackingInstances != null && !trackingInstances.isEmpty()) {
+//			cache.addAll(trackingInstances);
+//		}
 
-		trackingInstances = new ArrayList();
-		trackingInstances.add(this);
-		long result = fairTransfer(this.subscribers, power);
-		trackingInstances.addAll(cache);
-		return result;
+//		trackingInstances = new ArrayList();
+//		trackingInstances.add(this);
+//		long result = fairTransfer(this.subscribers, power);
+//		trackingInstances.addAll(cache);
+//		return result;
+
+		return fairTransfer(this.subscribers, power);
 	}
 	
 	public static void cleanup(List<IEnergyConnector> subscribers) {
@@ -214,15 +216,15 @@ public class PowerNet implements IPowerNet {
 			totalTransfer += totalGiven;
 		}
 
-		if(trackingInstances != null) {
-			
-			for(int i = 0; i < trackingInstances.size(); i++) {
-				PowerNet net = trackingInstances.get(i);
-				net.totalTransfer += totalTransfer;
-			}
-			
-			trackingInstances.clear();
-		}
+//		if(trackingInstances != null) {
+//
+//			for(int i = 0; i < trackingInstances.size(); i++) {
+//				PowerNet net = trackingInstances.get(i);
+//				net.totalTransfer += totalTransfer;
+//			}
+//
+//			trackingInstances.clear();
+//		}
 		
 		return power;
 	}
@@ -285,15 +287,15 @@ public class PowerNet implements IPowerNet {
 			totalTransfer += totalGiven;
 		}
 
-		if(trackingInstances != null) {
-			
-			for(int i = 0; i < trackingInstances.size(); i++) {
-				PowerNet net = trackingInstances.get(i);
-				net.totalTransfer += totalTransfer;
-			}
-			
-			trackingInstances.clear();
-		}
+//		if(trackingInstances != null) {
+//
+//			for(int i = 0; i < trackingInstances.size(); i++) {
+//				PowerNet net = trackingInstances.get(i);
+//				net.totalTransfer += totalTransfer;
+//			}
+//
+//			trackingInstances.clear();
+//		}
 		
 		return power;
 	}

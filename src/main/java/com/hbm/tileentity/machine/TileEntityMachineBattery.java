@@ -274,18 +274,17 @@ public class TileEntityMachineBattery extends TileEntityMachineBase implements I
 
 		//send power to buffered consumers, independent of nets
 		if(this.power > 0 && (mode == mode_buffer || mode == mode_output)) {
-			List<IEnergyConnector> con = new ArrayList();
-			con.addAll(consumers);
+            List<IEnergyConnector> con = new ArrayList<>(consumers);
 			
-			if(PowerNet.trackingInstances == null) {
-				PowerNet.trackingInstances = new ArrayList();
-			}
-			PowerNet.trackingInstances.clear();
-			
-			nets.forEach(x -> {
-				if(x instanceof PowerNet)
-					PowerNet.trackingInstances.add((PowerNet) x);
-			});
+//			if(PowerNet.trackingInstances == null) {
+//				PowerNet.trackingInstances = new ArrayList();
+//			}
+//			PowerNet.trackingInstances.clear();
+//			
+//			nets.forEach(x -> {
+//				if(x instanceof PowerNet)
+//					PowerNet.trackingInstances.add((PowerNet) x);
+//			});
 			
 			long toSend = Math.min(this.power, this.getMaxTransfer());
 			long powerRemaining = this.power - toSend;
