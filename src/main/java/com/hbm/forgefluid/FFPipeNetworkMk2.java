@@ -22,8 +22,8 @@ public class FFPipeNetworkMk2 implements IFluidHandler {
 	protected static Random rand = new Random();
 	
 	protected Fluid type;
-	protected Map<BlockPos, TileEntity> fillables = new HashMap<BlockPos, TileEntity>();
-	protected Map<BlockPos, IFluidPipeMk2> pipes = new HashMap<BlockPos, IFluidPipeMk2>();
+	protected Map<BlockPos, TileEntity> fillables = new HashMap<>();
+	protected Map<BlockPos, IFluidPipeMk2> pipes = new HashMap<>();
 
 	public FFPipeNetworkMk2(IFluidPipeMk2 te) {
 		this.type = te.getType();
@@ -38,15 +38,19 @@ public class FFPipeNetworkMk2 implements IFluidHandler {
 	public int fill(FluidStack resource, boolean doFill) {
 		if(resource == null || resource.getFluid() != type)
 			return 0;
-		List<IFluidHandler> handlers = new ArrayList<IFluidHandler>();
-		
-		Iterator<TileEntity> itr = fillables.values().iterator();
+		List<IFluidHandler> handlers = new ArrayList<>();
+
+		// we must copy the list here because h.fill might call back into ourselves and cause a CME
+		List<TileEntity> values = new ArrayList<>(fillables.values());
+		Iterator<TileEntity> itr = values.iterator();
 		while(itr.hasNext()){
 			TileEntity te = itr.next();
 			if(te.isInvalid()){
+				fillables.remove(te.getPos());
 				itr.remove();
 				continue;
 			}
+
 			if(te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)){
 				IFluidHandler h = te.getCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null);
 				if(h != null && h.fill(new FluidStack(resource.getFluid(), 1), false) > 0){
@@ -63,7 +67,10 @@ public class FFPipeNetworkMk2 implements IFluidHandler {
 		int remaining = resource.amount;
 		//Drillgon200: Extra hacky compensation
 		int intRoundingCompensation = resource.amount-part*handlers.size();
-		rand.setSeed(((TileEntity)this.fillables.values().iterator().next()).getWorld().getTotalWorldTime());
+
+		itr = fillables.values().iterator();
+		if (itr.hasNext()) rand.setSeed(itr.next().getWorld().getTotalWorldTime());
+
 		int randomFillIndex = rand.nextInt(handlers.size());
 		for(int i = 0; i < handlers.size(); i++){
 			IFluidHandler consumer = handlers.get(i);
