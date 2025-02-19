@@ -47,7 +47,11 @@ public abstract class TileEntityPylonBase extends TileEntityCableBaseNT {
 	public Nodespace.PowerNode createNode() {
 		TileEntity tile = (TileEntity) this;
 		Nodespace.PowerNode node = new Nodespace.PowerNode(new BlockPos(tile.getPos().getX(), tile.getPos().getY(), tile.getPos().getZ())).setConnections(new DirPos(pos.getX(), pos.getY(), pos.getZ(), ForgeDirection.UNKNOWN));
-		for(int[] pos : this.connected) node.addConnection(new DirPos(pos[0], pos[1], pos[2], ForgeDirection.UNKNOWN));
+		for(int[] pos : this.connected) {
+			world.getTileEntity(new BlockPos(pos[0], pos[1], pos[2])); // HACK: force load the tile entity to ensure we load all pylons that are in unloaded chunks
+			node.addConnection(new DirPos(pos[0], pos[1], pos[2], ForgeDirection.UNKNOWN));
+		}
+
 		return node;
 	}
 
