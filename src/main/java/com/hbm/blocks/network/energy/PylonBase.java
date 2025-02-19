@@ -6,6 +6,7 @@ import com.hbm.blocks.ModBlocks;
 import com.hbm.blocks.ITooltipProvider;
 import com.hbm.tileentity.network.energy.TileEntityPylonBase;
 
+import net.minecraft.block.state.BlockFaceShape;
 import net.minecraft.item.ItemStack;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.util.EnumFacing;
@@ -54,7 +55,12 @@ public abstract class PylonBase extends BlockContainer implements ITooltipProvid
     public boolean isNormalCube(IBlockState state, IBlockAccess world, BlockPos pos) {
         return false;
     }
-    
+
+    @Override
+    public BlockFaceShape getBlockFaceShape(IBlockAccess worldIn, IBlockState state, BlockPos pos, EnumFacing face){
+        return BlockFaceShape.UNDEFINED;
+    }
+
     public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
         return false;
     }
