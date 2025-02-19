@@ -120,8 +120,10 @@ public class TileEntityMachineChemfac extends TileEntityMachineChemplantBase imp
 			steam.writeToNBT(tankSteam);
 			data.setTag("steam", tankSteam);
 
-			PacketDispatcher.wrapper.sendToAll(new LoopedSoundPacket(pos.getX(), pos.getY(), pos.getZ()));
-			this.networkPack(data, 150);
+			if (this.shouldSendNetworkUpdate()) {
+				PacketDispatcher.wrapper.sendToAll(new LoopedSoundPacket(pos.getX(), pos.getY(), pos.getZ()));
+				this.networkPack(data, 150);
+			}
 		} else {
 			float maxSpeed = 30F;
 

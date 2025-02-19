@@ -1,12 +1,6 @@
 package com.hbm.tileentity.machine.rbmk;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.Map;
+import java.util.*;
 
 import org.lwjgl.opengl.GL11;
 
@@ -56,6 +50,8 @@ import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
 public abstract class TileEntityRBMKBase extends TileEntity implements INBTPacketReceiver, ITickable, IControllable {
+	public static final Random rand = new Random();
+	public final int updateOffset = rand.nextInt(20);
 
 	public static int rbmkHeight = 4;
 	
@@ -104,6 +100,11 @@ public abstract class TileEntityRBMKBase extends TileEntity implements INBTPacke
 	public boolean shouldUpdate() {
 		return true;
 	}
+
+	public boolean shouldSendNetworkUpdate() {
+		// VERTEX: Testing sending updates to the client only once per second for perf, TODO make this use wall clock time? doesn't really matter though since it's tq excluded
+		return (!world.isRemote && (world.getTotalWorldTime() + updateOffset) % 20 == 0);
+	}
 	
 	public int trackingRange() {
 		return 150;
@@ -118,11 +119,12 @@ public abstract class TileEntityRBMKBase extends TileEntity implements INBTPacke
 				boilWater();
 			coolPassively();
 			jump();
-			
-			NBTTagCompound data = new NBTTagCompound();
-			this.writeToNBT(data);
-			this.networkPack(data, trackingRange());
-			
+
+			if (shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				this.writeToNBT(data);
+				this.networkPack(data, trackingRange());
+			}
 		}
 	}
 

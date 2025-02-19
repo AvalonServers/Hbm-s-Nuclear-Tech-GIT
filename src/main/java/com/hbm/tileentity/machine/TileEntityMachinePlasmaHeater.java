@@ -125,10 +125,12 @@ public class TileEntityMachinePlasmaHeater extends TileEntityMachineBase impleme
 			/// END Loading plasma into the ITER ///
 
 			/// START Notif packets ///
-			PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, new FluidTank[]{tanks[0], tanks[1], plasma}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 20)); 
-			NBTTagCompound data = new NBTTagCompound();
-			data.setLong("power", power);
-			this.networkPack(data, 50);
+			if (this.shouldSendNetworkUpdate()) {
+				PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, new FluidTank[]{tanks[0], tanks[1], plasma}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 20));
+				NBTTagCompound data = new NBTTagCompound();
+				data.setLong("power", power);
+				this.networkPack(data, 50);
+			}
 			/// END Notif packets ///
 		}
 	}

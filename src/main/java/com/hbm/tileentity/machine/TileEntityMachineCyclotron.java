@@ -390,15 +390,17 @@ public class TileEntityMachineCyclotron extends TileEntityMachineBase implements
 			} else {
 				progress = 0;
 			}
-			
-			NBTTagCompound data = new NBTTagCompound();
-			data.setLong("power", power);
-			data.setInteger("progress", progress);
-			data.setBoolean("isOn", isOn);
-			data.setByte("plugs", plugs);
-			this.networkPack(data, 25);
 
-			PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, coolant, amat), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 15));
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setLong("power", power);
+				data.setInteger("progress", progress);
+				data.setBoolean("isOn", isOn);
+				data.setByte("plugs", plugs);
+				this.networkPack(data, 25);
+
+				PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, coolant, amat), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 15));
+			}
 		}
 	}
 	

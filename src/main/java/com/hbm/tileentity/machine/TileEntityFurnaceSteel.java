@@ -102,13 +102,16 @@ public class TileEntityFurnaceSteel extends TileEntityMachineBase implements IGU
 					
 				}
 			}
-			
-			NBTTagCompound data = new NBTTagCompound();
-			data.setIntArray("progress", progress);
-			data.setIntArray("bonus", bonus);
-			data.setInteger("heat", heat);
-			data.setBoolean("wasOn", wasOn);
-			this.networkPack(data, 50);
+
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setIntArray("progress", progress);
+				data.setIntArray("bonus", bonus);
+				data.setInteger("heat", heat);
+				data.setBoolean("wasOn", wasOn);
+
+				this.networkPack(data, 50);
+			}
 		} else {
 			
 			if(this.wasOn) {

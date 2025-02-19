@@ -97,10 +97,12 @@ public class TileEntityTurretRichard extends TileEntityTurretBaseNT {
 			if(this.getFirstConfigLoaded() == null) {
 				this.loaded = 0;
 			}
-			
-			NBTTagCompound data = new NBTTagCompound();
-			data.setInteger("loaded", this.loaded);
-			this.networkPack(data, 250);
+
+			if (shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setInteger("loaded", this.loaded);
+				this.networkPack(data, 250);
+			}
 		}
 	}
 

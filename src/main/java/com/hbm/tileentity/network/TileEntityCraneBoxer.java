@@ -164,9 +164,11 @@ public class TileEntityCraneBoxer extends TileEntityCraneBase implements IGUIPro
                 }
             }
 
-            NBTTagCompound data = new NBTTagCompound();
-            data.setByte("mode", mode);
-            this.networkPack(data, 15);
+            if (shouldSendNetworkUpdate()) {
+                NBTTagCompound data = new NBTTagCompound();
+                data.setByte("mode", mode);
+                this.networkPack(data, 15);
+            }
         }
     }
 

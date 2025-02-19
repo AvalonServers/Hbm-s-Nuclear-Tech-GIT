@@ -125,17 +125,19 @@ public class TileEntityMachineIGenerator extends TileEntityMachineBase implement
 				else
 					rtgs[i] = -1;
 			}
-			
-			data.setIntArray("rtgs", rtgs);
-			data.setInteger("temp", displayHeat);
-			data.setInteger("torque", torque);
-			data.setInteger("power", (int)power);
-			data.setShort("burn", (short) burnTime);
-			data.setShort("lastBurn", (short) lastBurnTime);
-			data.setFloat("dial", limiter);
-			this.networkPack(data, 250);
-			
-			PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, tanks[0], tanks[1], tanks[2]), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 100));
+
+			if (this.shouldSendNetworkUpdate()) {
+				data.setIntArray("rtgs", rtgs);
+				data.setInteger("temp", displayHeat);
+				data.setInteger("torque", torque);
+				data.setInteger("power", (int)power);
+				data.setShort("burn", (short) burnTime);
+				data.setShort("lastBurn", (short) lastBurnTime);
+				data.setFloat("dial", limiter);
+				this.networkPack(data, 250);
+
+				PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, tanks[0], tanks[1], tanks[2]), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 100));
+			}
 		} else {
 			
 			this.prevRotation = this.rotation;

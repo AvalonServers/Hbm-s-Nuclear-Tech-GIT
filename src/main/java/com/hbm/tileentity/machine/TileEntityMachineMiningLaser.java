@@ -188,20 +188,22 @@ public class TileEntityMachineMiningLaser extends TileEntityMachineBase implemen
 			this.tryFillContainer(pos.getX(), pos.getY(), pos.getZ() + 2);
 			this.tryFillContainer(pos.getX(), pos.getY(), pos.getZ() - 2);
 
-			PacketDispatcher.wrapper.sendToAll(new LoopedSoundPacket(pos.getX(), pos.getY(), pos.getZ()));
-			NBTTagCompound data = new NBTTagCompound();
-			data.setLong("power", power);
-			data.setInteger("lastX", lastTargetX);
-			data.setInteger("lastY", lastTargetY);
-			data.setInteger("lastZ", lastTargetZ);
-			data.setInteger("x", targetX);
-			data.setInteger("y", targetY);
-			data.setInteger("z", targetZ);
-			data.setBoolean("beam", beam);
-			data.setBoolean("isOn", isOn);
-			data.setDouble("progress", clientBreakProgress);
+			if (this.shouldSendNetworkUpdate()) {
+				PacketDispatcher.wrapper.sendToAll(new LoopedSoundPacket(pos.getX(), pos.getY(), pos.getZ()));
+				NBTTagCompound data = new NBTTagCompound();
+				data.setLong("power", power);
+				data.setInteger("lastX", lastTargetX);
+				data.setInteger("lastY", lastTargetY);
+				data.setInteger("lastZ", lastTargetZ);
+				data.setInteger("x", targetX);
+				data.setInteger("y", targetY);
+				data.setInteger("z", targetZ);
+				data.setBoolean("beam", beam);
+				data.setBoolean("isOn", isOn);
+				data.setDouble("progress", clientBreakProgress);
 
-			this.networkPack(data, 250);
+				this.networkPack(data, 250);
+			}
 		}
 	}
 

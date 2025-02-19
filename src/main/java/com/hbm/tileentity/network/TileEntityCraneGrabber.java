@@ -104,11 +104,12 @@ public class TileEntityCraneGrabber extends TileEntityCraneBase implements IGUIP
                 }
             }
 
-
-            NBTTagCompound data = new NBTTagCompound();
-            data.setBoolean("isWhitelist", isWhitelist);
-            this.matcher.writeToNBT(data);
-            this.networkPack(data, 15);
+            if (shouldSendNetworkUpdate()) {
+                NBTTagCompound data = new NBTTagCompound();
+                data.setBoolean("isWhitelist", isWhitelist);
+                this.matcher.writeToNBT(data);
+                this.networkPack(data, 15);
+            }
         }
     }
 

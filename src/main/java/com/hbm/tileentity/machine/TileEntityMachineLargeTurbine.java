@@ -118,13 +118,15 @@ public class TileEntityMachineLargeTurbine extends TileEntityMachineBase impleme
 
 			FFUtils.fillFluidContainer(inventory, tanks[1], 5, 6);
 
-			PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, new FluidTank[]{tanks[0], tanks[1]}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 20));
-			PacketDispatcher.wrapper.sendToAllAround(new FluidTypePacketTest(pos.getX(), pos.getY(), pos.getZ(), new Fluid[]{types[0], types[1]}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 20));
-			
-			NBTTagCompound data = new NBTTagCompound();
-			data.setLong("power", power);
-			data.setBoolean("operational", operational);
-			this.networkPack(data, 50);
+			if (this.shouldSendNetworkUpdate()) {
+				PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, new FluidTank[]{tanks[0], tanks[1]}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 20));
+				PacketDispatcher.wrapper.sendToAllAround(new FluidTypePacketTest(pos.getX(), pos.getY(), pos.getZ(), new Fluid[]{types[0], types[1]}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 20));
+
+				NBTTagCompound data = new NBTTagCompound();
+				data.setLong("power", power);
+				data.setBoolean("operational", operational);
+				this.networkPack(data, 50);
+			}
 		} else {
 
 			this.lastRotor = this.rotor;

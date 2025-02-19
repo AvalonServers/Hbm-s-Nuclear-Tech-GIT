@@ -86,11 +86,13 @@ public class TileEntityMachineFluidTank extends TileEntityMachineBase implements
 				world.destroyBlock(pos, false);
 				world.newExplosion(null, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, 5, true, true);
 			}
-			
-			PacketDispatcher.wrapper.sendToAllTracking(new FluidTankPacket(pos.getX(), pos.getY(), pos.getZ(), new FluidTank[] {tank}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 10));
-			NBTTagCompound data = new NBTTagCompound();
-			data.setShort("mode", mode);
-			this.networkPack(data, 50);
+
+			if (this.shouldSendNetworkUpdate()) {
+				PacketDispatcher.wrapper.sendToAllTracking(new FluidTankPacket(pos.getX(), pos.getY(), pos.getZ(), new FluidTank[] {tank}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 10));
+				NBTTagCompound data = new NBTTagCompound();
+				data.setShort("mode", mode);
+				this.networkPack(data, 50);
+			}
 			
 			detectAndSendChanges();
 		}

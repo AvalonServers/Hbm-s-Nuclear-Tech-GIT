@@ -74,13 +74,16 @@ public class TileEntityMachineUUCreator extends TileEntityMachineBase implements
 			this.log[this.log.length-1] = loggedProducedMB;
 
 			producedmb = getAvgUU();
-			PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, new FluidTank[] { tank }), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 100));
 
-			NBTTagCompound data = new NBTTagCompound();
-			data.setBoolean("isOn", isOn);
-			data.setLong("power", power);
-			data.setDouble("uuMB", producedmb);
-			this.networkPack(data, 250);
+			if (this.shouldSendNetworkUpdate()) {
+				PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, new FluidTank[] { tank }), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 100));
+
+				NBTTagCompound data = new NBTTagCompound();
+				data.setBoolean("isOn", isOn);
+				data.setLong("power", power);
+				data.setDouble("uuMB", producedmb);
+				this.networkPack(data, 250);
+			}
 		}
 	}
 

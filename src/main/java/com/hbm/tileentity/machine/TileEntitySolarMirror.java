@@ -30,7 +30,7 @@ public class TileEntitySolarMirror extends TileEntityTickingBase {
 	public void update() {
 		if(!world.isRemote) {
 
-			if(world.getTotalWorldTime() % 20 == 0)
+			if(shouldSendNetworkUpdate())
 				sendUpdate();
 
 			if(tY < pos.getY()){

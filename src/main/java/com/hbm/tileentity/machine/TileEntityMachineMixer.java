@@ -128,25 +128,29 @@ public class TileEntityMachineMixer extends TileEntityMachineBase implements ITi
 				if(tanks[2].getFluidAmount() > 0)
 					FFUtils.fillFluid(this, tanks[2], world, pos.getPos(), tanks[2].getCapacity() >> 1);
 			}
-			
-			NBTTagCompound data = new NBTTagCompound();
-			if(outputFluid != null){
-				data.setString("f", outputFluid.getName());
-			} else {
-				if(tanks[2].getFluid() != null){
-					data.setString("f", tanks[2].getFluid().getFluid().getName());
+
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				if(outputFluid != null){
+					data.setString("f", outputFluid.getName());
 				} else {
-					data.setString("f", "None");
+					if(tanks[2].getFluid() != null){
+						data.setString("f", tanks[2].getFluid().getFluid().getName());
+					} else {
+						data.setString("f", "None");
+					}
 				}
+
+				data.setLong("power", power);
+				data.setInteger("processTime", processTime);
+				data.setInteger("progress", progress);
+				data.setBoolean("wasOn", wasOn);
+				data.setBoolean("uu", uuMixer);
+				data.setTag("tanks", FFUtils.serializeTankArray(tanks));
+
+				this.networkPack(data, 50);
 			}
-			data.setLong("power", power);
-			data.setInteger("processTime", processTime);
-			data.setInteger("progress", progress);
-			data.setBoolean("wasOn", wasOn);
-			data.setBoolean("uu", uuMixer);
-			data.setTag("tanks", FFUtils.serializeTankArray(tanks));
-			
-			this.networkPack(data, 50);
+
 			if(!uuMixer && power > getMaxPower()) power = getMaxPower();
 			
 		} else {

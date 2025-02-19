@@ -108,14 +108,17 @@ public class TileEntityFurnaceIron extends TileEntityMachineBase implements IGUI
 			} else {
 				this.progress = 0;
 			}
-			
-			NBTTagCompound data = new NBTTagCompound();
-			data.setInteger("maxBurnTime", this.maxBurnTime);
-			data.setInteger("burnTime", this.burnTime);
-			data.setInteger("progress", this.progress);
-			data.setInteger("processingTime", this.processingTime);
-			data.setBoolean("wasOn", this.wasOn);
-			this.networkPack(data, 50);
+
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setInteger("maxBurnTime", this.maxBurnTime);
+				data.setInteger("burnTime", this.burnTime);
+				data.setInteger("progress", this.progress);
+				data.setInteger("processingTime", this.processingTime);
+				data.setBoolean("wasOn", this.wasOn);
+
+				this.networkPack(data, 50);
+			}
 		} else {
 			
 			if(this.progress > 0) {

@@ -102,15 +102,17 @@ public class TileEntityHeaterOilburner extends TileEntityMachineBase implements 
                 this.markDirty();
             }
 
-            NBTTagCompound data = new NBTTagCompound();
-            tank.writeToNBT(data);
-            data.setString("fluidType", fluidType.getName());
-            data.setBoolean("isOn", isOn);
-            data.setInteger("heatEnergy", heatEnergy);
-            data.setByte("setting", (byte) this.setting);
-            data.setInteger("cacheHeat", this.cacheHeat);
+            if (this.shouldSendNetworkUpdate()) {
+                NBTTagCompound data = new NBTTagCompound();
+                tank.writeToNBT(data);
+                data.setString("fluidType", fluidType.getName());
+                data.setBoolean("isOn", isOn);
+                data.setInteger("heatEnergy", heatEnergy);
+                data.setByte("setting", (byte) this.setting);
+                data.setInteger("cacheHeat", this.cacheHeat);
 
-            this.networkPack(data, 25);
+                this.networkPack(data, 25);
+            }
         }
     }
 

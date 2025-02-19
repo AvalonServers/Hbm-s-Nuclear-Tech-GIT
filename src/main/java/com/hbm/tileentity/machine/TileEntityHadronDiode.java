@@ -26,7 +26,9 @@ public class TileEntityHadronDiode extends TileEntityTickingBase {
 
 			if(age >= 20) {
 				age = 0;
-				sendSides();
+
+				if (this.shouldSendNetworkUpdate())
+					sendSides();
 			}
 			
 			if(fatherIAskOfYouToUpdateMe) {
@@ -43,14 +45,13 @@ public class TileEntityHadronDiode extends TileEntityTickingBase {
 	}
 	
 	public void sendSides() {
-
 		NBTTagCompound data = new NBTTagCompound();
-
 		for(int i = 0; i < 6; i++) {
 
 			if(sides[i] != null)
 				data.setInteger("" + i, sides[i].ordinal());
 		}
+
 		BlockHadronDiode.resetBlockState(world, pos);
 		this.networkPack(data, 250);
 	}

@@ -240,13 +240,16 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 				}
 			}
 
-			NBTTagCompound data = new NBTTagCompound();
-			data.setLong("power", power);
-			data.setInteger("progress", progress);
-			data.setInteger("maxProgress", maxProgress);
-			data.setBoolean("isProgressing", isProgressing);
-			data.setInteger("recipe", !inventory.getStackInSlot(4).isEmpty() ? ItemAssemblyTemplate.getRecipeIndex(inventory.getStackInSlot(4)) : -1);
-			this.networkPack(data, 150);
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setLong("power", power);
+				data.setInteger("progress", progress);
+				data.setInteger("maxProgress", maxProgress);
+				data.setBoolean("isProgressing", isProgressing);
+				data.setInteger("recipe", !inventory.getStackInSlot(4).isEmpty() ? ItemAssemblyTemplate.getRecipeIndex(inventory.getStackInSlot(4)) : -1);
+
+				this.networkPack(data, 150);
+			}
 		} else {
 
 			float volume = this.getVolume(2);

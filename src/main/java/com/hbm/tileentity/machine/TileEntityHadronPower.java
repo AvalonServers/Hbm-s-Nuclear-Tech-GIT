@@ -15,9 +15,12 @@ public class TileEntityHadronPower extends TileEntityTickingBase implements IEne
 	public void update() {
 		if(!world.isRemote) {
 			this.updateStandardConnections(world, pos);
-			NBTTagCompound data = new NBTTagCompound();
-			data.setLong("power", power);
-			this.networkPack(data, 15);
+
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setLong("power", power);
+				this.networkPack(data, 15);
+			}
 		}
 	}
 

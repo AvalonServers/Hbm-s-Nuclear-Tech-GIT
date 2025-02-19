@@ -95,8 +95,10 @@ public class TileEntitySILEX extends TileEntityMachineBase implements ITickable,
 				data.setInteger("meta", this.current.meta);
 			}
 
-			PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, tank), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 10));
-			this.networkPack(data, 50);
+			if (this.shouldSendNetworkUpdate()) {
+				PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, tank), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 10));
+				this.networkPack(data, 50);
+			}
 
 			this.mode = EnumWavelengths.NULL;
 		}

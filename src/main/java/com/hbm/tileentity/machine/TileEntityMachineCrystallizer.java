@@ -116,12 +116,14 @@ public class TileEntityMachineCrystallizer extends TileEntityMachineBase impleme
 				}
 			}
 
-			PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, new FluidTank[]{tank}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 10));
+			if (this.shouldSendNetworkUpdate()) {
+				PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, tank), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 10));
 
-			NBTTagCompound data = new NBTTagCompound();
-			data.setShort("progress", progress);
-			data.setLong("power", power);
-			this.networkPack(data, 25);
+				NBTTagCompound data = new NBTTagCompound();
+				data.setShort("progress", progress);
+				data.setLong("power", power);
+				this.networkPack(data, 25);
+			}
 		} else {
 
 			prevAngle = angle;

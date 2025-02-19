@@ -204,8 +204,9 @@ public abstract class TileEntityTurretBaseNT extends TileEntityMachineBase imple
 			
 			this.power = Library.chargeTEFromItems(inventory, 10, this.power, this.getMaxPower());
 			manualOverride = false;
-			networkPack();
-			
+
+			if (shouldSendNetworkUpdate())
+				networkPack();
 		} else {
 			
 			Vec3d vec = new Vec3d(this.getBarrelLength(), 0, 0);

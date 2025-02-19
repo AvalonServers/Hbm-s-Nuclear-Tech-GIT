@@ -110,10 +110,12 @@ public class TileEntityMachineSchrabidiumTransmutator extends TileEntityMachineB
 				process = 0;
 			}
 
-			NBTTagCompound data = new NBTTagCompound();
-			data.setLong("power", power);
-			data.setInteger("progress", process);
-			this.networkPack(data, 50);
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setLong("power", power);
+				data.setInteger("progress", process);
+				this.networkPack(data, 50);
+			}
 			
 			detectAndSendChanges();
 		} else {

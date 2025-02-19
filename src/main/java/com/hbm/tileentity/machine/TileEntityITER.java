@@ -154,28 +154,30 @@ public class TileEntityITER extends TileEntityMachineBase implements ITickable, 
 			doBreederStuff();
 			/// END Processing part ///
 
-			/// START Notif packets ///
-			PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, new FluidTank[] { tanks[0], tanks[1], plasma }), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 120));
-			PacketDispatcher.wrapper.sendToAllAround(new FluidTypePacketTest(pos.getX(), pos.getY(), pos.getZ(), new Fluid[]{plasmaType}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 20));
-			/// END Notif packets ///
-			NBTTagCompound data = new NBTTagCompound();
-			data.setBoolean("isOn", isOn);
-			data.setLong("power", power);
-			data.setInteger("progress", progress);
+			if (this.shouldSendNetworkUpdate()) {
+				/// START Notif packets ///
+				PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, new FluidTank[] { tanks[0], tanks[1], plasma }), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 120));
+				PacketDispatcher.wrapper.sendToAllAround(new FluidTypePacketTest(pos.getX(), pos.getY(), pos.getZ(), new Fluid[]{plasmaType}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 20));
+				/// END Notif packets ///
+				NBTTagCompound data = new NBTTagCompound();
+				data.setBoolean("isOn", isOn);
+				data.setLong("power", power);
+				data.setInteger("progress", progress);
 
-			if(inventory.getStackInSlot(3).getItem() == ModItems.fusion_shield_tungsten) {
-				data.setInteger("blanket", 1);
-			} else if(inventory.getStackInSlot(3).getItem() == ModItems.fusion_shield_desh) {
-				data.setInteger("blanket", 2);
-			} else if(inventory.getStackInSlot(3).getItem() == ModItems.fusion_shield_chlorophyte) {
-				data.setInteger("blanket", 3);
-			} else if(inventory.getStackInSlot(3).getItem() == ModItems.fusion_shield_vaporwave) {
-				data.setInteger("blanket", 4);
-			} else {
-				data.setInteger("blanket", 0);
+				if(inventory.getStackInSlot(3).getItem() == ModItems.fusion_shield_tungsten) {
+					data.setInteger("blanket", 1);
+				} else if(inventory.getStackInSlot(3).getItem() == ModItems.fusion_shield_desh) {
+					data.setInteger("blanket", 2);
+				} else if(inventory.getStackInSlot(3).getItem() == ModItems.fusion_shield_chlorophyte) {
+					data.setInteger("blanket", 3);
+				} else if(inventory.getStackInSlot(3).getItem() == ModItems.fusion_shield_vaporwave) {
+					data.setInteger("blanket", 4);
+				} else {
+					data.setInteger("blanket", 0);
+				}
+
+				this.networkPack(data, 250);
 			}
-
-			this.networkPack(data, 250);
 		} else {
 
 			this.lastRotor = this.rotor;

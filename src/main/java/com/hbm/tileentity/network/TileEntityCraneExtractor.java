@@ -163,10 +163,12 @@ public class TileEntityCraneExtractor extends TileEntityCraneBase implements IGU
                 }
             }
 
-            NBTTagCompound data = new NBTTagCompound();
-            data.setBoolean("isWhitelist", isWhitelist);
-            this.matcher.writeToNBT(data);
-            this.networkPack(data, 15);
+            if (shouldSendNetworkUpdate()) {
+                NBTTagCompound data = new NBTTagCompound();
+                data.setBoolean("isWhitelist", isWhitelist);
+                this.matcher.writeToNBT(data);
+                this.networkPack(data, 15);
+            }
         }
     }
 

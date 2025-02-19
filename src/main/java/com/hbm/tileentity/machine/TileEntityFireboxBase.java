@@ -85,15 +85,18 @@ public abstract class TileEntityFireboxBase extends TileEntityMachineBase implem
 				this.heatEnergy = Math.max(this.heatEnergy - Math.max(this.heatEnergy / 1000, 1), 0);
 				this.burnHeat = 0;
 			}
-			
-			NBTTagCompound data = new NBTTagCompound();
-			data.setInteger("maxBurnTime", this.maxBurnTime);
-			data.setInteger("burnTime", this.burnTime);
-			data.setInteger("burnHeat", this.burnHeat);
-			data.setInteger("heatEnergy", this.heatEnergy);
-			data.setInteger("playersUsing", this.playersUsing);
-			data.setBoolean("wasOn", this.wasOn);
-			this.networkPack(data, 50);
+
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setInteger("maxBurnTime", this.maxBurnTime);
+				data.setInteger("burnTime", this.burnTime);
+				data.setInteger("burnHeat", this.burnHeat);
+				data.setInteger("heatEnergy", this.heatEnergy);
+				data.setInteger("playersUsing", this.playersUsing);
+				data.setBoolean("wasOn", this.wasOn);
+
+				this.networkPack(data, 50);
+			}
 		} else {
 			this.prevDoorAngle = this.doorAngle;
 			float swingSpeed = (doorAngle / 10F) + 3;

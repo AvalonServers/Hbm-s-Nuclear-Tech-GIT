@@ -83,7 +83,8 @@ public class TileEntityMachineRadar extends TileEntityTickingBase implements ITi
 			if(lastPower != getRedPower())
 				world.notifyNeighborsOfStateChange(pos, getBlockType(), true);
 
-			sendMissileData();
+			if (this.shouldSendNetworkUpdate())
+				sendMissileData();
 			lastPower = getRedPower();
 			
 			if(world.getBlockState(pos.down()).getBlock() != ModBlocks.muffler) {

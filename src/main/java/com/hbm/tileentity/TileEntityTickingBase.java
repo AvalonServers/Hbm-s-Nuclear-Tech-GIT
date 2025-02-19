@@ -9,8 +9,12 @@ import net.minecraft.util.ITickable;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+import java.util.Random;
+
 public abstract class TileEntityTickingBase extends TileEntityLoadedBase implements ITickable, INBTPacketReceiver {
-	
+	public static final Random rand = new Random();
+	public final int updateOffset = rand.nextInt(20);
+
 	public abstract String getInventoryName();
 	
 	public int getGaugeScaled(int i, FluidTank tank) {
@@ -24,4 +28,9 @@ public abstract class TileEntityTickingBase extends TileEntityLoadedBase impleme
 	}
 	
 	public void networkUnpack(NBTTagCompound nbt) { }
+
+	public boolean shouldSendNetworkUpdate() {
+		// VERTEX: Testing sending updates to the client only once per second for perf, TODO make this use wall clock time? doesn't really matter though since it's tq excluded
+		return (!world.isRemote && (world.getTotalWorldTime() + updateOffset) % 20 == 0);
+	}
 }

@@ -41,8 +41,7 @@ public class TileEntityCraneRouter extends TileEntityMachineBase implements IGUI
 
     @Override
     public void update() {
-        if(!world.isRemote) {
-
+        if(!world.isRemote && shouldSendNetworkUpdate()) {
             NBTTagCompound data = new NBTTagCompound();
             for(int i = 0; i < patterns.length; i++) {
                 NBTTagCompound compound = new NBTTagCompound();

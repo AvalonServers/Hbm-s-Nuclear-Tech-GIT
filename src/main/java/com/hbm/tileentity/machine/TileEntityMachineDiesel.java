@@ -117,12 +117,14 @@ public class TileEntityMachineDiesel extends TileEntityMachineBase implements IT
 
 			generate();
 
-			NBTTagCompound data = new NBTTagCompound();
-			data.setInteger("power", (int) power);
-			data.setInteger("powerCap", (int) powerCap);
-			this.networkPack(data, 50);
-			
-			PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, new FluidTank[] {tank}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 10));
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setInteger("power", (int) power);
+				data.setInteger("powerCap", (int) powerCap);
+				this.networkPack(data, 50);
+
+				PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, new FluidTank[] {tank}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 10));
+			}
 		}
 	}
 	

@@ -174,22 +174,24 @@ public class TileEntityMachineExcavator extends TileEntityMachineBase implements
 				this.targetDepth = 0;
 				this.drillRating = 0;
 			}
-			
-			NBTTagCompound data = new NBTTagCompound();
-			tank.writeToNBT(data);
-			if(fluidType != null)
-				data.setString("f", fluidType.getName());
-            data.setBoolean("d", enableDrill);
-			data.setBoolean("c", enableCrusher);
-			data.setBoolean("w", enableWalling);
-			data.setBoolean("v", enableVeinMiner);
-			data.setBoolean("s", enableSilkTouch);
-			data.setBoolean("o", operational);
-			data.setInteger("t", targetDepth);
-			data.setInteger("g", chuteTimer);
-			data.setLong("p", power);
-			this.networkPack(data, 150);
-			
+
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				tank.writeToNBT(data);
+				if(fluidType != null)
+					data.setString("f", fluidType.getName());
+				data.setBoolean("d", enableDrill);
+				data.setBoolean("c", enableCrusher);
+				data.setBoolean("w", enableWalling);
+				data.setBoolean("v", enableVeinMiner);
+				data.setBoolean("s", enableSilkTouch);
+				data.setBoolean("o", operational);
+				data.setInteger("t", targetDepth);
+				data.setInteger("g", chuteTimer);
+				data.setLong("p", power);
+
+				this.networkPack(data, 150);
+			}
 		} else {
 			
 			this.prevDrillExtension = this.drillExtension;

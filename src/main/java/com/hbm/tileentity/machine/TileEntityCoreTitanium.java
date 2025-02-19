@@ -203,11 +203,14 @@ public class TileEntityCoreTitanium extends TileEntityMachineBase implements ITi
 			moveToOuput(11);
 			moveToOuput(12);
 
-			NBTTagCompound data = new NBTTagCompound();
-			data.setInteger("cookTime", progress);
-			data.setInteger("speed", progressStep);
-			data.setLong("power", power);
-			this.networkPack(data, 250);
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setInteger("cookTime", progress);
+				data.setInteger("speed", progressStep);
+				data.setLong("power", power);
+
+				this.networkPack(data, 250);
+			}
 		}
 	}
 

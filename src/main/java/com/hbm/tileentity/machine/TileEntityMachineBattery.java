@@ -227,7 +227,8 @@ public class TileEntityMachineBattery extends TileEntityMachineBase implements I
 			}
 			this.log[this.log.length-1] = avg;
 
-			this.networkPack(packNBT(), 20);
+			if (this.shouldSendNetworkUpdate())
+				this.networkPack(packNBT(), 20);
 		}
 	}
 

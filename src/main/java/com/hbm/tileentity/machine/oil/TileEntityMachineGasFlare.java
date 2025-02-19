@@ -170,14 +170,17 @@ public class TileEntityMachineGasFlare extends TileEntityMachineBase implements 
 			
 			power = Library.chargeItemsFromTE(inventory, 0, power, maxPower);
 
-			NBTTagCompound data = new NBTTagCompound();
-			data.setBoolean("isOn", isOn);
-			data.setBoolean("doesBurn", doesBurn);
-			data.setString("tankType", tankType.getName());
-			this.networkPack(data, 25);
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setBoolean("isOn", isOn);
+				data.setBoolean("doesBurn", doesBurn);
+				data.setString("tankType", tankType.getName());
+				this.networkPack(data, 25);
 
-			PacketDispatcher.wrapper.sendToAllAround(new AuxElectricityPacket(pos, power), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 15));
-			PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, new FluidTank[] {tank}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 15));
+				PacketDispatcher.wrapper.sendToAllAround(new AuxElectricityPacket(pos, power), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 15));
+				PacketDispatcher.wrapper.sendToAllAround(new FluidTankPacket(pos, new FluidTank[] {tank}), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 15));
+			}
+
 			if(prevPower != power || prevAmount != tank.getFluidAmount() || needsUpdate){
 				markDirty();
 			}

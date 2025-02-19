@@ -3,6 +3,7 @@ package com.hbm.tileentity;
 import com.hbm.blocks.ModBlocks;
 import com.hbm.interfaces.Spaghetti;
 import com.hbm.lib.ItemStackHandlerWrapper;
+import com.hbm.lib.Library;
 import com.hbm.packet.NBTPacket;
 import com.hbm.packet.PacketDispatcher;
 
@@ -10,14 +11,20 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.EnumFacing;
+import net.minecraft.util.math.MathHelper;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
+import java.util.Random;
+
 @Spaghetti("Not spaghetti in itself, but for the love of god please use this base class for all machines")
 public abstract class TileEntityMachineBase extends TileEntityLoadedBase implements INBTPacketReceiver {
+	public static final Random rand = new Random();
+	public final int updateOffset = rand.nextInt(20);
+	public int networkUpdateFrequency = 20;
 
 	public ItemStackHandler inventory;
 
@@ -78,9 +85,13 @@ public abstract class TileEntityMachineBase extends TileEntityLoadedBase impleme
 	}
 	
 	public void networkPack(NBTTagCompound nbt, int range) {
-
 		if(!world.isRemote)
 			PacketDispatcher.wrapper.sendToAllAround(new NBTPacket(nbt, pos), new TargetPoint(this.world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), range));
+	}
+
+	public boolean shouldSendNetworkUpdate() {
+		// VERTEX: Testing sending updates to the client only once per second for perf, TODO make this use wall clock time? doesn't really matter though since it's tq excluded
+		return (!world.isRemote && (world.getTotalWorldTime() + updateOffset) % networkUpdateFrequency == 0);
 	}
 	
 	public void networkUnpack(NBTTagCompound nbt) { }

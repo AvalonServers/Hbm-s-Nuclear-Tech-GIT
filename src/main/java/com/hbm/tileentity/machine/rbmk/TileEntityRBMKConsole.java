@@ -272,9 +272,8 @@ public class TileEntityRBMKConsole extends TileEntityMachineBase implements ICon
 	private void prepareNetworkPack() {
 		
 		NBTTagCompound data = new NBTTagCompound();
-
 		
-		if(this.world.getTotalWorldTime() % 10 == 0) {
+		if(shouldSendNetworkUpdate()) {
 			
 			data.setBoolean("full", true);
 			

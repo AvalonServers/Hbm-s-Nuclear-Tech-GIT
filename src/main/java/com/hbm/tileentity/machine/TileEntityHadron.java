@@ -114,23 +114,25 @@ public class TileEntityHadron extends TileEntityMachineBase implements ITickable
 				particles.remove(p);
 			}
 			particlesToRemove.clear();
-			
-			NBTTagCompound data = new NBTTagCompound();
-			data.setBoolean("isOn", isOn);
-			data.setLong("power", power);
-			data.setBoolean("analysis", analysisOnly);
-			data.setBoolean("hopperMode", hopperMode);
-			data.setByte("state", (byte) state.ordinal());
 
-			data.setBoolean("stat_success", stat_success);
-			data.setByte("stat_state", (byte) stat_state.ordinal());
-			data.setInteger("stat_charge", stat_charge);
-			data.setInteger("stat_x", stat_x);
-			data.setInteger("stat_y", stat_y);
-			data.setInteger("stat_z", stat_z);
-			this.networkPack(data, 50);
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setBoolean("isOn", isOn);
+				data.setLong("power", power);
+				data.setBoolean("analysis", analysisOnly);
+				data.setBoolean("hopperMode", hopperMode);
+				data.setByte("state", (byte) state.ordinal());
+
+				data.setBoolean("stat_success", stat_success);
+				data.setByte("stat_state", (byte) stat_state.ordinal());
+				data.setInteger("stat_charge", stat_charge);
+				data.setInteger("stat_x", stat_x);
+				data.setInteger("stat_y", stat_y);
+				data.setInteger("stat_z", stat_z);
+
+				this.networkPack(data, 50);
+			}
 		}
-		
 	}
 	
 	private void process(Particle p) {

@@ -265,12 +265,14 @@ public class TileEntityMachineReactor extends TileEntityMachineBase implements I
 
 			if(markDirty)
 				this.markDirty();
-			
-			NBTTagCompound data = new NBTTagCompound();
-			data.setShort("charge", (short)charge);
-			data.setShort("progress", (short)progress);
-			data.setByte("heat", (byte)heat);
-			this.networkPack(data, 20);
+
+			if (this.shouldSendNetworkUpdate()) {
+				NBTTagCompound data = new NBTTagCompound();
+				data.setShort("charge", (short)charge);
+				data.setShort("progress", (short)progress);
+				data.setByte("heat", (byte)heat);
+				this.networkPack(data, 20);
+			}
 		}
 	}
 	

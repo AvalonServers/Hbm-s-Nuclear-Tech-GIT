@@ -227,15 +227,19 @@ public class TileEntityFEL extends TileEntityMachineBase implements ITickable, I
 					}
 				}
 			}
-			
-			PacketDispatcher.wrapper.sendToAll(new LoopedSoundPacket(pos.getX(), pos.getY(), pos.getZ()));
-			NBTTagCompound data = new NBTTagCompound();
-			data.setLong("power", power);
-			data.setString("mode", mode.toString());
-			data.setBoolean("isOn", isOn);
-			data.setBoolean("valid", missingValidSilex);
-			data.setInteger("distance", distance);
-			this.networkPack(data, 250);
+
+			if (this.shouldSendNetworkUpdate()) {
+				PacketDispatcher.wrapper.sendToAll(new LoopedSoundPacket(pos.getX(), pos.getY(), pos.getZ()));
+
+				NBTTagCompound data = new NBTTagCompound();
+				data.setLong("power", power);
+				data.setString("mode", mode.toString());
+				data.setBoolean("isOn", isOn);
+				data.setBoolean("valid", missingValidSilex);
+				data.setInteger("distance", distance);
+
+				this.networkPack(data, 250);
+			}
 		}
 	}
 	
