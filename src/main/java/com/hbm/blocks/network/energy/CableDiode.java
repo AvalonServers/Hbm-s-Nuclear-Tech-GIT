@@ -211,6 +211,8 @@ public class CableDiode extends BlockContainer implements IEnergyConnectorBlock,
 		@Override
 		public void update() {
 			if (!world.isRemote) {
+				pulses = 0;
+
 				for (ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
 
 					if (dir == getDir())
@@ -244,7 +246,7 @@ public class CableDiode extends BlockContainer implements IEnergyConnectorBlock,
 			recursionBrake = true;
 
 			ForgeDirection dir = getDir();
-			Nodespace.PowerNode node = Nodespace.getNode(world, pos);
+			Nodespace.PowerNode node = Nodespace.getNode(world, pos.add(dir.offsetX, dir.offsetY, dir.offsetZ));
 			TileEntity te = Compat.getTileStandard(world, pos.getX() + dir.offsetX, pos.getY() + dir.offsetY, pos.getZ() + dir.offsetZ);
 
 			if(node != null && !node.expired && node.hasValidNet() && te instanceof IEnergyConnector && ((IEnergyConnector) te).canConnect(dir.getOpposite())) {
