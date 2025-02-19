@@ -11,7 +11,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class TEPylonSenderPacket implements IMessage {
-	
+
 	//Pylon connection synchronization packet, Mk.III
 	//1: try sending list, every entry gets noted in the bit buffer
 	//2: Up to 3 entries (9 variables in total, not counting origin coordiantes) sync all connections at once
@@ -27,7 +27,7 @@ public class TEPylonSenderPacket implements IMessage {
 
 	public TEPylonSenderPacket()
 	{
-		
+
 	}
 
 	public TEPylonSenderPacket(int x, int y, int z, int conX, int conY, int conZ, boolean addOrRemove)
@@ -64,26 +64,26 @@ public class TEPylonSenderPacket implements IMessage {
 	}
 
 	public static class Handler implements IMessageHandler<TEPylonSenderPacket, IMessage> {
-		
+
 		@Override
 		public IMessage onMessage(TEPylonSenderPacket m, MessageContext ctx) {
 			Minecraft.getMinecraft().addScheduledTask(() -> {
 				BlockPos pos = new BlockPos(m.x, m.y, m.z);
 				TileEntity te = Minecraft.getMinecraft().world.getTileEntity(pos);
-				
+
 				try {
 					if (te != null && te instanceof TileEntityPylonBase) {
-							
+
 						TileEntityPylonBase pyl = (TileEntityPylonBase) te;
 						if(m.addOrRemove){
-							pyl.addConnection(new BlockPos(m.conX, m.conY, m.conZ));
+							pyl.addConnection(m.conX, m.conY, m.conZ);
 						}else{
 							pyl.removeConnection(new BlockPos(m.conX, m.conY, m.conZ));
 						}
 					}
 				} catch(Exception x) {}
 			});
-			
+
 			return null;
 		}
 	}

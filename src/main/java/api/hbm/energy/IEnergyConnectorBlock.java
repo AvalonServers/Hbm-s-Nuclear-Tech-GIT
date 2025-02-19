@@ -12,15 +12,15 @@ import net.minecraft.world.IBlockAccess;
  *
  */
 public interface IEnergyConnectorBlock {
-	
-	/**
-	 * Same as IEnergyConnector's method but for regular blocks that might not even have TEs. Used for rendering only!
-	 * @param world
-	 * @param x
-	 * @param y
-	 * @param z
-	 * @param dir
-	 * @return
-	 */
-	public boolean canConnect(IBlockAccess world, BlockPos pos, ForgeDirection dir);
+
+    /**
+     * Same as IEnergyConnector's method but for regular blocks that might not even have TEs. Used for rendering only!
+     * @param world
+     * @param x
+     * @param y
+     * @param z
+     * @param dir
+     * @return
+     */
+    public boolean canConnect(IBlockAccess world, BlockPos pos, ForgeDirection dir);
 }

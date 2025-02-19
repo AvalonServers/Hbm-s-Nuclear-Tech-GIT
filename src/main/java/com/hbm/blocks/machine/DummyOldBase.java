@@ -1,11 +1,10 @@
 package com.hbm.blocks.machine;
 
+import api.hbm.energy.IEnergyConnectorBlock;
 import com.hbm.blocks.ModBlocks;
-import com.hbm.main.MainRegistry;
 import com.hbm.lib.ForgeDirection;
 import com.hbm.interfaces.IDummy;
 
-import api.hbm.energy.IEnergyConnectorBlock;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.world.IBlockAccess;

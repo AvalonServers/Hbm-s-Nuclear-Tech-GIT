@@ -1,328 +1,338 @@
 package api.hbm.energy;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import com.hbm.util.Tuple;
 
-import com.hbm.config.GeneralConfig;
+import java.util.*;
 
-import api.hbm.energy.IEnergyConnector.ConnectionPriority;
-import net.minecraft.tileentity.TileEntity;
+public class PowerNet {
 
-/**
- * Basic IPowerNet implementation. The behavior of this demo might change inbetween releases, but the API remains the same.
- * For more consistency please implement your own IPowerNet.
- * @author hbm
- */
-public class PowerNet implements IPowerNet {
-	
-	private boolean valid = true;
-	private HashMap<Integer, IEnergyConductor> links = new HashMap();
-	private HashMap<Integer, Integer> proxies = new HashMap();
-	private List<IEnergyConnector> subscribers = new ArrayList();
+    public boolean valid = true;
+    public Set<Nodespace.PowerNode> links = new HashSet();
 
-//	public static List<PowerNet> trackingInstances = null;
-	protected long totalTransfer = 0;
+    /** Maps all active subscribers to a timestamp, handy for handling timeouts. In a good system this shouldn't be necessary, but the previous system taught me to be cautious anyway */
+    public HashMap<IEnergyUser, Long> receiverEntries = new HashMap();
+    public HashMap<IEnergyGenerator, Long> providerEntries = new HashMap();
 
-	@Override
-	public void joinNetworks(IPowerNet network) {
-		
-		if(network == this)
-			return; //wtf?!
+    public long energyTracker = 0L;
 
-		for(IEnergyConductor conductor : network.getLinks()) {
-			joinLink(conductor);
-		}
-		network.getLinks().clear();
-		
-		for(IEnergyConnector connector : network.getSubscribers()) {
-			this.subscribe(connector);
-		}
-		
-		network.destroy();
-	}
+    public PowerNet() {
+        Nodespace.activePowerNets.add(this);
+    }
 
-	@Override
-	public IPowerNet joinLink(IEnergyConductor conductor) {
-		
-		if(conductor.getPowerNet() != null)
-			conductor.getPowerNet().leaveLink(conductor);
-		
-		conductor.setPowerNet(this);
-		int identity = conductor.getIdentity();
-		this.links.put(identity, conductor);
-		
-		if(conductor.hasProxies()) {
-			for(Integer i : conductor.getProxies()) {
-				this.proxies.put(i, identity);
-			}
-		}
-		
-		return this;
-	}
+    /// SUBSCRIBER HANDLING ///
+    public boolean isSubscribed(IEnergyUser receiver) {
+        return this.receiverEntries.containsKey(receiver);
+    }
 
-	@Override
-	public void leaveLink(IEnergyConductor conductor) {
-		conductor.setPowerNet(null);
-		int identity = conductor.getIdentity();
-		this.links.remove(identity);
-		
-		if(conductor.hasProxies()) {
-			for(Integer i : conductor.getProxies()) {
-				this.proxies.remove(i);
-			}
-		}
-	}
+    public void addReceiver(IEnergyUser receiver) {
+        this.receiverEntries.put(receiver, System.currentTimeMillis());
+    }
 
-	@Override
-	public void subscribe(IEnergyConnector connector) {
-		this.subscribers.add(connector);
-	}
+    public void removeReceiver(IEnergyUser receiver) {
+        this.receiverEntries.remove(receiver);
+    }
 
-	@Override
-	public void unsubscribe(IEnergyConnector connector) {
-		this.subscribers.remove(connector);
-	}
+    /// PROVIDER HANDLING ///
+    public boolean isProvider(IEnergyGenerator provider) {
+        return this.providerEntries.containsKey(provider);
+    }
 
-	@Override
-	public boolean isSubscribed(IEnergyConnector connector) {
-		return this.subscribers.contains(connector);
-	}
+    public void addProvider(IEnergyGenerator provider) {
+        this.providerEntries.put(provider, System.currentTimeMillis());
+    }
 
-	@Override
-	public List<IEnergyConductor> getLinks() {
-		List<IEnergyConductor> linkList = new ArrayList();
-		linkList.addAll(this.links.values());
-		return linkList;
-	}
+    public void removeProvider(IEnergyGenerator provider) {
+        this.providerEntries.remove(provider);
+    }
 
-	public HashMap<Integer, Integer> getProxies() {
-		HashMap<Integer, Integer> proxyCopy = new HashMap(proxies);
-		return proxyCopy;
-	}
+    /// LINK JOINING ///
 
-	@Override
-	public List<IEnergyConnector> getSubscribers() {
-		return this.subscribers;
-	}
-	
-	@Override
-	public void destroy() {
-		this.valid = false;
-		this.subscribers.clear();
-		
-		for(IEnergyConductor link : this.links.values()) {
-			link.setPowerNet(null);
-		}
-		
-		this.links.clear();
-	}
-	
-	@Override
-	public boolean isValid() {
-		return this.valid;
-	}
+    /** Combines two networks into one */
+    public void joinNetworks(PowerNet network) {
 
-	@Override
-	public long getTotalTransfer() {
-		return this.totalTransfer;
-	}
-	
-	public long lastCleanup = System.currentTimeMillis();
-	
-	@Override
-	public long transferPower(long power) {
-		
-//		List<PowerNet> cache = new ArrayList();
-//		if(trackingInstances != null && !trackingInstances.isEmpty()) {
-//			cache.addAll(trackingInstances);
-//		}
+        if(network == this) return; //wtf?!
 
-//		trackingInstances = new ArrayList();
-//		trackingInstances.add(this);
-//		long result = fairTransfer(this.subscribers, power);
-//		trackingInstances.addAll(cache);
-//		return result;
+        List<Nodespace.PowerNode> oldNodes = new ArrayList(network.links.size());
+        oldNodes.addAll(network.links); // might prevent oddities related to joining - nvm it does nothing
 
-		return fairTransfer(this.subscribers, power);
-	}
-	
-	public static void cleanup(List<IEnergyConnector> subscribers) {
+        for(Nodespace.PowerNode conductor : oldNodes) forceJoinLink(conductor);
+        network.links.clear();
 
-		subscribers.removeIf(x -> 
-			x == null || !(x instanceof TileEntity) || ((TileEntity)x).isInvalid() || !x.isLoaded()
-		);
-	}
+        for(IEnergyUser connector : network.receiverEntries.keySet()) this.addReceiver(connector);
+        for(IEnergyGenerator connector : network.providerEntries.keySet()) this.addProvider(connector);
+        network.destroy();
+    }
 
-	public static boolean shouldSend(ConnectionPriority senderPrio, ConnectionPriority p, IEnergyConnector x){
-		return (x.getPriority() == p) && (!x.isStorage() || (senderPrio.compareTo(p) <= 0));
-	}
+    /** Adds the power node as part of this network's links */
+    public PowerNet joinLink(Nodespace.PowerNode node) {
+        if(node.net != null) node.net.leaveLink(node);
+        return forceJoinLink(node);
+    }
 
-	public static long fairTransferWithPrio(ConnectionPriority senderPrio, List<IEnergyConnector> subscribers, long power) {
-		
-		if(power <= 0) return 0;
-		
-		if(subscribers.isEmpty())
-			return power;
-		
-		cleanup(subscribers);
-		
-		ConnectionPriority[] priorities = new ConnectionPriority[] {ConnectionPriority.HIGH, ConnectionPriority.NORMAL, ConnectionPriority.LOW};
-		
-		long totalTransfer = 0;
-		
-		for(ConnectionPriority p : priorities) {
-			
-			List<IEnergyConnector> subList = new ArrayList();
-			subscribers.forEach(x -> {
-				if(shouldSend(senderPrio, p, x)) {
-					subList.add(x);
-				}
-			});
-			
-			if(subList.isEmpty())
-				continue;
-			
-			List<Long> weight = new ArrayList();
-			long totalReq = 0;
-			
-			for(IEnergyConnector con : subList) {
-				long req = con.getTransferWeight();
-				weight.add(req);
-				totalReq += req;
-			}
-			
-			if(totalReq == 0)
-				continue;
-			
-			long totalGiven = 0;
-			
-			for(int i = 0; i < subList.size(); i++) {
-				IEnergyConnector con = subList.get(i);
-				long req = weight.get(i);
-				double fraction = (double)req / (double)totalReq;
-				
-				long given = (long) Math.floor(fraction * power);
-				
-				totalGiven += (given - con.transferPower(given));
+    /** Adds the power node as part of this network's links, skips the part about removing it from existing networks */
+    public PowerNet forceJoinLink(Nodespace.PowerNode node) {
+        this.links.add(node);
+        node.setNet(this);
+        return this;
+    }
 
-				if(con instanceof TileEntity) {
-					TileEntity tile = (TileEntity) con;
-					tile.getWorld().markChunkDirty(tile.getPos(), tile);
-				}
-			}
-			
-			power -= totalGiven;
-			totalTransfer += totalGiven;
-		}
+    /** Removes the specified power node */
+    public void leaveLink(Nodespace.PowerNode node) {
+        node.setNet(null);
+        this.links.remove(node);
+    }
 
-//		if(trackingInstances != null) {
-//
-//			for(int i = 0; i < trackingInstances.size(); i++) {
-//				PowerNet net = trackingInstances.get(i);
-//				net.totalTransfer += totalTransfer;
-//			}
-//
-//			trackingInstances.clear();
-//		}
-		
-		return power;
-	}
+    /// GENERAL POWER NET CONTROL ///
+    public void invalidate() {
+        this.valid = false;
+        Nodespace.activePowerNets.remove(this);
+    }
 
-	public static long fairTransfer(List<IEnergyConnector> subscribers, long power) {
-		
-		if(power <= 0) return 0;
-		
-		if(subscribers.isEmpty())
-			return power;
-		
-		cleanup(subscribers);
-		
-		ConnectionPriority[] priorities = new ConnectionPriority[] {ConnectionPriority.HIGH, ConnectionPriority.NORMAL, ConnectionPriority.LOW};
-		
-		long totalTransfer = 0;
-		
-		for(ConnectionPriority p : priorities) {
-			
-			List<IEnergyConnector> subList = new ArrayList();
-			subscribers.forEach(x -> {
-				if(x.getPriority() == p) {
-					subList.add(x);
-				}
-			});
-			
-			if(subList.isEmpty())
-				continue;
-			
-			List<Long> weight = new ArrayList();
-			long totalReq = 0;
-			
-			for(IEnergyConnector con : subList) {
-				long req = con.getTransferWeight();
-				weight.add(req);
-				totalReq += req;
-			}
-			
-			if(totalReq == 0)
-				continue;
-			
-			long totalGiven = 0;
-			
-			for(int i = 0; i < subList.size(); i++) {
-				IEnergyConnector con = subList.get(i);
-				long req = weight.get(i);
-				double fraction = (double)req / (double)totalReq;
-				
-				long given = (long) Math.floor(fraction * power);
-				
-				totalGiven += (given - con.transferPower(given));
+    public boolean isValid() {
+        return this.valid;
+    }
 
-				if(con instanceof TileEntity) {
-					TileEntity tile = (TileEntity) con;
-					tile.getWorld().markChunkDirty(tile.getPos(), tile);
-				}
-			}
-			
-			power -= totalGiven;
-			totalTransfer += totalGiven;
-		}
+    public void destroy() {
+        this.invalidate();
+        for(Nodespace.PowerNode link : this.links) if(link.net == this) link.setNet(null);
+        this.links.clear();
+        this.receiverEntries.clear();
+        this.providerEntries.clear();
+    }
 
-//		if(trackingInstances != null) {
-//
-//			for(int i = 0; i < trackingInstances.size(); i++) {
-//				PowerNet net = trackingInstances.get(i);
-//				net.totalTransfer += totalTransfer;
-//			}
-//
-//			trackingInstances.clear();
-//		}
-		
-		return power;
-	}
+    public void resetEnergyTracker() {
+        this.energyTracker = 0;
+    }
 
-	@Override
-	public void reevaluate() {
-		
-		if(!GeneralConfig.enableReEval) {
-			this.destroy();
-			return;
-		}
+    protected static int timeout = 3_000;
 
-		HashMap<Integer, IEnergyConductor> copy = new HashMap(links);
-		HashMap<Integer, Integer> proxyCopy = new HashMap(proxies);
-		
-		for(IEnergyConductor link : copy.values()) {
-			this.leaveLink(link);
-		}
-		
-		for(IEnergyConductor link : copy.values()) {
-			
-			link.setPowerNet(null);
-			link.reevaluate(copy, proxyCopy);
-			
-			if(link.getPowerNet() == null) {
-				link.setPowerNet(new PowerNet().joinLink(link));
-			}
-		}
-	}
+    public void transferPower() {
+
+        if(providerEntries.isEmpty()) return;
+        if(receiverEntries.isEmpty()) return;
+
+        long timestamp = System.currentTimeMillis();
+        long transferCap = 100_000_000_000_000_00L;
+
+        List<Tuple.Pair<IEnergyGenerator, Long>> providers = new ArrayList();
+        long powerAvailable = 0;
+
+        Iterator<Map.Entry<IEnergyGenerator, Long>> provIt = providerEntries.entrySet().iterator();
+        while(provIt.hasNext()) {
+            Map.Entry<IEnergyGenerator, Long> entry = provIt.next();
+            if(timestamp - entry.getValue() > timeout) { provIt.remove(); continue; }
+            long src = Math.min(entry.getKey().getPower(), entry.getKey().getProviderSpeed());
+            providers.add(new Tuple.Pair(entry.getKey(), src));
+            if(powerAvailable < transferCap) powerAvailable += src;
+        }
+
+        powerAvailable = Math.min(powerAvailable, transferCap);
+
+        List<Tuple.Pair<IEnergyUser, Long>>[] receivers = new ArrayList[IEnergyUser.ConnectionPriority.values().length];
+        for(int i = 0; i < receivers.length; i++) receivers[i] = new ArrayList();
+        long[] demand = new long[IEnergyUser.ConnectionPriority.values().length];
+        long totalDemand = 0;
+
+        Iterator<Map.Entry<IEnergyUser, Long>> recIt = receiverEntries.entrySet().iterator();
+
+        while(recIt.hasNext()) {
+            Map.Entry<IEnergyUser, Long> entry = recIt.next();
+            if(timestamp - entry.getValue() > timeout) { recIt.remove(); continue; }
+            long rec = Math.min(entry.getKey().getMaxPower() - entry.getKey().getPower(), entry.getKey().getReceiverSpeed());
+            int p = entry.getKey().getPriority().ordinal();
+            receivers[p].add(new Tuple.Pair(entry.getKey(), rec));
+            demand[p] += rec;
+            totalDemand += rec;
+        }
+
+        long toTransfer = Math.min(powerAvailable, totalDemand);
+        long energyUsed = 0;
+
+        for(int i = IEnergyUser.ConnectionPriority.values().length - 1; i >= 0; i--) {
+            List<Tuple.Pair<IEnergyUser, Long>> list = receivers[i];
+            long priorityDemand = demand[i];
+
+            for(Tuple.Pair<IEnergyUser, Long> entry : list) {
+                double weight = (double) entry.getValue() / (double) (priorityDemand);
+                long toSend = (long) Math.max(toTransfer * weight, 0D);
+                energyUsed += (toSend - entry.getKey().transferPower(toSend)); //leftovers are subtracted from the intended amount to use up
+            }
+
+            toTransfer -= energyUsed;
+        }
+
+        this.energyTracker += energyUsed;
+
+        for(Tuple.Pair<IEnergyGenerator, Long> entry : providers) {
+            double weight = (double) entry.getValue() / (double) powerAvailable;
+            long toUse = (long) Math.max(energyUsed * weight, 0D);
+            entry.getKey().usePower(toUse);
+        }
+    }
+
+    @Deprecated public void transferPowerOld() {
+
+        if(providerEntries.isEmpty()) return;
+        if(receiverEntries.isEmpty()) return;
+
+        long timestamp = System.currentTimeMillis();
+        long transferCap = 100_000_000_000_000_00L; // that ought to be enough
+
+        long supply = 0;
+        long demand = 0;
+        long[] priorityDemand = new long[IEnergyUser.ConnectionPriority.values().length];
+
+        Iterator<Map.Entry<IEnergyGenerator, Long>> provIt = providerEntries.entrySet().iterator();
+        while(provIt.hasNext()) {
+            Map.Entry<IEnergyGenerator, Long> entry = provIt.next();
+            if(timestamp - entry.getValue() > timeout) { provIt.remove(); continue; }
+            supply += Math.min(entry.getKey().getPower(), entry.getKey().getProviderSpeed());
+        }
+
+        if(supply <= 0) return;
+
+        Iterator<Map.Entry<IEnergyUser, Long>> recIt = receiverEntries.entrySet().iterator();
+        while(recIt.hasNext()) {
+            Map.Entry<IEnergyUser, Long> entry = recIt.next();
+            if(timestamp - entry.getValue() > timeout) { recIt.remove(); continue; }
+            long rec = Math.min(entry.getKey().getMaxPower() - entry.getKey().getPower(), entry.getKey().getReceiverSpeed());
+            demand += rec;
+            for(int i = 0; i <= entry.getKey().getPriority().ordinal(); i++) priorityDemand[i] += rec;
+        }
+
+        if(demand <= 0) return;
+
+        long toTransfer = Math.min(supply, demand);
+        if(toTransfer > transferCap) toTransfer = transferCap;
+        if(toTransfer <= 0) return;
+
+        List<IEnergyGenerator> buffers = new ArrayList();
+        List<IEnergyGenerator> providers = new ArrayList();
+        Set<IEnergyUser> receiverSet = receiverEntries.keySet();
+        for(IEnergyGenerator provider : providerEntries.keySet()) {
+            if(receiverSet.contains(provider)) {
+                buffers.add(provider);
+            } else {
+                providers.add(provider);
+            }
+        }
+        providers.addAll(buffers); //makes buffers go last
+        List<IEnergyUser> receivers = new ArrayList() {{ addAll(receiverSet); }};
+
+        receivers.sort(COMP);
+
+        int maxIteration = 1000;
+
+        //how much the current sender/receiver have already sent/received
+        long prevSrc = 0;
+        long prevDest = 0;
+
+        while(!receivers.isEmpty() && !providers.isEmpty() && maxIteration > 0) {
+            maxIteration--;
+
+            IEnergyGenerator src = providers.get(0);
+            IEnergyUser dest = receivers.get(0);
+
+            if(src.getPower() <= 0) { providers.remove(0); prevSrc = 0; continue; }
+
+            if(src == dest) { // STALEMATE DETECTED
+                //if this happens, a buffer will waste both its share of transfer and receiving potential and do effectively nothing, essentially breaking
+
+                //try if placing the conflicting provider at the end of the list does anything
+                //we do this first because providers have no priority, so we may shuffle those around as much as we want
+                if(providers.size() > 1) {
+                    providers.add(providers.get(0));
+                    providers.remove(0);
+                    prevSrc = 0; //this might cause slight issues due to the tracking being effectively lost while there still might be pending operations
+                    continue;
+                }
+                //if that didn't work, try shifting the receiver by one place (to minimize priority breakage)
+                if(receivers.size() > 1) {
+                    receivers.add(2, receivers.get(0));
+                    receivers.remove(0);
+                    prevDest = 0; //ditto
+                    continue;
+                }
+
+                //if neither option could be performed, the only conclusion is that this buffer mode battery is alone in the power net, in which case: not my provlem
+            }
+
+            long pd = priorityDemand[dest.getPriority().ordinal()];
+
+            long receiverShare = Math.min((long) Math.ceil((double) Math.min(dest.getMaxPower() - dest.getPower(), dest.getReceiverSpeed()) * (double) supply / (double) pd), dest.getReceiverSpeed()) - prevDest;
+            long providerShare = Math.min((long) Math.ceil((double) Math.min(src.getPower(), src.getProviderSpeed()) * (double) demand / (double) supply), src.getProviderSpeed()) - prevSrc;
+
+            long toDrain = Math.min((long) (src.getPower()), providerShare);
+            long toFill = Math.min(dest.getMaxPower() - dest.getPower(), receiverShare);
+
+            long finalTransfer = Math.min(toDrain, toFill);
+            if(toFill <= 0) { receivers.remove(0); prevDest = 0; continue; }
+
+            finalTransfer -= dest.transferPower(finalTransfer);
+            src.usePower(finalTransfer);
+
+            prevSrc += finalTransfer;
+            prevDest += finalTransfer;
+
+            if(prevSrc >= src.getProviderSpeed()) { providers.remove(0); prevSrc = 0; continue; }
+            if(prevDest >= dest.getReceiverSpeed()) { receivers.remove(0); prevDest = 0; continue; }
+
+            toTransfer -= finalTransfer;
+            this.energyTracker += finalTransfer;
+        }
+    }
+
+    public long sendPowerDiode(long power) {
+
+        if(receiverEntries.isEmpty()) return power;
+
+        long timestamp = System.currentTimeMillis();
+
+        List<Tuple.Pair<IEnergyUser, Long>>[] receivers = new ArrayList[IEnergyUser.ConnectionPriority.values().length];
+        for(int i = 0; i < receivers.length; i++) receivers[i] = new ArrayList();
+        long[] demand = new long[IEnergyUser.ConnectionPriority.values().length];
+        long totalDemand = 0;
+
+        Iterator<Map.Entry<IEnergyUser, Long>> recIt = receiverEntries.entrySet().iterator();
+
+        while(recIt.hasNext()) {
+            Map.Entry<IEnergyUser, Long> entry = recIt.next();
+            if(timestamp - entry.getValue() > timeout) { recIt.remove(); continue; }
+            long rec = Math.min(entry.getKey().getMaxPower() - entry.getKey().getPower(), entry.getKey().getReceiverSpeed());
+            int p = entry.getKey().getPriority().ordinal();
+            receivers[p].add(new Tuple.Pair(entry.getKey(), rec));
+            demand[p] += rec;
+            totalDemand += rec;
+        }
+
+        long toTransfer = Math.min(power, totalDemand);
+        long energyUsed = 0;
+
+        for(int i = IEnergyUser.ConnectionPriority.values().length - 1; i >= 0; i--) {
+            List<Tuple.Pair<IEnergyUser, Long>> list = receivers[i];
+            long priorityDemand = demand[i];
+
+            for(Tuple.Pair<IEnergyUser, Long> entry : list) {
+                double weight = (double) entry.getValue() / (double) (priorityDemand);
+                long toSend = (long) Math.max(toTransfer * weight, 0D);
+                energyUsed += (toSend - entry.getKey().transferPower(toSend)); //leftovers are subtracted from the intended amount to use up
+            }
+
+            toTransfer -= energyUsed;
+        }
+
+        this.energyTracker += energyUsed;
+
+        return power - energyUsed;
+    }
+
+    public static final ReceiverComparator COMP = new ReceiverComparator();
+
+    public static class ReceiverComparator implements Comparator<IEnergyUser> {
+
+        @Override
+        public int compare(IEnergyUser o1, IEnergyUser o2) {
+            return o2.getPriority().ordinal() - o1.getPriority().ordinal();
+        }
+    }
 }

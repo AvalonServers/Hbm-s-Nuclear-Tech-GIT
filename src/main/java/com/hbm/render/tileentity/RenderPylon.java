@@ -1,21 +1,19 @@
 package com.hbm.render.tileentity;
 
-import org.lwjgl.opengl.GL11;
-
 import com.hbm.lib.RefStrings;
 import com.hbm.render.amlfrom1710.Vec3;
 import com.hbm.render.model.ModelPylon;
 import com.hbm.tileentity.network.energy.TileEntityPylon;
 import com.hbm.tileentity.network.energy.TileEntityPylonBase;
-
 import net.minecraft.client.renderer.BufferBuilder;
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
 import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import org.lwjgl.opengl.GL11;
 
 public class RenderPylon extends TileEntitySpecialRenderer<TileEntityPylon> {
 
@@ -39,10 +37,10 @@ public class RenderPylon extends TileEntitySpecialRenderer<TileEntityPylon> {
 	@Override
 	public void render(TileEntityPylon pyl, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
 		GL11.glPushMatrix();
-			GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F - ((1F / 16F) * 14F), (float) z + 0.5F);
-			GL11.glRotatef(180, 0F, 0F, 1F);
-			bindTexture(texture);
-			this.pylon.renderAll(0.0625F);
+		GL11.glTranslatef((float) x + 0.5F, (float) y + 1.5F - ((1F / 16F) * 14F), (float) z + 0.5F);
+		GL11.glRotatef(180, 0F, 0F, 1F);
+		bindTexture(texture);
+		this.pylon.renderAll(0.0625F);
 		GL11.glPopMatrix();
 
 		this.renderPowerLines(pyl, x, y, z);
@@ -53,8 +51,8 @@ public class RenderPylon extends TileEntitySpecialRenderer<TileEntityPylon> {
 		GL11.glTranslatef((float) x, (float) y, (float) z);
 		for (int i = 0; i < pyl.connected.size(); i++) {
 
-			BlockPos otherPylon = pyl.connected.get(i);
-			TileEntity tile = pyl.getWorld().getTileEntity(otherPylon);
+			int[] otherPylon = pyl.connected.get(i);
+			TileEntity tile = pyl.getWorld().getTileEntity(new BlockPos(otherPylon[0], otherPylon[1], otherPylon[2]));
 
 			if(tile instanceof TileEntityPylonBase) {
 				TileEntityPylonBase pylon = (TileEntityPylonBase) tile;
@@ -62,7 +60,7 @@ public class RenderPylon extends TileEntitySpecialRenderer<TileEntityPylon> {
 				Vec3[] m2 = pylon.getMountPos();
 
 				int lineCount = Math.max(pyl.getConnectionType() == TileEntityPylonBase.ConnectionType.QUAD ? 4 : 1, pylon.getConnectionType() == TileEntityPylonBase.ConnectionType.QUAD ? 4 : 1);
-				
+
 				for(int line = 0; line < lineCount; line++) {
 
 					int secondIndex = line % m2.length;
@@ -74,7 +72,7 @@ public class RenderPylon extends TileEntitySpecialRenderer<TileEntityPylon> {
 					Vec3 first = m1[line % m1.length];
 					Vec3 second = m2[secondIndex];
 
-					Vec3 mid = new Vec3(otherPylon).add(second).subtract(new Vec3(pyl.getPos()).add(first));
+					Vec3 mid = new Vec3(new BlockPos(otherPylon[0], otherPylon[1], otherPylon[2])).add(second).subtract(new Vec3(pyl.getPos()).add(first));
 					drawLine(first, first.add(new Vec3(mid.xCoord*0.5, mid.yCoord*0.5, mid.zCoord*0.5)), lineCount == 1 ? 0.03125F : 0.055F, mid.lengthVector()*0.045);
 				}
 			}
@@ -88,14 +86,14 @@ public class RenderPylon extends TileEntitySpecialRenderer<TileEntityPylon> {
 
 		for(float j = 0; j < count; j++) {
 			float k = j + 1;
-			
+
 			drawLineSegment(
-				firstPylonMountPos.xCoord + (deltaVector.xCoord * j / count),
-				firstPylonMountPos.yCoord + (deltaVector.yCoord * j / count) - hang * Math.sin(j / count * Math.PI * 0.5),
-				firstPylonMountPos.zCoord + (deltaVector.zCoord * j / count),
-				firstPylonMountPos.xCoord + (deltaVector.xCoord * k / count),
-				firstPylonMountPos.yCoord + (deltaVector.yCoord * k / count) - hang * Math.sin(k / count * Math.PI * 0.5),
-				firstPylonMountPos.zCoord + (deltaVector.zCoord * k / count), girth);
+					firstPylonMountPos.xCoord + (deltaVector.xCoord * j / count),
+					firstPylonMountPos.yCoord + (deltaVector.yCoord * j / count) - hang * Math.sin(j / count * Math.PI * 0.5),
+					firstPylonMountPos.zCoord + (deltaVector.zCoord * j / count),
+					firstPylonMountPos.xCoord + (deltaVector.xCoord * k / count),
+					firstPylonMountPos.yCoord + (deltaVector.yCoord * k / count) - hang * Math.sin(k / count * Math.PI * 0.5),
+					firstPylonMountPos.zCoord + (deltaVector.zCoord * k / count), girth);
 		}
 	}
 

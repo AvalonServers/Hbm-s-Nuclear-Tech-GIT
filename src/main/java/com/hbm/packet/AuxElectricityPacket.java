@@ -1,7 +1,6 @@
 package com.hbm.packet;
 
 import api.hbm.energy.IEnergyUser;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.tileentity.TileEntity;
@@ -21,7 +20,7 @@ public class AuxElectricityPacket implements IMessage {
 
 	public AuxElectricityPacket()
 	{
-		
+
 	}
 
 	public AuxElectricityPacket(BlockPos pos, long charge)
@@ -56,7 +55,7 @@ public class AuxElectricityPacket implements IMessage {
 	}
 
 	public static class Handler implements IMessageHandler<AuxElectricityPacket, IMessage> {
-		
+
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(AuxElectricityPacket m, MessageContext ctx) {
@@ -66,13 +65,13 @@ public class AuxElectricityPacket implements IMessage {
 					TileEntity te = Minecraft.getMinecraft().world.getTileEntity(pos);
 
 					if (te != null && te instanceof IEnergyUser) {
-						
+
 						IEnergyUser gen = (IEnergyUser) te;
 						gen.setPower(m.charge);
 					}
 				} catch (Exception x) { }
 			});
-			
+
 			return null;
 		}
 	}

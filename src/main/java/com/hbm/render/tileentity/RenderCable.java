@@ -1,18 +1,15 @@
 package com.hbm.render.tileentity;
 
-import org.lwjgl.opengl.GL11;
-
-import com.hbm.main.ResourceManager;
-import com.hbm.lib.Library;
 import com.hbm.blocks.ModBlocks;
+import com.hbm.lib.Library;
+import com.hbm.main.ResourceManager;
 import com.hbm.tileentity.network.energy.TileEntityCableBaseNT;
-
 import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
-import net.minecraft.util.ResourceLocation;
+import org.lwjgl.opengl.GL11;
 
 public class RenderCable extends TileEntitySpecialRenderer<TileEntityCableBaseNT> {
-	
+
 	@Override
 	public void render(TileEntityCableBaseNT te, double x, double y, double z, float partialTicks, int destroyStage, float alpha) {
 		if(te.getBlockType() != ModBlocks.red_cable)
@@ -49,12 +46,12 @@ public class RenderCable extends TileEntitySpecialRenderer<TileEntityCableBaseNT
 		GL11.glTranslated(-x - 0.5F, -y - 0.5F, -z - 0.5F);
 		GL11.glPopMatrix();
 	}
-	
+
 	// Bob: Muehsam muss ich hier im BSH meine genialen Mods schreiben, obwohl ich die Zeit eigentlich doch besser nutzen koennte.
 	// Da mir das aber Spass macht, wird auch in Zukunft gutes Zeug von mir geben (und damit meine ich NICHT Drogen, etc.)
 	// Danke.
-	
+
 	// Drill: I didn't write this, but I'm gonna leave it there.
-	
+
 	// Alcater: Bob alle Achtung, ich ziehe meinen Hut vor Dir.
 }

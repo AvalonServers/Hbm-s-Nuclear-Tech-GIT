@@ -13,7 +13,7 @@ public interface IBatteryItem {
 	public long getMaxCharge();
 	public long getChargeRate();
 	public long getDischargeRate();
-	
+
 	/** Returns a string for the NBT tag name of the long storing power */
 	public default String getChargeTagName() {
 		return "charge";

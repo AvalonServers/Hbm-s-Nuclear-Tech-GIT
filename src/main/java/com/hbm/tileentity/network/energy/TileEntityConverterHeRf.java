@@ -1,35 +1,33 @@
 package com.hbm.tileentity.network.energy;
 
-import java.lang.NoSuchMethodError;
-
-import com.hbm.tileentity.TileEntityLoadedBase;
-import com.hbm.config.GeneralConfig;
-import com.hbm.lib.ForgeDirection;
-
-import api.hbm.energy.IEnergyConnector;
+import api.hbm.energy.IEnergyUser;
 import cofh.redstoneflux.api.IEnergyProvider;
 import cofh.redstoneflux.api.IEnergyReceiver;
-import net.minecraftforge.energy.IEnergyStorage;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.energy.CapabilityEnergy;
+import com.hbm.config.GeneralConfig;
+import com.hbm.lib.ForgeDirection;
+import com.hbm.tileentity.TileEntityLoadedBase;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
+import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.common.Optional;
 
 @Optional.InterfaceList({@Optional.Interface(iface = "cofh.redstoneflux.api.IEnergyProvider", modid = "redstoneflux")})
-public class TileEntityConverterHeRf extends TileEntityLoadedBase implements ITickable, IEnergyConnector, IEnergyProvider, IEnergyStorage {
+public class TileEntityConverterHeRf extends TileEntityLoadedBase implements ITickable, IEnergyUser, IEnergyProvider, IEnergyStorage {
 
 	//Thanks to the great people of Fusion Warfare for helping me with the original implementation of the RF energy API
-	
+
 	public TileEntityConverterHeRf() {
 		super();
 	}
-	
+
 	@Override
 	public void update() {
 		if (!world.isRemote) {
-			this.updateStandardConnections(world, pos);
+			for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS)
+				this.trySubscribe(world, pos.getX() + dir.offsetX, pos.getY() + dir.offsetY, pos.getZ() + dir.offsetZ, dir);
 		}
 	}
 	//RF
@@ -58,7 +56,7 @@ public class TileEntityConverterHeRf extends TileEntityLoadedBase implements ITi
 	@Optional.Method(modid="redstoneflux")
 	public int transferToRFMachine(TileEntity entity, int rf, EnumFacing dir){
 		if(entity != null && entity instanceof IEnergyReceiver) {
-				
+
 			IEnergyReceiver receiver = (IEnergyReceiver) entity;
 			return receiver.receiveEnergy(dir, rf, false);
 		}
@@ -67,7 +65,7 @@ public class TileEntityConverterHeRf extends TileEntityLoadedBase implements ITi
 
 	public int transferToFEMachine(TileEntity entity, int fe, EnumFacing dir){
 		if(entity != null && entity.hasCapability(CapabilityEnergy.ENERGY, dir)) {
-			
+
 			IEnergyStorage storage = entity.getCapability(CapabilityEnergy.ENERGY, dir);
 			if(storage.canReceive()){
 				return storage.receiveEnergy(fe, false);
@@ -79,12 +77,12 @@ public class TileEntityConverterHeRf extends TileEntityLoadedBase implements ITi
 	//NTM
 	@Override
 	public long transferPower(long power) {
-		
+
 		if(recursionBrake)
 			return power;
-		
+
 		recursionBrake = true;
-		
+
 		// we have to limit the transfer amount because otherwise FEnSUs would overflow the RF output, twice
 		int toRF = (int) Math.min(Integer.MAX_VALUE, power*GeneralConfig.conversionRateHeToRF);
 		int transfer = 0;
@@ -110,14 +108,15 @@ public class TileEntityConverterHeRf extends TileEntityLoadedBase implements ITi
 
 		recursionBrake = false;
 		lastTransfer = (long)(totalTransferred / GeneralConfig.conversionRateHeToRF);
-		
+
 		return power - (long)(totalTransferred / GeneralConfig.conversionRateHeToRF);
 	}
-	
+
 	@Override
 	public long getPower() {
 		return 0;
 	}
+	@Override public void setPower(long power) { }
 
 	@Override
 	public long getMaxPower() {
@@ -125,14 +124,14 @@ public class TileEntityConverterHeRf extends TileEntityLoadedBase implements ITi
 	}
 
 	private long lastTransfer = 0;
-	
+
 	@Override
-	public long getTransferWeight() {
-		
+	public long getReceiverSpeed() {
+
 		if(lastTransfer > 0) {
 			return lastTransfer * 2;
 		} else {
-			return 10000;
+			return getMaxPower();
 		}
 	}
 

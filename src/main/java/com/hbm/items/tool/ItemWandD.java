@@ -68,9 +68,10 @@ public class ItemWandD extends Item {
 				MainRegistry.z--;
 			if (b == ModBlocks.red_pylon) {
 				TileEntityPylonBase te = (TileEntityPylonBase) world.getTileEntity(pos);
-				for(int i = 0; i < te.connected.size(); i++)
-					if(world.isRemote)
-						player.sendMessage(new TextComponentString(te.connected.get(i).getX() + " " + te.connected.get(i).getY() + " " + te.connected.get(i).getZ()));
+				for(int i = 0; i < te.connected.size(); i++){
+					int[] coords = te.connected.get(i);
+					player.sendMessage(new TextComponentString(coords[0] + " " + coords[1] + " " + coords[2]));
+				}
 			}
 			
 			if(player.isSneaking()){

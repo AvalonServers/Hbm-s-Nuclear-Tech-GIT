@@ -22,7 +22,7 @@ import com.hbm.tileentity.machine.TileEntityReactorControl;
 import com.hbm.tileentity.machine.TileEntitySoyuzLauncher;
 
 import io.netty.buffer.ByteBuf;
-import api.hbm.energy.IEnergyConnector.ConnectionPriority;
+import api.hbm.energy.IEnergyUser.ConnectionPriority;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
