@@ -232,7 +232,7 @@ public class TileEntityMachineSchrabidiumTransmutator extends TileEntityMachineB
 			if(inventory.getStackInSlot(0).getCount() == 0)
 				inventory.setStackInSlot(0, ItemStack.EMPTY);
 
-			this.world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_LIGHTNING_THUNDER, SoundCategory.BLOCKS, 10000.0F, 0.8F + world.rand.nextFloat() * 0.2F);
+			//this.world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), SoundEvents.ENTITY_LIGHTNING_THUNDER, SoundCategory.BLOCKS, 10000.0F, 0.8F + world.rand.nextFloat() * 0.2F);
 		}
 	}
 	
