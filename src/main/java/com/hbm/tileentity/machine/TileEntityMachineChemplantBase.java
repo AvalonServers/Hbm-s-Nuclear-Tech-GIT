@@ -388,11 +388,8 @@ public abstract class TileEntityMachineChemplantBase extends TileEntityMachineBa
 
 			ItemStack chestItem = chest.getStackInSlot(i).copy();
 			if(chestItem.isEmpty() || (Library.areItemStacksCompatible(outputStack, chestItem, false) && chestItem.getCount() < chestItem.getMaxStackSize())) {
-				inventory.getStackInSlot(slot).shrink(1);
-
-				outputStack.setCount(1);
-				chest.insertItem(i, outputStack, false);
-
+				// VERTEX: what the fuck was the old version of this code? what the actual fuck?
+				inventory.setStackInSlot(slot, chest.insertItem(i, outputStack, false));
 				return true;
 			}
 		}
