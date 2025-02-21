@@ -16,6 +16,7 @@ import com.hbm.items.ModItems;
 import com.hbm.items.machine.ItemFluidIcon;
 import com.hbm.items.special.ItemBedrockOre;
 
+import com.hbm.lib.Library;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -104,10 +105,9 @@ public class CrystallizerRecipes {
 		addRecipe(new ComparableStack(ModBlocks.sand_quartz), new FluidStack(ModForgeFluids.nitroglycerin, 1000), new ItemStack(ModItems.ball_dynamite, 16));
 		addRecipe(NETHERQUARTZ.dust(), new FluidStack(ModForgeFluids.nitroglycerin, 250), new ItemStack(ModItems.ball_dynamite, 4));
 
-		List<ItemStack> quartz = OreDictionary.getOres("crystalCertusQuartz");
-		
-		if(quartz != null && !quartz.isEmpty()) {
-			ItemStack qItem = quartz.get(0).copy();
+		ItemStack quartz = Library.getPreferredOredictItem("crystalCertusQuartz");
+		if(!quartz.isEmpty()) {
+			ItemStack qItem = quartz.copy();
 			qItem.setCount(6);
 			addRecipe("oreCertusQuartz", new FluidStack(ModForgeFluids.acid, 500), qItem);
 		}

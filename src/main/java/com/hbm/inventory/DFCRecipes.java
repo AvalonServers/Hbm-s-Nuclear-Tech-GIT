@@ -100,7 +100,10 @@ public class DFCRecipes {
 	}
 
 	public static void setRecipe(long requiredFlux, String in, ItemStack out) {
-		dfcRecipes.put(new ComparableStack(OreDictionary.getOres(in).get(0)), new Object[] {requiredFlux, out});
+		ItemStack preferred = Library.getPreferredOredictItem(in);
+		if (preferred.isEmpty()) return;
+
+		dfcRecipes.put(new ComparableStack(preferred), new Object[] {requiredFlux, out});
 	}
 
 	public static void removeRecipe(ItemStack in) {

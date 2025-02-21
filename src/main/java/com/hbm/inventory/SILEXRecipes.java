@@ -18,6 +18,7 @@ import com.hbm.items.machine.ItemFluidIcon;
 import com.hbm.items.special.ItemWasteLong;
 import com.hbm.items.special.ItemWasteShort;
 import com.hbm.blocks.ModBlocks;
+import com.hbm.lib.Library;
 import com.hbm.util.WeightedRandomObject;
 
 import net.minecraft.init.Blocks;
@@ -1121,9 +1122,10 @@ public class SILEXRecipes {
 		for(Object ingredient : ing) {
 			
 			if(ingredient instanceof String) {
+				ItemStack preferred = Library.getPreferredOredictItem((String)ingredient);
 				List<ItemStack> ingredients = OreDictionary.getOres((String)ingredient);
-				if(ingredients.size() > 0) {
-					SILEXRecipe output = getOutput(ingredients.get(0));
+				if(!ingredients.isEmpty()) {
+					SILEXRecipe output = getOutput(preferred);
 					if(output != null)
 						recipes.put(ingredients, output);
 				}

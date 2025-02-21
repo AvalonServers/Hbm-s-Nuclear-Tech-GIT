@@ -386,8 +386,10 @@ public class RecipesCommon {
 		
 		@Override
 		public ItemStack getStack() {
-			ItemStack stack = toStacks().get(0);
-			return new ItemStack(stack.getItem(), stacksize, stack.getMetadata());
+			ItemStack preferred = Library.getPreferredOredictItem(name);
+			if (preferred.isEmpty()) return ItemStack.EMPTY;
+
+			return new ItemStack(preferred.getItem(), stacksize, preferred.getMetadata());
 		}
 		
 		@Override

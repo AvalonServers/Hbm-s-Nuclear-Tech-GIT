@@ -12,13 +12,17 @@ import com.hbm.interfaces.Spaghetti;
 import com.hbm.lib.Library;
 import com.hbm.config.BedrockOreJsonConfig;
 import com.hbm.config.CompatibilityConfig;
+import com.hbm.lib.RefStrings;
 import com.hbm.util.WeightedRandomObject;
 
 import net.minecraft.init.Items;
 import net.minecraft.init.Blocks;
 import net.minecraft.block.Block;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemBlock;
+import net.minecraft.util.NonNullList;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
 import net.minecraftforge.oredict.OreDictionary;
 import net.minecraftforge.fluids.FluidStack;
@@ -59,52 +63,45 @@ public class BedrockOreRegistry {
 	}
 
 	public static boolean tryRegister(int index, String oreName, String output){
-		if(OreDictionary.doesOreNameExist(output) && isActualItem(output)){
-			oreIndexes.put(index, oreName);
-			oreToIndexes.put(oreName, index);
-			oreResults.put(oreName, output);
-			oreTiers.put(oreName, Math.max(1, 1+getDirectOreTier(oreName)));
-			return true;
+		if (!OreDictionary.doesOreNameExist(output) || !isActualItem(output)) return false;
+		NonNullList<ItemStack> outputs = OreDictionary.getOres(output);
+
+		boolean internal = false;
+		for (ItemStack stack : outputs) {
+			if (stack == null || stack.isEmpty()) continue;
+
+			Item item = stack.getItem();
+            //noinspection ConstantValue
+            if (item == null) continue;
+
+			ResourceLocation location = item.getRegistryName();
+			if (location != null && location.getResourceDomain().equals(RefStrings.MODID)) {
+				internal = true;
+				break;
+			}
 		}
-		return false;
+
+		oreIndexes.put(index, oreName);
+		oreToIndexes.put(oreName, index);
+		oreResults.put(oreName, output);
+		oreTiers.put(oreName, Math.max(1, 1+getDirectOreTier(oreName)));
+
+		// if we have an internal item stop going down the list and bail
+		return internal;
 	}
 
 	public static void collectBedrockOres(){
 		int index = 0;
 		for(String oreName : OreDictionary.getOreNames()){
 			if(oreName.startsWith("ore") && is3DBlock(oreName) && !CompatibilityConfig.bedrockOreBlacklist.contains(oreName)){
-
+				if (oreIndexes.containsKey(index)) index++;
 				String resourceName = oreName.substring(3);
-				
-				String oreOutput = "gem"+resourceName;
-				if(tryRegister(index, oreName, oreOutput)){
-					index++;
-					continue;
-				}
 
-				oreOutput = "dust"+resourceName;
-				if(tryRegister(index, oreName, oreOutput)){
-					index++;
-					continue;
-				}
-
-				oreOutput = "ingot"+resourceName;
-				if(tryRegister(index, oreName, oreOutput)){
-					index++;
-					continue;
-				}
-
-				oreOutput = "item"+resourceName;
-				if(tryRegister(index, oreName, oreOutput)){
-					index++;
-					continue;
-				}
-
-				oreOutput = "food"+resourceName;
-				if(tryRegister(index, oreName, oreOutput)){
-					index++;
-					continue;
-				}
+				if (tryRegister(index, oreName, "gem" + resourceName)) continue;
+				if (tryRegister(index, oreName, "dust" + resourceName)) continue;
+				if (tryRegister(index, oreName, "ingot" + resourceName)) continue;
+				if (tryRegister(index, oreName, "item" + resourceName)) continue;
+				if (tryRegister(index, oreName, "food" + resourceName)) continue;
 			}
 		}
 	}
@@ -147,10 +144,10 @@ public class BedrockOreRegistry {
 
 			List<WeightedRandomObject> oreWeights = new ArrayList();
 			for(String oreName : oreResults.keySet()){
-
 				if(BedrockOreJsonConfig.isOreAllowed(dimID, oreName))
 					oreWeights.add(new WeightedRandomObject(oreName, getTierWeight(getOreTier(oreName))));
 			}
+
 			oreCasino.put(dimID, oreWeights);
 		}
 	}
@@ -184,9 +181,9 @@ public class BedrockOreRegistry {
 
 	public static void registerOreColors(){
 		for(Map.Entry<String, String> entry : oreResults.entrySet()) {
-			List<ItemStack> oreResult = OreDictionary.getOres(entry.getValue());
-			if(oreResult.size() > 0){
-				int color = Library.getColorFromItemStack(oreResult.get(0));
+			ItemStack stack = Library.getPreferredOredictItem(entry.getValue());
+			if(!stack.isEmpty()){
+				int color = Library.getColorFromItemStack(stack);
 				oreColors.put(entry.getKey(), color);
 			}
 		}
@@ -197,9 +194,9 @@ public class BedrockOreRegistry {
 	public static void registerScannerOreColors(){
 		for(String entry : OreDictionary.getOreNames()) {
 			if(!entry.startsWith("ore")) continue;
-			List<ItemStack> oreResult = OreDictionary.getOres(entry);
-			if(oreResult.size() > 0){
-				int color = Library.getColorFromItemStack(oreResult.get(0));
+			ItemStack stack = Library.getPreferredOredictItem(entry);
+			if(!stack.isEmpty()){
+				int color = Library.getColorFromItemStack(stack);
 				oreScanColors.put(entry, color);
 			}
 		}
@@ -212,9 +209,7 @@ public class BedrockOreRegistry {
 	}
 
 	public static ItemStack getResource(String ore){
-		List<ItemStack> outputs = OreDictionary.getOres(oreResults.get(ore));
-		if(outputs.size() > 0) return outputs.get(0);
-		return new ItemStack(Items.AIR);
+		return Library.getPreferredOredictItem(oreResults.get(ore));
 	}
 
 	public static int getOreColor(String ore){

@@ -13,6 +13,8 @@ import com.hbm.items.special.ItemHazard;
 import com.hbm.items.machine.ItemFluidIcon;
 
 import static com.hbm.inventory.OreDictManager.*;
+
+import com.hbm.lib.Library;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -154,8 +156,9 @@ public class RBMKOutgasserRecipes {
 	}
 
 	public static void addRecipe(int requiredFlux, String in, ItemStack out) {
-		if(!OreDictionary.getOres(in).isEmpty() && OreDictionary.getOres(in).get(0) != null && !OreDictionary.getOres(in).get(0).isEmpty())
-			rbmkOutgasserRecipes.put(new ComparableStack(OreDictionary.getOres(in).get(0)), new Object[] {requiredFlux, out});
+		ItemStack inStack = Library.getPreferredOredictItem(in);
+		if(!inStack.isEmpty())
+			rbmkOutgasserRecipes.put(new ComparableStack(inStack), new Object[] {requiredFlux, out});
 	}
 
 	public static void addRecipe(float requiredFlux, String in, ItemStack out) {

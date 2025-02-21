@@ -15,6 +15,8 @@ import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
 import javax.annotation.Nullable;
 
+import net.minecraft.init.Items;
+import net.minecraft.util.*;
 import org.apache.logging.log4j.Level;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -50,9 +52,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EntitySelectors;
-import net.minecraft.util.EnumFacing;
-import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
@@ -63,7 +62,6 @@ import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.Explosion;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -840,6 +838,23 @@ public static boolean canConnect(IBlockAccess world, BlockPos pos, ForgeDirectio
 				return;
 			}
 		}
+	}
+
+	public static ItemStack getPreferredOredictItem(String ore) {
+		NonNullList<ItemStack> outputs = OreDictionary.getOres(ore);
+		if (outputs.isEmpty()) return new ItemStack(Items.AIR);
+
+		// Prefer our own ores over ones owned by other mods...
+		for(ItemStack stack : outputs) {
+			Item item = stack.getItem();
+			//noinspection ConstantValue
+			if (item == null) continue;
+
+			ResourceLocation location = item.getRegistryName();
+			if (location != null && location.getResourceDomain().equals(RefStrings.MODID)) return stack;
+		}
+
+		return outputs.get(0);
 	}
 
 	//////  //////  //////  //////  //////  ////        //////  //////  //////

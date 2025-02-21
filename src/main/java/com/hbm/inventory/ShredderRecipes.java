@@ -11,6 +11,7 @@ import com.hbm.inventory.RecipesCommon.ComparableStack;
 import com.hbm.inventory.BedrockOreRegistry;
 import com.hbm.items.ModItems;
 
+import com.hbm.lib.Library;
 import mezz.jei.api.ingredients.IIngredients;
 import mezz.jei.api.ingredients.VanillaTypes;
 import mezz.jei.api.recipe.IRecipeWrapper;
@@ -329,12 +330,10 @@ public class ShredderRecipes {
 	}
 
 	public static ItemStack getOredictByName(String name) {
-		
-		List<ItemStack> matches = OreDictionary.getOres(name);
-		if(matches != null && !matches.isEmpty())
-			return matches.get(0).copy();
-		
-		return new ItemStack(ModItems.scrap);
+		ItemStack preferred = Library.getPreferredOredictItem(name);
+		if (preferred.isEmpty()) return new ItemStack(ModItems.scrap);
+
+		return preferred.copy();
 	}
 	
 	public static void setRecipe(Item in, ItemStack out) {
