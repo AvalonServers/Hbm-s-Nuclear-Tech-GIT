@@ -18,6 +18,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
@@ -60,7 +61,7 @@ public class CraneSplitter extends BlockDummyable implements IConveyorBelt, IEnt
 
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return Item.getItemFromBlock(ModBlocks.crane_splitter);
+        return isCore(state) ? Item.getItemFromBlock(ModBlocks.crane_splitter) : Items.AIR;
     }
 
     @Override

@@ -18,6 +18,7 @@ import com.hbm.util.I18nUtil;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.client.util.ITooltipFlag;
 import net.minecraft.item.Item;
@@ -59,7 +60,7 @@ public class HeatBoiler extends BlockDummyable implements ILookOverlay, ITooltip
 
     @Override
     public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-        return Item.getItemFromBlock(ModBlocks.heat_boiler);
+        return isCore(state) ? Item.getItemFromBlock(ModBlocks.heat_boiler) : Items.AIR;
     }
 
     @Override

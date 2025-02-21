@@ -19,6 +19,7 @@ import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumBlockRenderType;
@@ -263,6 +264,16 @@ public abstract class BlockDummyable extends BlockContainer {
 	public boolean hasExtra(int meta) {
 		return meta > 5 && meta < 12;
 	}
+
+	public boolean isCore(IBlockState state) {
+		if (state.getBlock().getClass() != this.getClass()) return false;
+
+		int metadata = state.getValue(META);
+		if(metadata >= extra)
+			metadata -= extra;
+
+		return ForgeDirection.getOrientation(metadata) == ForgeDirection.UNKNOWN;
+	}
 	
 	@Override
 	public void breakBlock(World world, BlockPos pos, IBlockState state) {
@@ -271,7 +282,6 @@ public abstract class BlockDummyable extends BlockContainer {
 			//ForgeDirection d = ForgeDirection.getOrientation(world.getBlockMetadata(x, y, z) - offset);
 			//MultiblockHandler.emptySpace(world, x, y, z, getDimensions(), this, d);
 		} else if(!safeRem) {
-			
 	    	if(i >= extra)
 	    		i -= extra;
 
@@ -279,11 +289,11 @@ public abstract class BlockDummyable extends BlockContainer {
 			int[] pos1 = findCore(world, pos.getX() + dir.offsetX, pos.getY() + dir.offsetY, pos.getZ() + dir.offsetZ);
 			
 			if(pos1 != null) {
-
 				//ForgeDirection d = ForgeDirection.getOrientation(world.getBlockMetadata(pos[0], pos[1], pos[2]) - offset);
-				world.setBlockToAir(new BlockPos(pos1[0], pos1[1], pos1[2]));
+				world.destroyBlock(new BlockPos(pos1[0], pos1[1], pos1[2]), true);
 			}
 		}
+
 		InventoryHelper.dropInventoryItems(world, pos, world.getTileEntity(pos));
 		super.breakBlock(world, pos, state);
 	}
@@ -321,6 +331,11 @@ public abstract class BlockDummyable extends BlockContainer {
 	@Override
 	public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side) {
 		return false;
+	}
+
+	@Override
+	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
+		return isCore(state) ? super.getItemDropped(state, rand, fortune) : Items.AIR;
 	}
 	
 	@Override

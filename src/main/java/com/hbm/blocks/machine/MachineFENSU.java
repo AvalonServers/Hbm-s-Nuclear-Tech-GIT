@@ -17,6 +17,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.client.util.ITooltipFlag;
@@ -56,7 +57,7 @@ public class MachineFENSU extends BlockDummyableMBB implements ILookOverlay {
 
 	@Override
 	public Item getItemDropped(IBlockState state, Random rand, int fortune) {
-		return null;
+		return Items.AIR;
 	}
 
 	@Override
