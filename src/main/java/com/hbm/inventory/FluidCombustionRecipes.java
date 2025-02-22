@@ -60,6 +60,7 @@ public class FluidCombustionRecipes {
 		addBurnableFluid("plantoil", 50);
 		addBurnableFluid("acetaldehyde", 80);
 		addBurnableFluid("biodiesel", 175);
+		addBurnableFluid("creosote", 20);
 		
 	}
 
