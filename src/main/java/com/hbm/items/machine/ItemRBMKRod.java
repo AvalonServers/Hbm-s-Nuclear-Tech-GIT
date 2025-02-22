@@ -2,6 +2,7 @@ package com.hbm.items.machine;
 
 import java.util.List;
 
+import com.hbm.config.MachineConfig;
 import com.hbm.interfaces.IItemHazard;
 import com.hbm.items.ModItems;
 import com.hbm.main.MainRegistry;
@@ -190,7 +191,7 @@ public class ItemRBMKRod extends Item implements IItemHazard {
 		double outFlux = reactivityFunc(inFlux, getEnrichment(stack)) * RBMKDials.getReactivityMod(world);
 		
 		double y = getYield(stack);
-		y -= inFlux;
+		y -= inFlux * (1 / MachineConfig.rbmkYieldMultiplier);
 		
 		if(y < 0D) y = 0D;
 		

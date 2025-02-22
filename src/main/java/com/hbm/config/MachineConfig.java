@@ -46,6 +46,7 @@ public class MachineConfig {
 	public static int crateByteSize = 8;
 
 	public static int rbmkJumpTemp = 1250;
+	public static double rbmkYieldMultiplier = 1.0D;
 
 	public static boolean chemplantKeepOilProcessing = false;
 	
@@ -105,5 +106,7 @@ public class MachineConfig {
 		rbmkJumpTemp = CommonConfig.createConfigInt(config, CATEGORY_MACHINE, generateConfigName(28, "rbmkJumpTemp"), "Controls at which rbmk column temperature the lid jumping begins. Can not be < 20°C. Set to > 1500°C to turn off. Default is 1250°C - <temp> (int)", 1250);
 		
 		chemplantKeepOilProcessing = CommonConfig.createConfigBool(config, CATEGORY_MACHINE, generateConfigName(29, "chemplantKeepOilProcessing"), "If false then the chemplant recipes processing Heavyoil, Industrial Oil, Naphtha, Light Oil will be removed. Otherwise not", false);
+
+		rbmkYieldMultiplier = CommonConfig.createConfigDouble(config, CATEGORY_MACHINE, generateConfigName(30, "rbmkYieldMultiplier"), "Multiplier for the yield of all rbmk fuels", 1.0D);
 	}
 }
