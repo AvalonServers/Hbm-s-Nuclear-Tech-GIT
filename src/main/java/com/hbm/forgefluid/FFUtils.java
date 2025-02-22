@@ -236,6 +236,13 @@ public class FFUtils {
 			hasInfo = true;
 		}
 
+		if (FluidTypeHandler.isSmelly(fluid)) {
+			if (isKeyPressed) {
+				texts.add("§6["+I18n.format("trait.smelly")+"]");
+			}
+			hasInfo = true;
+		}
+
 		if (FluidCombustionRecipes.hasFuelRecipe(fluid)) {
 			if(isKeyPressed){
 				texts.add("§6["+I18n.format("trait.flammable")+"]");

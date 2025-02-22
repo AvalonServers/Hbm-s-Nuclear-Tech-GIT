@@ -45,6 +45,10 @@ public class FluidTypeHandler {
 	public static boolean isCorrosiveIron(Fluid f){
 		return containsTrait(f, FluidTrait.CORROSIVE_2);
 	}
+
+	public static boolean isSmelly(Fluid f){
+		return containsTrait(f, FluidTrait.SMELLY);
+	}
 	
 	public static boolean isHot(Fluid f){
 		if(f == null)
@@ -87,31 +91,31 @@ public class FluidTypeHandler {
 		fluidProperties.put(ModForgeFluids.deuterium.getName(), new FluidProperties(2, 4, 0, 1.2F, EnumSymbol.CROYGENIC));
 		fluidProperties.put(ModForgeFluids.tritium.getName(), new FluidProperties(3, 4, 0, 1.3F, EnumSymbol.RADIATION));
 		
-		fluidProperties.put(ModForgeFluids.oil.getName(), new FluidProperties(2, 1, 0, EnumSymbol.NONE));
-		fluidProperties.put(ModForgeFluids.hotoil.getName(), new FluidProperties(2, 3, 0, EnumSymbol.NONE));
-		fluidProperties.put(ModForgeFluids.crackoil.getName(), new FluidProperties(2, 1, 0, EnumSymbol.NONE));
-		fluidProperties.put(ModForgeFluids.hotcrackoil.getName(), new FluidProperties(2, 3, 0, EnumSymbol.NONE));
+		fluidProperties.put(ModForgeFluids.oil.getName(), new FluidProperties(2, 1, 0, EnumSymbol.NONE, FluidTrait.SMELLY));
+		fluidProperties.put(ModForgeFluids.hotoil.getName(), new FluidProperties(2, 3, 0, EnumSymbol.NONE, FluidTrait.SMELLY));
+		fluidProperties.put(ModForgeFluids.crackoil.getName(), new FluidProperties(2, 1, 0, EnumSymbol.NONE, FluidTrait.SMELLY));
+		fluidProperties.put(ModForgeFluids.hotcrackoil.getName(), new FluidProperties(2, 3, 0, EnumSymbol.NONE, FluidTrait.SMELLY));
 		
-		fluidProperties.put(ModForgeFluids.heavyoil.getName(), new FluidProperties(2, 1, 0, EnumSymbol.NONE));
-		fluidProperties.put(ModForgeFluids.bitumen.getName(), new FluidProperties(2, 0, 0, EnumSymbol.NONE));
-		fluidProperties.put(ModForgeFluids.smear.getName(), new FluidProperties(2, 1, 0, EnumSymbol.NONE));
-		fluidProperties.put(ModForgeFluids.heatingoil.getName(), new FluidProperties(2, 2, 0, EnumSymbol.NONE));
+		fluidProperties.put(ModForgeFluids.heavyoil.getName(), new FluidProperties(2, 1, 0, EnumSymbol.NONE, FluidTrait.SMELLY));
+		fluidProperties.put(ModForgeFluids.bitumen.getName(), new FluidProperties(2, 0, 0, EnumSymbol.NONE, FluidTrait.SMELLY));
+		fluidProperties.put(ModForgeFluids.smear.getName(), new FluidProperties(2, 1, 0, EnumSymbol.NONE, FluidTrait.SMELLY));
+		fluidProperties.put(ModForgeFluids.heatingoil.getName(), new FluidProperties(2, 2, 0, EnumSymbol.NONE, FluidTrait.SMELLY));
 		
-		fluidProperties.put(ModForgeFluids.reclaimed.getName(), new FluidProperties(2, 2, 0, EnumSymbol.NONE));
-		fluidProperties.put(ModForgeFluids.petroil.getName(), new FluidProperties(1, 3, 0, EnumSymbol.NONE));
+		fluidProperties.put(ModForgeFluids.reclaimed.getName(), new FluidProperties(2, 2, 0, EnumSymbol.NONE, FluidTrait.SMELLY));
+		fluidProperties.put(ModForgeFluids.petroil.getName(), new FluidProperties(1, 3, 0, EnumSymbol.NONE, FluidTrait.SMELLY));
 
-		fluidProperties.put(ModForgeFluids.fracksol.getName(), new FluidProperties(1, 3, 3, EnumSymbol.ACID, FluidTrait.CORROSIVE));
+		fluidProperties.put(ModForgeFluids.fracksol.getName(), new FluidProperties(1, 3, 3, EnumSymbol.ACID, FluidTrait.CORROSIVE, FluidTrait.SMELLY));
 		
 		fluidProperties.put(ModForgeFluids.lubricant.getName(), new FluidProperties(2, 1, 0, EnumSymbol.NONE));
 		
-		fluidProperties.put(ModForgeFluids.naphtha.getName(), new FluidProperties(2, 1, 0, EnumSymbol.NONE));
-		fluidProperties.put(ModForgeFluids.diesel.getName(), new FluidProperties(1, 2, 0, EnumSymbol.NONE));
+		fluidProperties.put(ModForgeFluids.naphtha.getName(), new FluidProperties(2, 1, 0, EnumSymbol.NONE, FluidTrait.SMELLY));
+		fluidProperties.put(ModForgeFluids.diesel.getName(), new FluidProperties(1, 2, 0, EnumSymbol.NONE, FluidTrait.SMELLY));
 		
 		fluidProperties.put(ModForgeFluids.lightoil.getName(), new FluidProperties(1, 2, 0, EnumSymbol.NONE));
 		fluidProperties.put(ModForgeFluids.kerosene.getName(), new FluidProperties(1, 2, 0, EnumSymbol.NONE));
 		
 		fluidProperties.put(ModForgeFluids.gas.getName(), new FluidProperties(1, 4, 1, EnumSymbol.NONE));
-		fluidProperties.put(ModForgeFluids.petroleum.getName(), new FluidProperties(1, 4, 1, EnumSymbol.NONE));
+		fluidProperties.put(ModForgeFluids.petroleum.getName(), new FluidProperties(1, 4, 1, EnumSymbol.NONE, FluidTrait.SMELLY));
 		
 		fluidProperties.put(ModForgeFluids.aromatics.getName(), new FluidProperties(1, 4, 1, EnumSymbol.NONE));
 		fluidProperties.put(ModForgeFluids.unsaturateds.getName(), new FluidProperties(1, 4, 1, EnumSymbol.NONE));
@@ -120,7 +124,7 @@ public class FluidTypeHandler {
 		fluidProperties.put(ModForgeFluids.biofuel.getName(), new FluidProperties(1, 2, 0, EnumSymbol.NONE));
 
 		fluidProperties.put(ModForgeFluids.ethanol.getName(), new FluidProperties(2, 3, 1, EnumSymbol.NONE));
-		fluidProperties.put(ModForgeFluids.fishoil.getName(), new FluidProperties(0, 1, 0, EnumSymbol.NONE));
+		fluidProperties.put(ModForgeFluids.fishoil.getName(), new FluidProperties(0, 1, 0, EnumSymbol.NONE, FluidTrait.SMELLY));
 		fluidProperties.put(ModForgeFluids.sunfloweroil.getName(), new FluidProperties(0, 1, 0, EnumSymbol.NONE));
 		fluidProperties.put(ModForgeFluids.colloid.getName(), new FluidProperties(0, 0, 0, EnumSymbol.NONE));
 		
@@ -142,7 +146,7 @@ public class FluidTypeHandler {
 		fluidProperties.put(ModForgeFluids.nitroglycerin.getName(), new FluidProperties(0, 4, 4, 1.5F, EnumSymbol.NONE));
 		fluidProperties.put(ModForgeFluids.liquid_osmiridium.getName(),	new FluidProperties(5, 0, 5, 1.8F, EnumSymbol.OXIDIZER, FluidTrait.CORROSIVE_2));
 		
-		fluidProperties.put(ModForgeFluids.watz.getName(), new FluidProperties(4, 0, 3, 1.5F, EnumSymbol.OXIDIZER, FluidTrait.CORROSIVE_2));
+		fluidProperties.put(ModForgeFluids.watz.getName(), new FluidProperties(4, 0, 3, 1.5F, EnumSymbol.OXIDIZER, FluidTrait.CORROSIVE_2, FluidTrait.SMELLY));
 		fluidProperties.put(ModForgeFluids.cryogel.getName(), new FluidProperties(2, 0, 0, EnumSymbol.CROYGENIC));
 		
 		fluidProperties.put(ModForgeFluids.oxygen.getName(), new FluidProperties(3, 0, 0, 1.1F, EnumSymbol.CROYGENIC));
@@ -152,8 +156,8 @@ public class FluidTypeHandler {
 		fluidProperties.put(ModForgeFluids.mercury.getName(), new FluidProperties(2, 0, 0, EnumSymbol.NONE));
 		fluidProperties.put(ModForgeFluids.pain.getName(), new FluidProperties(2, 0, 1, EnumSymbol.ACID, FluidTrait.CORROSIVE));
 		
-		fluidProperties.put(ModForgeFluids.wastefluid.getName(), new FluidProperties(2, 0, 1, EnumSymbol.RADIATION));
-		fluidProperties.put(ModForgeFluids.wastegas.getName(), new FluidProperties(2, 0, 1, EnumSymbol.RADIATION));
+		fluidProperties.put(ModForgeFluids.wastefluid.getName(), new FluidProperties(2, 0, 1, EnumSymbol.RADIATION, FluidTrait.SMELLY));
+		fluidProperties.put(ModForgeFluids.wastegas.getName(), new FluidProperties(2, 0, 1, EnumSymbol.RADIATION, FluidTrait.SMELLY));
 		
 		fluidProperties.put(ModForgeFluids.gasoline.getName(), new FluidProperties(2, 0, 1, EnumSymbol.NONE));
 		fluidProperties.put(ModForgeFluids.experience.getName(), new FluidProperties(0, 0, 0, 1.1F, EnumSymbol.NONE));
@@ -166,10 +170,10 @@ public class FluidTypeHandler {
 		fluidProperties.put(ModForgeFluids.plasma_bf.getName(), new FluidProperties(4, 5, 4, EnumSymbol.RADIATION, FluidTrait.NO_CONTAINER, FluidTrait.NO_ID));
 		fluidProperties.put(ModForgeFluids.uu_matter.getName(),	new FluidProperties(6, 2, 6, 2.0F, EnumSymbol.ACID, FluidTrait.CORROSIVE));
 
-		fluidProperties.put(ModForgeFluids.toxic_fluid.getName(), new FluidProperties(3, 0, 4, EnumSymbol.RADIATION, FluidTrait.CORROSIVE_2));
-		fluidProperties.put(ModForgeFluids.radwater_fluid.getName(), new FluidProperties(2, 0, 0, EnumSymbol.RADIATION));
-		fluidProperties.put(ModForgeFluids.mud_fluid.getName(), new FluidProperties(4, 0, 1, EnumSymbol.ACID, FluidTrait.CORROSIVE_2));
-		fluidProperties.put(ModForgeFluids.corium_fluid.getName(), new FluidProperties(4, 0, 2, EnumSymbol.RADIATION, FluidTrait.CORROSIVE_2));
+		fluidProperties.put(ModForgeFluids.toxic_fluid.getName(), new FluidProperties(3, 0, 4, EnumSymbol.RADIATION, FluidTrait.CORROSIVE_2, FluidTrait.SMELLY));
+		fluidProperties.put(ModForgeFluids.radwater_fluid.getName(), new FluidProperties(2, 0, 0, EnumSymbol.RADIATION, FluidTrait.SMELLY));
+		fluidProperties.put(ModForgeFluids.mud_fluid.getName(), new FluidProperties(4, 0, 1, EnumSymbol.ACID, FluidTrait.CORROSIVE_2, FluidTrait.SMELLY));
+		fluidProperties.put(ModForgeFluids.corium_fluid.getName(), new FluidProperties(4, 0, 2, EnumSymbol.RADIATION, FluidTrait.CORROSIVE_2, FluidTrait.SMELLY));
 		fluidProperties.put(ModForgeFluids.volcanic_lava_fluid.getName(), new FluidProperties(4, 1, 1, EnumSymbol.NOWATER));
 	
 	}
@@ -202,6 +206,7 @@ public class FluidTypeHandler {
 		AMAT,
 		CORROSIVE,
 		CORROSIVE_2,
+		SMELLY,
 		NO_CONTAINER,
 		NO_ID;
 	}

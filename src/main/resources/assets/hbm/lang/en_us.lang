@@ -4967,6 +4967,7 @@ trait.reactorrod=Reactor Fuel Rod
 trait.schrabbomb=Schrabidium Bomb
 trait.soliniumbomb=Solinium Bomb
 trait.soliniumgrenade=Solinium Grenade
+trait.smelly=Smelly
 trait.thermobomb=Thermonuclear Bomb
 trait.tile.cluster=Drops only when broken by a player
 trait.tile.depth=Can only be destroyed by explosions
