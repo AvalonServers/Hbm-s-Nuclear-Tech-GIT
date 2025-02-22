@@ -969,15 +969,14 @@ public class ModEventHandler {
 			return;
 
 		Block block = event.getState().getBlock();
-		
-		if(block == Blocks.COAL_ORE || block == Blocks.COAL_BLOCK || block == ModBlocks.ore_lignite) {
-			
+
+		if(GeneralConfig.enableCoal && (block == Blocks.COAL_ORE || block == Blocks.COAL_BLOCK || block == ModBlocks.ore_lignite)) {
 			for(ForgeDirection dir : ForgeDirection.VALID_DIRECTIONS) {
 
 				int x = event.getPos().getX() + dir.offsetX;
 				int y = event.getPos().getY() + dir.offsetY;
 				int z = event.getPos().getZ() + dir.offsetZ;
-				
+
 				if(event.getWorld().rand.nextInt(2) == 0 && event.getWorld().getBlockState(new BlockPos(x, y, z)).getBlock() == Blocks.AIR)
 					event.getWorld().setBlockState(new BlockPos(x, y, z), ModBlocks.gas_coal.getDefaultState());
 			}
