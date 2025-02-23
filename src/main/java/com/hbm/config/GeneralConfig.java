@@ -2,6 +2,7 @@ package com.hbm.config;
 
 import java.util.Locale;
 
+import net.minecraft.client.Minecraft;
 import org.apache.logging.log4j.Level;
 import org.lwjgl.opengl.GLContext;
 
@@ -155,6 +156,14 @@ public class GeneralConfig {
 		advancedRadiation = adv_rads.getBoolean(true);
 		
 		bloodFX = CommonConfig.createConfigBool(config, CATEGORY_GENERAL, "1.32_enable_blood_effects", "Enables the over-the-top blood visual effects for some weapons", true);
+
+		if(FMLCommonHandler.instance().getSide() == Side.CLIENT) {
+			if (Minecraft.IS_RUNNING_ON_MAC) {
+				MainRegistry.logger.error("MacOS detected - forcibly disabling shaders...");
+				useShaders = false;
+				useShaders2 = false;
+			}
+		}
 	
 		if((instancedParticles || depthEffects || flowingDecalAmountMax > 0 || bloodFX || bloom || heatDistortion) && (!GLCompat.error.isEmpty() || !useShaders2)){
 			MainRegistry.logger.error("Warning - Open GL 3.3 not supported! Disabling 3.3 effects...");
