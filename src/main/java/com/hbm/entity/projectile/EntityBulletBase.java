@@ -345,7 +345,6 @@ public class EntityBulletBase extends Entity implements IProjectile {
 					} catch (Exception x) {
 					}
 				}
-				
 
 				// handle block collision
 			} else if (world.getBlockState(movement.getBlockPos()).getMaterial() != Material.AIR) {
@@ -485,27 +484,25 @@ public class EntityBulletBase extends Entity implements IProjectile {
 	}
 	
 	private void doHitVFX(@Nullable BlockPos pos, RayTraceResult hit){
-		if(getDataManager().get(STYLE) == BulletConfiguration.STYLE_TRACER){
-			NBTTagCompound tag = new NBTTagCompound();
-			tag.setString("type", "bimpact");
-			tag.setByte("hitType", (byte) hit.typeOfHit.ordinal());
-			Vec3d norm = Library.normalFromRayTrace(hit);
-			tag.setFloat("nX", (float) norm.x);
-			tag.setFloat("nY", (float) norm.y);
-			tag.setFloat("nZ", (float) norm.z);
-			tag.setFloat("dirX", (float) motionX);
-			tag.setFloat("dirY", (float) motionY);
-			tag.setFloat("dirZ", (float) motionZ);
-			if(hit.typeOfHit == Type.BLOCK){
-				IBlockState blockstate = world.getBlockState(pos);
-				Block block = blockstate.getBlock();
-				tag.setInteger("block", Block.getIdFromBlock(block));
-				tag.setByte("meta", (byte) block.getMetaFromState(blockstate));
-			}
-			PacketDispatcher.wrapper.sendToAllTracking(new AuxParticlePacketNT(tag, hit.hitVec.x, hit.hitVec.y, hit.hitVec.z), this);
-			if(hit.typeOfHit == Type.ENTITY && hit.entityHit instanceof EntityLivingBase){
-				EntityHitDataHandler.addHit((EntityLivingBase) hit.entityHit, this, hit.hitVec, new Vec3d(this.motionX, this.motionY, this.motionZ).normalize());
-			}
+		NBTTagCompound tag = new NBTTagCompound();
+		tag.setString("type", "bimpact");
+		tag.setByte("hitType", (byte) hit.typeOfHit.ordinal());
+		Vec3d norm = Library.normalFromRayTrace(hit);
+		tag.setFloat("nX", (float) norm.x);
+		tag.setFloat("nY", (float) norm.y);
+		tag.setFloat("nZ", (float) norm.z);
+		tag.setFloat("dirX", (float) motionX);
+		tag.setFloat("dirY", (float) motionY);
+		tag.setFloat("dirZ", (float) motionZ);
+		if(hit.typeOfHit == Type.BLOCK){
+			IBlockState blockstate = world.getBlockState(pos);
+			Block block = blockstate.getBlock();
+			tag.setInteger("block", Block.getIdFromBlock(block));
+			tag.setByte("meta", (byte) block.getMetaFromState(blockstate));
+		}
+		PacketDispatcher.wrapper.sendToAllTracking(new AuxParticlePacketNT(tag, hit.hitVec.x, hit.hitVec.y, hit.hitVec.z), this);
+		if(hit.typeOfHit == Type.ENTITY && hit.entityHit instanceof EntityLivingBase){
+			EntityHitDataHandler.addHit((EntityLivingBase) hit.entityHit, this, hit.hitVec, new Vec3d(this.motionX, this.motionY, this.motionZ).normalize());
 		}
 	}
 

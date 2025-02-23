@@ -655,7 +655,7 @@ public abstract class TileEntityTurretBaseNT extends TileEntityMachineBase imple
 	 * @return
 	 */
 	public int getDecetorInterval() {
-		return 10;
+		return 20;
 	}
 	
 	/**
@@ -663,7 +663,7 @@ public abstract class TileEntityTurretBaseNT extends TileEntityMachineBase imple
 	 * @return
 	 */
 	public double getDecetorRange() {
-		return 32D;
+		return 128D;
 	}
 	
 	/**
