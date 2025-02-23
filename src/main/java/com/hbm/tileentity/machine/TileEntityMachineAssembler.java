@@ -1,15 +1,12 @@
 package com.hbm.tileentity.machine;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import com.hbm.blocks.ModBlocks;
 import com.hbm.handler.MultiblockHandler;
 import com.hbm.inventory.AssemblerRecipes;
+import com.hbm.inventory.RecipesCommon;
 import com.hbm.inventory.RecipesCommon.AStack;
-import com.hbm.inventory.RecipesCommon.ComparableStack;
 import com.hbm.items.ModItems;
 import com.hbm.items.machine.ItemAssemblyTemplate;
 import com.hbm.lib.HBMSoundHandler;
@@ -19,18 +16,13 @@ import com.hbm.sound.AudioWrapper;
 import com.hbm.tileentity.TileEntityMachineBase;
 
 import api.hbm.energy.IEnergyUser;
-import net.minecraft.init.Items;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
-import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
-import net.minecraftforge.common.capabilities.Capability;
-import net.minecraftforge.common.capabilities.ICapabilityProvider;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 import net.minecraftforge.items.CapabilityItemHandler;
@@ -47,18 +39,22 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 	public boolean needsProcess = true;
 	public int maxProgress = 100;
 	public boolean isProgressing;
-	int age = 0;
-	int consumption = 100;
-	int speed = 100;
+	protected int age = 0;
+	protected int consumption = 100;
+	protected int speed = 100;
 
 	@SideOnly(Side.CLIENT)
 	public int recipe;
 
 	private AudioWrapper audio;
+
+	public TileEntityMachineAssembler(int scount) {
+		super(scount);
+	}
 	
 	public TileEntityMachineAssembler() {
-
 		super(18);
+
 		inventory = new ItemStackHandler(18){
 			@Override
 			protected void onContentsChanged(int slot){
@@ -107,7 +103,6 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 	@Override
 	public void update() {
 		if(!world.isRemote) {
-
 			this.updateConnections();
 
 			this.consumption = 100;
@@ -146,18 +141,21 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 					}
 				}
 			}
-		this.speed = (int) s;
-		this.consumption = (int) c;
 
-		if(speed < 2)
-			speed = 2;
-		if(consumption < 2)
-			consumption = 2;
+			this.speed = (int) s;
+			this.consumption = (int) c;
+
+			if(speed < 2)
+				speed = 2;
+			if(consumption < 2)
+				consumption = 2;
+
 			isProgressing = false;
 			power = Library.chargeTEFromItems(inventory, 0, power, maxPower);
-			if(needsProcess && (AssemblerRecipes.getOutputFromTempate(inventory.getStackInSlot(4)) != ItemStack.EMPTY && AssemblerRecipes.getRecipeFromTempate(inventory.getStackInSlot(4)) != null)) {
+
+			if(needsProcess && (AssemblerRecipes.getOutputFromTempate(inventory.getStackInSlot(4)) != ItemStack.EMPTY && AssemblerRecipes.getRecipeFromTemplate(inventory.getStackInSlot(4)) != null)) {
 				this.maxProgress = (ItemAssemblyTemplate.getProcessTime(inventory.getStackInSlot(4)) * speed) / 100;
-				if(removeItems(AssemblerRecipes.getRecipeFromTempate(inventory.getStackInSlot(4)), cloneItemStackProper(inventory))) {
+				if(removeItems(AssemblerRecipes.getRecipeFromTemplate(inventory.getStackInSlot(4)), cloneItemStackProper(inventory))) {
 					if(power >= consumption ){
 					if(inventory.getStackInSlot(5).isEmpty() || (!inventory.getStackInSlot(5).isEmpty() && inventory.getStackInSlot(5).getItem() == AssemblerRecipes.getOutputFromTempate(inventory.getStackInSlot(4)).copy().getItem()) && inventory.getStackInSlot(5).getCount() + AssemblerRecipes.getOutputFromTempate(inventory.getStackInSlot(4)).copy().getCount() <= inventory.getStackInSlot(5).getMaxStackSize()) {
 						progress++;
@@ -171,7 +169,7 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 								inventory.getStackInSlot(5).grow(AssemblerRecipes.getOutputFromTempate(inventory.getStackInSlot(4)).copy().getCount());
 							}
 
-							removeItems(AssemblerRecipes.getRecipeFromTempate(inventory.getStackInSlot(4)), inventory);
+							removeItems(AssemblerRecipes.getRecipeFromTemplate(inventory.getStackInSlot(4)), inventory);
 							if(inventory.getStackInSlot(0).getItem() == ModItems.meteorite_sword_alloyed)
 								inventory.setStackInSlot(0, new ItemStack(ModItems.meteorite_sword_machined));
 						}
@@ -185,7 +183,6 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 			} else{
 				progress = 0;
 			}
-
 
 			int meta = this.getBlockMetadata();
 			TileEntity te = null;
@@ -212,9 +209,8 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 			}
 
 			if(te != null) {
-				ICapabilityProvider capte = te;
-				if(capte.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, MultiblockHandler.intToEnumFacing(meta).rotateY())) {
-					IItemHandler cap = capte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, MultiblockHandler.intToEnumFacing(meta).rotateY());
+				if(te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, MultiblockHandler.intToEnumFacing(meta).rotateY())) {
+					IItemHandler cap = te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, MultiblockHandler.intToEnumFacing(meta).rotateY());
 					if (cap != null){
 						tryFillContainerCap(cap, 5);
 					}
@@ -222,21 +218,26 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 			}
 
 			if(te2 != null) {
-				ICapabilityProvider capte = te2;
-				if(capte.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, MultiblockHandler.intToEnumFacing(meta).rotateY())) {
-					IItemHandler cap = capte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, MultiblockHandler.intToEnumFacing(meta).rotateY());
+				if(te2.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, MultiblockHandler.intToEnumFacing(meta).rotateY())) {
+					IItemHandler cap = te2.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, MultiblockHandler.intToEnumFacing(meta).rotateY());
 					int[] slots;
-					if(te2 instanceof TileEntityMachineBase){
-						slots = ((TileEntityMachineBase)te2).getAccessibleSlotsFromSide(MultiblockHandler.intToEnumFacing(meta).rotateY());
-						tryFillAssemblerCap(cap, slots, (TileEntityMachineBase)te2);
+
+					ItemStack template = inventory.getStackInSlot(4);
+					List<RecipesCommon.AStack> recipes = AssemblerRecipes.getRecipeFromTemplate(template);
+					if (recipes != null && AssemblerRecipes.getOutputFromTempate(template) != null) {
+						List<AStack> recipeIngredients = new ArrayList<>(recipes); //Loading Ingredients
+						if(te2 instanceof TileEntityMachineBase){
+							slots = ((TileEntityMachineBase)te2).getAccessibleSlotsFromSide(MultiblockHandler.intToEnumFacing(meta).rotateY());
+							tryFillAssemblerCap(cap, slots, (TileEntityMachineBase)te2, 6, 18, recipeIngredients);
+						}
+						else if(cap != null){
+							slots = new int[cap.getSlots()];
+							for(int i = 0; i< slots.length; i++)
+								slots[i] = i;
+
+							tryFillAssemblerCap(cap, slots, null, 6, 18, recipeIngredients);
+						}
 					}
-					else if(cap != null){
-						slots = new int[cap.getSlots()];
-						for(int i = 0; i< slots.length; i++)
-							slots[i] = i;
-						tryFillAssemblerCap(cap, slots, null);
-					}
-					
 				}
 			}
 
@@ -333,11 +334,12 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 		boolean te2Valid = validateTe(te2);
 
 		if(te1Valid && te2Valid) {
-			IItemHandlerModifiable iTe1 = (IItemHandlerModifiable) te1.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-			IItemHandlerModifiable iTe2 = (IItemHandlerModifiable) te2.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
+			IItemHandlerModifiable iTe1 = Objects.requireNonNull((IItemHandlerModifiable) te1.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null));
+			IItemHandlerModifiable iTe2 = Objects.requireNonNull((IItemHandlerModifiable) te2.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null));
 			boolean openSlot = false;
 			boolean existingTemplate = false;
 			boolean filledContainer = false;
+
 			//Check if there's an existing template and an open slot
 			for(int i = 0; i < iTe1.getSlots(); i++) {
 				if(iTe1.getStackInSlot(i).isEmpty()) {
@@ -371,78 +373,21 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 	}
 
 	private boolean validateTe(TileEntity te) {
-		if(te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null) && te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null) instanceof IItemHandlerModifiable)
-			return true;
-		return false;
-	}
+        return te != null && te.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null)
+				&& te.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null) instanceof IItemHandlerModifiable;
+    }
 
 	//I can't believe that worked.
 	public ItemStackHandler cloneItemStackProper(IItemHandlerModifiable array) {
 		ItemStackHandler stack = new ItemStackHandler(array.getSlots());
 
 		for(int i = 0; i < array.getSlots(); i++)
-			if(array.getStackInSlot(i).getItem() != Items.AIR)
+			if(!array.getStackInSlot(i).isEmpty())
 				stack.setStackInSlot(i, array.getStackInSlot(i).copy());
 			else
 				stack.setStackInSlot(i, ItemStack.EMPTY);
-		;
 
 		return stack;
-	}
-
-	//Unloads output into chests
-	public boolean tryFillContainer(IInventory inv, int slot) {
-
-		int size = inv.getSizeInventory();
-
-		for(int i = 0; i < size; i++) {
-			if(inv.getStackInSlot(i) != null) {
-
-				if(inventory.getStackInSlot(slot).getItem() == Items.AIR)
-					return false;
-
-				ItemStack sta1 = inv.getStackInSlot(i).copy();
-				ItemStack sta2 = inventory.getStackInSlot(slot).copy();
-				if(sta1 != null && sta2 != null) {
-					sta1.setCount(1);
-					sta2.setCount(1);
-
-					if(isItemAcceptable(sta1, sta2) && inventory.getStackInSlot(i).getCount() < inventory.getStackInSlot(i).getMaxStackSize()) {
-						inventory.getStackInSlot(slot).shrink(1);
-
-						if(inventory.getStackInSlot(slot).isEmpty())
-							inventory.setStackInSlot(slot, ItemStack.EMPTY);
-
-						ItemStack sta3 = inventory.getStackInSlot(i).copy();
-						sta3.grow(1);
-						inv.setInventorySlotContents(i, sta3);
-
-						return true;
-					}
-				}
-			}
-		}
-		for(int i = 0; i < size; i++) {
-
-			if(inventory.getStackInSlot(slot).getItem() == Items.AIR)
-				return false;
-
-			ItemStack sta2 = inventory.getStackInSlot(slot).copy();
-			if(inv.getStackInSlot(i) == null && sta2 != null) {
-				sta2.setCount(1);
-				inventory.getStackInSlot(slot).shrink(1);
-				;
-
-				if(inventory.getStackInSlot(slot).isEmpty())
-					inventory.setStackInSlot(slot, ItemStack.EMPTY);
-
-				inv.setInventorySlotContents(i, sta2);
-
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	//Unloads output into chests. Capability version.
@@ -452,135 +397,113 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 			return false;
 
 		for(int i = 0; i < chest.getSlots(); i++) {
-			
-			ItemStack outputStack = inventory.getStackInSlot(slot).copy();
+			ItemStack outputStack = inventory.getStackInSlot(slot);
 			if(outputStack.isEmpty())
 				return false;
 
-			ItemStack chestItem = chest.getStackInSlot(i).copy();
+			ItemStack chestItem = chest.getStackInSlot(i);
 			if(chestItem.isEmpty() || (Library.areItemStacksCompatible(outputStack, chestItem, false) && chestItem.getCount() < chestItem.getMaxStackSize())) {
-				inventory.getStackInSlot(slot).shrink(1);
-
-				outputStack.setCount(1);
-				chest.insertItem(i, outputStack, false);
-
-				return true;
+				// VERTEX: what the fuck was the old version of this code? what the actual fuck?
+				inventory.setStackInSlot(slot, chest.insertItem(i, outputStack, false));
+				if (outputStack.isEmpty()) return true;
 			}
 		}
 
 		return false;
 	}
 
-	private int getValidSlot(AStack nextIngredient){
+	// min = 6, max, 18 for assembler
+	protected int getValidSlot(AStack nextIngredient, int minSlot, int maxSlot) {
 		int firstFreeSlot = -1;
-		float maxStackSize = nextIngredient.getStack().getMaxStackSize();
-		int stackCount = (int)Math.ceil(nextIngredient.count() / maxStackSize);
+		int stackCount = (int) Math.ceil(nextIngredient.count() / 64F);
 		int stacksFound = 0;
 
 		nextIngredient = nextIngredient.singulize();
-		
-		for(int k = 6; k < 18; k++) { //scaning inventory if some of the ingredients allready exist
-			if(stacksFound < stackCount){
-				ItemStack assStack = inventory.getStackInSlot(k).copy();
-				if(assStack.isEmpty()){
-					if(firstFreeSlot < 6){
+
+		for(int k = minSlot; k < maxSlot; k++) {
+			if(stacksFound < stackCount) {
+				ItemStack assStack = inventory.getStackInSlot(k);
+				if(assStack.isEmpty()) {
+					if(firstFreeSlot < minSlot)
 						firstFreeSlot = k;
-					}
 				} else { // check if there are already enough filled stacks is full
-				
-					assStack.setCount(1);
-					if(nextIngredient.isApplicable(assStack)){ // check if it is the right item
-						if(inventory.getStackInSlot(k).getCount() < assStack.getMaxStackSize()) {
-							// is that stack full?
+					if(nextIngredient.isApplicable(assStack)) { // check if it is the right item
+						if(inventory.getStackInSlot(k).getCount() < assStack.getMaxStackSize()) { // is that stack full?
 							return k; // found a not full slot where we already have that ingredient
-						}
-						else
+						} else {
 							stacksFound++;
+						}
 					}
 				}
-			}else {
+			} else {
 				return -1; // All required stacks are full
 			}
 		}
-		if(firstFreeSlot < 6) // nothing free in assembler inventory anymore
+
+		if(firstFreeSlot < minSlot) // nothing free in assembler inventory anymore
 			return -2;
 		return firstFreeSlot;
 	}
 
-	//private int extractIngredient(IItemHandler container)
-
-
-	public boolean tryFillAssemblerCap(IItemHandler container, int[] allowedSlots, TileEntityMachineBase te) {
+	public boolean tryFillAssemblerCap(IItemHandler container, int[] allowedSlots, TileEntityMachineBase te, int minSlot, int maxSlot, List<AStack> recipeIngredients) {
 		if(allowedSlots.length < 1)
 			return false;
-		if(AssemblerRecipes.getOutputFromTempate(inventory.getStackInSlot(4)) == ItemStack.EMPTY || AssemblerRecipes.getRecipeFromTempate(inventory.getStackInSlot(4)) == null) //No recipe template found
+		if(recipeIngredients == null) //No recipe template found
 			return false;
+
 		else {
-			List<AStack> recipeIngredients = new ArrayList<>(AssemblerRecipes.getRecipeFromTempate(inventory.getStackInSlot(4))); //Loading Ingredients
-			Map<Integer, ItemStack> itemStackMap = new HashMap<Integer, ItemStack>();
+			Map<Integer, ItemStack> itemStackMap = new HashMap<>();
 
 			for(int slot : allowedSlots) {
 				container.getStackInSlot(slot);
-				if (container.getStackInSlot(slot).isEmpty()) { // check next slot in chest if it is empty
-					continue;
-				} else { // found an item in chest
-					itemStackMap.put(slot, container.getStackInSlot(slot).copy());
+				if(!container.getStackInSlot(slot).isEmpty()) {
+					itemStackMap.put(slot, container.getStackInSlot(slot));
 				}
 			}
-			if(itemStackMap.size() == 0){
-				return true;
+
+			if(itemStackMap.isEmpty()) {
+				return false;
 			}
 
-			for(int ig = 0; ig < recipeIngredients.size(); ig++) {
+            for (AStack recipeIngredient : recipeIngredients) {
+                AStack nextIngredient = recipeIngredient.copy(); // getting new ingredient
+				nextIngredient.singulize();
 
-				AStack nextIngredient = recipeIngredients.get(ig).copy(); // getting new ingredient
-				
-				int ingredientSlot = getValidSlot(nextIngredient);
+                int ingredientSlot = getValidSlot(nextIngredient, minSlot, maxSlot);
+                if (ingredientSlot < minSlot)
+                    continue; // Ingredient filled or Assembler is full
 
+                int possibleAmount = inventory.getStackInSlot(ingredientSlot).getMaxStackSize() - inventory.getStackInSlot(ingredientSlot).getCount(); // how many items do we need to fill the stack?
+                if (possibleAmount == 0) { // full
+                    System.out.println("This should never happen method getValidSlot broke");
+                    continue;
+                }
 
-				if(ingredientSlot < 6)
-					continue; // Ingredient filled or Assembler is full
+                // Ok now we know what we are looking for(nexIngredient) and where to put it (ingredientSlot) - So lets see if we find some of it in containers
+                for (Map.Entry<Integer, ItemStack> set : itemStackMap.entrySet()) {
+                    ItemStack stack = set.getValue();
+                    int slot = set.getKey();
 
-				int possibleAmount = inventory.getStackInSlot(ingredientSlot).getMaxStackSize() - inventory.getStackInSlot(ingredientSlot).getCount(); // how many items do we need to fill the stack?
-				
-				if(possibleAmount == 0){ // full
-					System.out.println("This should never happen method getValidSlot broke");
-					continue;
-				}
-				// Ok now we know what we are looking for (nexIngredient) and where to put it (ingredientSlot) - So lets see if we find some of it in containers
-				for (Map.Entry<Integer,ItemStack> set :
-						itemStackMap.entrySet()) {
-					    ItemStack stack = set.getValue();
-						int slot = set.getKey();
-						ItemStack compareStack = stack.copy();
-						compareStack.setCount(1);
+					RecipesCommon.NbtComparableStack comparable = new RecipesCommon.NbtComparableStack(stack);
+					comparable.singulize();
 
-						if(nextIngredient.isApplicable(compareStack)){ // bingo found something
+                    if (nextIngredient.isApplicable(comparable)) { // bingo found something
+                        int foundCount = Math.min(stack.getCount(), possibleAmount);
+                        if (te != null && !te.canExtractItem(slot, stack, foundCount))
+                            continue;
+                        if (foundCount > 0) {
+                            possibleAmount -= foundCount;
+                            ItemStack result = container.extractItem(slot, foundCount, false);
+                            inventory.insertItem(ingredientSlot, result, false);
+                        } else {
+                            break; // ingredientSlot filled
+                        }
+                    }
+                }
+            }
 
-							int foundCount = Math.min(stack.getCount(), possibleAmount);
-							if(te != null && !te.canExtractItem(slot, stack, foundCount))
-								continue;
-							if(foundCount > 0){
-								possibleAmount -= foundCount;
-								container.extractItem(slot, foundCount, false);
-								inventory.getStackInSlot(ingredientSlot);
-								if(inventory.getStackInSlot(ingredientSlot).isEmpty()){
-
-									stack.setCount(foundCount);
-									inventory.setStackInSlot(ingredientSlot, stack);
-
-								}else{
-									inventory.getStackInSlot(ingredientSlot).grow(foundCount); // transfer complete
-								}
-								needsProcess = true;
-							}else{
-								break; // ingredientSlot filled
-							}
-						}
-					}
-				}
-			}
 			return true;
+		}
 	}
 
 	//boolean true: remove items, boolean false: simulation mode
@@ -588,18 +511,17 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 		if(stack == null)
 			return false;
 
-		for(int i = 0; i < stack.size(); i++) {
-			for(int j = 0; j < stack.get(i).count(); j++) {
-				AStack sta = stack.get(i).copy();
-				sta.singulize();
-				if(!canRemoveItemFromArray(sta, array)){
-					return false;
-				}
-			}
-		}
+        for (AStack aStack : stack) {
+            for (int j = 0; j < aStack.count(); j++) {
+                AStack sta = aStack.copy();
+                sta.singulize();
+                if (!canRemoveItemFromArray(sta, array)) {
+                    return false;
+                }
+            }
+        }
 
 		return true;
-
 	}
 
 	public boolean canRemoveItemFromArray(AStack stack, IItemHandlerModifiable array) {
@@ -632,7 +554,7 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 	public boolean isItemAcceptable(ItemStack stack1, ItemStack stack2) {
 
 		if(stack1 != null && stack2 != null && !stack1.isEmpty() && !stack2.isEmpty()) {
-			if(Library.areItemStacksCompatible(stack1, stack2))
+			if(Library.areItemStacksCompatible(stack1, stack2, false))
 				return true;
 
 			int[] ids1 = OreDictionary.getOreIDs(stack1);
@@ -676,12 +598,6 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 	@Override
 	public AxisAlignedBB getRenderBoundingBox() {
 		return new AxisAlignedBB(pos.getX(), pos.getY(), pos.getZ(), pos.getX() + 1, pos.getY() + 1, pos.getZ() + 1).grow(2, 1, 2).grow(10);
-	}
-
-	@Override
-	@SideOnly(Side.CLIENT)
-	public double getMaxRenderDistanceSquared() {
-		return 65536.0D;
 	}
 	
 	@Override

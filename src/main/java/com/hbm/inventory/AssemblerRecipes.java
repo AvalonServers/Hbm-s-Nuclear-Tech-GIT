@@ -106,7 +106,7 @@ public class AssemblerRecipes {
 		return null;
 	}
 
-	public static List<AStack> getRecipeFromTempate(ItemStack stack) {
+	public static List<AStack> getRecipeFromTemplate(ItemStack stack) {
 
 		if(stack != null && stack.getItem() instanceof ItemAssemblyTemplate) {
 
