@@ -2,6 +2,7 @@ package com.hbm.items.special;
 
 import java.util.List;
 
+import com.hbm.config.MachineConfig;
 import com.hbm.items.ModItems;
 
 import net.minecraft.client.util.ITooltipFlag;
@@ -17,7 +18,7 @@ public class ItemFusionShield extends Item {
 	public int maxTemp;
 
 	public ItemFusionShield(long maxDamage, int maxTemp, String s) {
-		this.maxDamage = maxDamage;
+		this.maxDamage = (int) (maxDamage * MachineConfig.fusionBlanketMultiplier);
 		this.maxTemp = maxTemp;
 		this.setUnlocalizedName(s);
 		this.setRegistryName(s);

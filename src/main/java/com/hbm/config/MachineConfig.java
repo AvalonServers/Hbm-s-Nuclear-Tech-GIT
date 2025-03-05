@@ -47,6 +47,7 @@ public class MachineConfig {
 
 	public static int rbmkJumpTemp = 1250;
 	public static double rbmkYieldMultiplier = 1.0D;
+	public static double fusionBlanketMultiplier = 1.0D;
 
 	public static boolean chemplantKeepOilProcessing = false;
 	
@@ -108,5 +109,6 @@ public class MachineConfig {
 		chemplantKeepOilProcessing = CommonConfig.createConfigBool(config, CATEGORY_MACHINE, generateConfigName(29, "chemplantKeepOilProcessing"), "If false then the chemplant recipes processing Heavyoil, Industrial Oil, Naphtha, Light Oil will be removed. Otherwise not", false);
 
 		rbmkYieldMultiplier = CommonConfig.createConfigDouble(config, CATEGORY_MACHINE, generateConfigName(30, "rbmkYieldMultiplier"), "Multiplier for the yield of all rbmk fuels", 1.0D);
+		fusionBlanketMultiplier = CommonConfig.createConfigDouble(config, CATEGORY_MACHINE, generateConfigName(31, "fusionBlanketMultiplier"), "Multiplier for the lifetime of all fusion blankets", 1.0D);
 	}
 }
