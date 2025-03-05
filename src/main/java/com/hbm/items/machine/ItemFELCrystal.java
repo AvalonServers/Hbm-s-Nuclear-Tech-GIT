@@ -56,5 +56,13 @@ public class ItemFELCrystal extends Item {
 			this.guiColor = guiColor;
 			this.textColor = textColor;
 		}
+
+		public static EnumWavelengths parse(String s) {
+			try {
+				return EnumWavelengths.valueOf(s);
+			} catch(IllegalArgumentException e) {
+				return NULL;
+			}
+		}
 	}
 }
