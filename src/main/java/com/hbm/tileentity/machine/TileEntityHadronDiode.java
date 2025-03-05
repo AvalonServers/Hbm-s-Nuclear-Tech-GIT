@@ -4,7 +4,10 @@ import com.hbm.blocks.machine.BlockHadronDiode;
 import com.hbm.lib.ForgeDirection;
 import com.hbm.tileentity.TileEntityTickingBase;
 
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 
 public class TileEntityHadronDiode extends TileEntityTickingBase {
 
@@ -26,17 +29,19 @@ public class TileEntityHadronDiode extends TileEntityTickingBase {
 
 			if(age >= 20) {
 				age = 0;
-
-				if (this.shouldSendNetworkUpdate())
-					sendSides();
+				sendSides();
 			}
-			
+
 			if(fatherIAskOfYouToUpdateMe) {
 				fatherIAskOfYouToUpdateMe = false;
-				//world.markBlockRangeForRenderUpdate(pos, pos);
 				BlockHadronDiode.resetBlockState(world, pos);
 			}
 		}
+	}
+
+	@Override
+	public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState) {
+		return oldState.getBlock() != newState.getBlock();
 	}
 
 	@Override
@@ -47,12 +52,10 @@ public class TileEntityHadronDiode extends TileEntityTickingBase {
 	public void sendSides() {
 		NBTTagCompound data = new NBTTagCompound();
 		for(int i = 0; i < 6; i++) {
-
 			if(sides[i] != null)
 				data.setInteger("" + i, sides[i].ordinal());
 		}
 
-		BlockHadronDiode.resetBlockState(world, pos);
 		this.networkPack(data, 250);
 	}
 	
@@ -61,7 +64,6 @@ public class TileEntityHadronDiode extends TileEntityTickingBase {
 		for(int i = 0; i < 6; i++) {
 			sides[i] = DiodeConfig.values()[nbt.getInteger("" + i)];
 		}
-		//world.markBlockRangeForRenderUpdate(pos, pos);
 	}
 	
 	public DiodeConfig getConfig(int side) {

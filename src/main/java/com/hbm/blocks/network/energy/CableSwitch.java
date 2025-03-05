@@ -4,6 +4,7 @@ import com.hbm.blocks.ModBlocks;
 import com.hbm.lib.HBMSoundHandler;
 import com.hbm.tileentity.network.energy.TileEntityCableSwitch;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
@@ -56,6 +57,12 @@ public class CableSwitch extends BlockContainer {
 		} else {
 			return false;
 		}
+	}
+
+	@Override
+	public void neighborChanged(IBlockState state, World world, BlockPos pos, Block blockIn, BlockPos fromPos) {
+		TileEntityCableSwitch entity = (TileEntityCableSwitch) world.getTileEntity(pos);
+		if (entity != null) entity.update();
 	}
 	
 	@Override

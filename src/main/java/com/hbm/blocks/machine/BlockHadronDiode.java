@@ -59,7 +59,7 @@ public class BlockHadronDiode extends BlockContainer implements IToolable {
 			config += 1;
 			config %= DiodeConfig.values().length;
 			diode.setConfig(side.ordinal(), config);
-			resetBlockState(world, new BlockPos(x, y, z));
+			resetBlockState(world, diode.getPos());
 		}
 		
 		return true;
@@ -67,13 +67,16 @@ public class BlockHadronDiode extends BlockContainer implements IToolable {
 	
 	public static void resetBlockState(World world, BlockPos pos){
 		TileEntityHadronDiode diode = (TileEntityHadronDiode) world.getTileEntity(pos);
-		IBlockState newState = ModBlocks.hadron_diode.getDefaultState();
-		for(int i = 0; i < 6; i++){
-			newState = newState.withProperty(BlockHadronDiode.textures[i], diode.sides[i].ordinal());
+		if (diode == null) return;
+
+		IBlockState state = world.getBlockState(pos);
+		for(int i = 0; i < 6; i++) {
+			state = state.withProperty(BlockHadronDiode.textures[i], diode.sides[i].ordinal());
 		}
-		world.setBlockState(pos, newState);
-		diode.validate();
-		world.setTileEntity(pos, diode);
+
+		world.setBlockState(pos, state, 3);
+		world.notifyBlockUpdate(pos, state, state, 3);
+		world.scheduleBlockUpdate(pos, diode.getBlockType(), 0, 0);
 	}
 	
 	@Override

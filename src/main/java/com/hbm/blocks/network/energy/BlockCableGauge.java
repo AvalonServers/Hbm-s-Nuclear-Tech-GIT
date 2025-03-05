@@ -121,7 +121,7 @@ public class BlockCableGauge extends BlockContainer implements ILookOverlay, ITo
 	}
 
 	@Optional.InterfaceList({@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers")})
-	public static class TileEntityCableGauge extends TileEntityCableBaseNT implements INBTPacketReceiver, SimpleComponent {
+	public static class TileEntityCableGauge extends TileEntityCableBaseNT implements ITickable, INBTPacketReceiver, SimpleComponent {
 
 		private long deltaTick = 10;
 		private long deltaSecond = 0;

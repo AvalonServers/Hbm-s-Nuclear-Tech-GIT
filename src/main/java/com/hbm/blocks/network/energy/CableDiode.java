@@ -113,7 +113,7 @@ public class CableDiode extends BlockContainer implements IEnergyConnectorBlock,
 
 		if(tool == ToolType.DEFUSER) {
 			int p = te.priority.ordinal() + 1;
-			if(p > 2) p = 0;
+			if(p >= ConnectionPriority.values().length) p = 0;
 			te.priority = ConnectionPriority.values()[p];
 			te.markDirty();
 			INBTPacketReceiver.networkPack((TileEntity)te, te.packValues(), 20);
