@@ -1,6 +1,7 @@
 package com.hbm.tileentity.conductor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.hbm.forgefluid.FFPipeNetworkMk2;
@@ -10,6 +11,7 @@ import com.hbm.packet.PacketDispatcher;
 import com.hbm.packet.PipeUpdatePacket;
 
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.network.NetworkManager;
@@ -19,6 +21,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.capabilities.Capability;
@@ -38,7 +41,16 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 	public TileEntity[] tileentityCache = new TileEntity[6];
 	public boolean isBeingDestroyed = false;
 
-	public TileEntityFFDuctBaseMk2() {
+	public TileEntityFFDuctBaseMk2() {}
+
+	protected void attemptRebuildIfBroken() {
+		if ((network != null && network.isValid()) || isBeingDestroyed) return;
+
+		network = null;
+
+		updateConnections();
+		joinOrMakeNetwork();
+		onNeighborChange();
 	}
 
 	public void setType(Fluid f) {
@@ -115,10 +127,12 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 	public void onLoad() {
 		if(!world.isRemote){
 			world.getMinecraftServer().addScheduledTask(() -> {
+				updateConnections();
 				joinOrMakeNetwork();
 				onNeighborChange();
 			});
 		} else {
+			updateConnections();
 			joinOrMakeNetwork();
 			onNeighborChange();
 		}
@@ -162,8 +176,7 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 		network.checkForRemoval(this);
 
 		// Not sure if I need to do this, but I'll be safe
-		for(int i = 0; i < tileentityCache.length; i++)
-			tileentityCache[i] = null;
+		Arrays.fill(tileentityCache, null);
 
 		this.network = null;
 	}
@@ -180,12 +193,22 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 		if(te instanceof TileEntityFFDuctBaseMk2) {
 			((TileEntityFFDuctBaseMk2) te).isBeingDestroyed = true;
 		}
+
 		rebuildNetworks(world, pos);
 	}
 
 	public static void rebuildNetworks(World world, BlockPos pos) {
 		TileEntity center = world.getTileEntity(pos);
-		for(EnumFacing e : EnumFacing.VALUES) {
+		EnumFacing[] dirs = EnumFacing.VALUES;
+		if (center instanceof TileEntityFFDuctBaseMk2) {
+			TileEntityFFDuctBaseMk2 duct = (TileEntityFFDuctBaseMk2) center;
+			duct.updateConnections();
+			dirs = duct.connections;
+		}
+
+		for(EnumFacing e : dirs) {
+			if (e == null) continue;
+
 			TileEntity te = world.getTileEntity(pos.offset(e));
 			if(te instanceof IFluidPipeMk2) {
 				IFluidPipeMk2 pipe = (IFluidPipeMk2) te;
@@ -193,18 +216,24 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 					pipe.getNetwork().destroy();
 			}
 		}
+
 		if(center instanceof IFluidPipeMk2 && ((IFluidPipeMk2) center).getNetwork() != null)
 			((IFluidPipeMk2) center).getNetwork().destroy();
 
-		for(EnumFacing e : EnumFacing.VALUES)
+		for(EnumFacing e : dirs) {
+			if (e == null) continue;
 			FFPipeNetworkMk2.buildNetwork(world.getTileEntity(pos.offset(e)));
+		}
+
 		FFPipeNetworkMk2.buildNetwork(center);
 	}
 
 	@Override
 	public void joinOrMakeNetwork() {
 		List<FFPipeNetworkMk2> otherNetworks = new ArrayList<FFPipeNetworkMk2>();
-		for(EnumFacing e : EnumFacing.VALUES) {
+		for(EnumFacing e : connections) {
+			if (e == null) continue;
+
 			BlockPos offset = pos.offset(e);
 			TileEntity te = world.getTileEntity(offset);
 			if(te instanceof IFluidPipeMk2) {
@@ -214,6 +243,7 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 				}
 			}
 		}
+
 		if(otherNetworks.isEmpty()) {
 			network = new FFPipeNetworkMk2(this);
 			network.tryAdd(this);
@@ -227,9 +257,35 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 		}
 	}
 
+	public void dumpState(EntityPlayer player) {
+		player.sendMessage(new TextComponentString("Dumping state for the fluid duct at " + pos));
+		player.sendMessage(new TextComponentString("--------------------------------"));
+		player.sendMessage(new TextComponentString("DUCT TE STATE"));
+		player.sendMessage(new TextComponentString("Instance: " + this));
+		player.sendMessage(new TextComponentString("Connections: " + Arrays.toString(connections)));
+		player.sendMessage(new TextComponentString("Type: " + (type == null ? "None" : type.getName())));
+		player.sendMessage(new TextComponentString("Network: " + (network == null ? "None" : network.toString())));
+		player.sendMessage(new TextComponentString("TE cache: " + Arrays.toString(tileentityCache)));
+		player.sendMessage(new TextComponentString("Is being destroyed: " + isBeingDestroyed));
+		player.sendMessage(new TextComponentString("--------------------------------"));
+
+		if (network != null) {
+			player.sendMessage(new TextComponentString("NETWORK STATE"));
+			player.sendMessage(new TextComponentString("Valid: " + network.isValid()));
+			player.sendMessage(new TextComponentString("Type: " + (network.getType() == null ? "None" : network.getType().getName())));
+			player.sendMessage(new TextComponentString("Size: " + network.size()));
+		} else {
+			player.sendMessage(new TextComponentString("NETWORK DUMP SKIPPED, NO NETWORK"));
+		}
+	}
+
 	protected boolean rebuildCache() {
 		boolean changed = false;
-		for(EnumFacing e : EnumFacing.VALUES) {
+
+        Arrays.fill(tileentityCache, null);
+		for(EnumFacing e : connections) {
+			if (e == null) continue;
+
 			TileEntity te = world.getTileEntity(pos.offset(e));
 			if(tileentityCache[e.getIndex()] == null) {
 				if(te != null) {

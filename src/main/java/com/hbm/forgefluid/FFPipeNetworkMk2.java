@@ -20,6 +20,7 @@ import net.minecraftforge.fluids.capability.IFluidTankProperties;
 public class FFPipeNetworkMk2 implements IFluidHandler {
 
 	protected static Random rand = new Random();
+	protected boolean valid = true;
 	
 	protected Fluid type;
 	protected Map<BlockPos, TileEntity> fillables = new HashMap<>();
@@ -107,6 +108,11 @@ public class FFPipeNetworkMk2 implements IFluidHandler {
 		pipes.values().forEach(pipe -> pipe.setNetwork(null));
 		pipes.clear();
 		fillables.clear();
+		valid = false;
+	}
+
+	public boolean isValid() {
+		return valid;
 	}
 
 	public void checkForRemoval(TileEntity te) {

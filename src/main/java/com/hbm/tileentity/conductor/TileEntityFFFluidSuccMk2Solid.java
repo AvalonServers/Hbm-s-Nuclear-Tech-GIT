@@ -14,8 +14,10 @@ public class TileEntityFFFluidSuccMk2Solid extends TileEntityFFFluidDuctMk2 impl
 
 	@Override
 	public void update() {
-		if(world.isRemote || network == null || network.getType() == null)
-			return;
+		if (world.isRemote) return;
+		attemptRebuildIfBroken();
+
+		if(network == null || network.getType() == null) return;
 		for(EnumFacing e : EnumFacing.VALUES){
 			TileEntity te = world.getTileEntity(pos.offset(e));
 			if(te != null && !(te instanceof IFluidPipeMk2) && te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, e.getOpposite())){

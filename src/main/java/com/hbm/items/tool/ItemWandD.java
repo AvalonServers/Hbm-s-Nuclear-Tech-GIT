@@ -25,6 +25,7 @@ import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.tileentity.TileEntityChest;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.EnumActionResult;
@@ -93,9 +94,10 @@ public class ItemWandD extends Item {
 		} else {
 			clickClient(world, player, pos, hitX, hitY, hitZ);
 		}
-		if(b == ModBlocks.fluid_duct_mk2){
-			System.out.println("client: " + world.isRemote + " " + ((TileEntityFFDuctBaseMk2)world.getTileEntity(pos)).getNetwork() + " " + ((TileEntityFFDuctBaseMk2)world.getTileEntity(pos)).getNetwork().size());
-			System.out.println(((TileEntityFFDuctBaseMk2)world.getTileEntity(pos)).connections);
+		if((b == ModBlocks.fluid_duct_mk2 || b == ModBlocks.fluid_duct_solid || b == ModBlocks.fluid_duct_solid_sealed) && !world.isRemote){
+			TileEntity te = world.getTileEntity(pos);
+			if (te instanceof TileEntityFFDuctBaseMk2)
+				((TileEntityFFDuctBaseMk2)te).dumpState(player);
 		}
 		
 		/*int x = pos.getX();
