@@ -1,35 +1,24 @@
 # <u>**HBM Nuclear Tech Mod - 1.12.2 Extended Edition**</u>
 
-This is my 1.12.2 custom version of the mod
+This is a custom 1.12.2 version of NTM:EE based off Alcatergit's fork. This is intended to be a stopgap until TheSlize's update fork is complete, and its goal is to make the current version of the mod more playable and performant.
 
-which is forked from the fork made by [TheOriginalGolem](https://github.com/TheOriginalGolem/Hbm-s-Nuclear-Tech-GIT)
-which is forked from the port made by [Drillgon200](https://github.com/Drillgon200/Hbm-s-Nuclear-Tech-GIT)
-which is ported from the original mod made by [HBMTheBobcat](https://github.com/HbmMods/Hbm-s-Nuclear-Tech-GIT).
+Releases may be downloaded from GitHub, or you can build this fork yourself. As this is an experimental version, no support will be provided unless you are a Descent: Frozen Hell player.
 
+Bugfixes:
+- Prevent a server-side crash when TileEntityFEL attempts to load a corrupted wavelength
+- Make the fluid pipe logic more robust, ensuring pipes don't randomly break
+- Improve assembler item handling code to handle input/output inventories better, and additionally handle oredicted input items in recipes correctly.
+- Forcibly disable shaders when a Mac client is detected
+- Don't spawn coal gas unless coal dust is actually enabled
+- Ensure HBM prefers its own outputs in recipes over outputs belonging to other mods in oredict entries
+- Prevent multiblock duping when broken with tools such as the IF Infinity Drill
+- Force power pylons in unloaded chunks to add themselves to the network
 
-The latest version can be found on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/hbms-nuclear-tech-mod-extended-edition) or [Modrinth](https://modrinth.com/mod/ntm-extended) or under the [Releases page](https://github.com/Alcatergit/Hbm-s-Nuclear-Tech-GIT/releases).
+Performance improvements:
+- Port to the new energy system introduced in TheSlize's version
+- Port to the new model system also introduced in TheSlize's version, which uses VBOs
+- Copy less ItemStacks in assembler item handling methods, making assemblers and chemplants faster
 
-If you have question or suggestions you can post them on our [NTM Extended Discord](https://discord.gg/Auq95eCEtD)
-
-### **Want to contribute?**
-
-If you want to contribute make a pull request and I'll review it as soon as possible.
-Every contribution is very much appreciated by me and the players.
-
-### **Build Guide:**
-
-Download the repository, then open a shell prompt in that folder, then type the following:
-
-`.\gradlew build`
-
-Press enter.
-
-Now just wait for the build to finish and the new Jar file will be in `Hbm-s-Nuclear-Tech-GIT\build\libs`.
-
-
-#### Discords:
-
-Alcater#2644
-Golem#9568
-Drillgon200#0288
-The Bobcat#8817
+QoL improvements:
+- Add configuration options to multiply the yield of RBMK fuel and fusion blankets
+- Prevent the thunder sound produced by the Nuclear Transmutation Device from playing globally
