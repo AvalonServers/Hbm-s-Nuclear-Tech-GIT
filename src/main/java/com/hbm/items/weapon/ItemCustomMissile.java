@@ -92,6 +92,8 @@ public class ItemCustomMissile extends Item {
 		} catch(ClassCastException x) {
 			//Drillgon200: Why is this even necessary, JEI?
 			return;
+		} catch(NullPointerException x) {
+			return;
 		}
 	}
 
