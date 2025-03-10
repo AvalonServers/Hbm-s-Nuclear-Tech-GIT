@@ -1,6 +1,8 @@
 package api.hbm.energy;
 
 import com.hbm.lib.DirPos;
+import com.hbm.tileentity.network.energy.TileEntityCableBaseNT;
+import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.common.FMLCommonHandler;
@@ -23,8 +25,29 @@ public class Nodespace {
 
     public static PowerNode getNode(World world, BlockPos pos) {
         NodeWorld nodeWorld = worlds.get(world);
-        if(nodeWorld != null) return nodeWorld.nodes.get(pos);
-        return null;
+        if (nodeWorld == null) {
+            nodeWorld = new NodeWorld();
+            worlds.put(world, nodeWorld);
+        }
+
+        if (!nodeWorld.nodes.containsKey(pos)) {
+            // chunk might not be loaded, so attempt to load in the TE. we only try this once, and then cache the result
+            TileEntity te = world.getTileEntity(pos);
+            Nodespace.PowerNode node = null;
+
+            if (te instanceof TileEntityCableBaseNT) {
+                TileEntityCableBaseNT connector = (TileEntityCableBaseNT) te;
+                node = connector.getNode();
+            }
+
+            if (node != null) {
+                nodeWorld.pushNode(node);
+            } else {
+                nodeWorld.nodes.put(pos, null);
+            }
+        }
+
+        return nodeWorld.nodes.get(pos);
     }
 
     public static void createNode(World world, PowerNode node) {
@@ -52,8 +75,10 @@ public class Nodespace {
             if(nodes == null)
                 continue;
 
-            for(Map.Entry<BlockPos, PowerNode> entry : nodes.nodes.entrySet()) {
+            for(Map.Entry<BlockPos, PowerNode> entry : new HashMap<>(nodes.nodes).entrySet()) {
                 PowerNode node = entry.getValue();
+                if (node == null) continue;
+
                 if(!node.hasValidNet() || node.recentlyChanged) {
                     checkNodeConnection(world, node);
                     node.recentlyChanged = false;

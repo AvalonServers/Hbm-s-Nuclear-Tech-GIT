@@ -4,6 +4,7 @@ import com.hbm.blocks.ModBlocks;
 import com.hbm.lib.Library;
 import com.hbm.main.MainRegistry;
 import com.hbm.tileentity.network.energy.TileEntityCableBaseNT;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.BlockFaceShape;
@@ -30,6 +31,14 @@ public class BlockCable extends BlockContainer {
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
 		return new TileEntityCableBaseNT();
+	}
+
+	@Override
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+		TileEntity te = worldIn.getTileEntity(pos);
+		if(te instanceof TileEntityCableBaseNT){
+			((TileEntityCableBaseNT)te).update();
+		}
 	}
 
 	@Override

@@ -32,6 +32,10 @@ public class TileEntityCableBaseNT extends TileEntity implements IEnergyConducto
 		return true;
 	}
 
+	public Nodespace.PowerNode getNode() {
+		return node;
+	}
+
 	public void onNodeDestroyedCallback() {
 		this.node = null;
 	}

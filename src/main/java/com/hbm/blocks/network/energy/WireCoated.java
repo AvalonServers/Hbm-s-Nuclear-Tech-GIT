@@ -3,11 +3,13 @@ package com.hbm.blocks.network.energy;
 import com.hbm.blocks.ModBlocks;
 import com.hbm.tileentity.network.energy.TileEntityCableBaseNT;
 
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockContainer;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumBlockRenderType;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 public class WireCoated extends BlockContainer {
@@ -23,6 +25,14 @@ public class WireCoated extends BlockContainer {
 	@Override
 	public TileEntity createNewTileEntity(World worldIn, int meta) {
 		return new TileEntityCableBaseNT();
+	}
+
+	@Override
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+		TileEntity te = worldIn.getTileEntity(pos);
+		if(te instanceof TileEntityCableBaseNT){
+			((TileEntityCableBaseNT)te).update();
+		}
 	}
 
 	@Override
