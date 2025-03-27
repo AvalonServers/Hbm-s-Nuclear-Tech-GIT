@@ -21,6 +21,7 @@ buildscript {
         
 apply plugin: 'net.minecraftforge.gradle'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
+apply plugin: 'idea'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
@@ -125,7 +126,7 @@ dependencies {
     // compile against the JEI API but do not include it at runtime
     compileOnly fg.deobf("mezz.jei:jei_1.12.2:${version_jei}:api")
     // at runtime, use the full JEI jar
-    runtimeOnly fg.deobf("mezz.jei:jei_1.12.2:${version_jei}")
+    //runtimeOnly fg.deobf("mezz.jei:jei_1.12.2:${version_jei}")
 
     //compileOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}:api")
     //runtimeOnly fg.deobf("mezz.jei:jei-${mc_version}:${jei_version}")
@@ -172,3 +173,5 @@ publishing {
         }
     }
 }
+
+sourceSets { main { output.resourcesDir = output.classesDir } }
