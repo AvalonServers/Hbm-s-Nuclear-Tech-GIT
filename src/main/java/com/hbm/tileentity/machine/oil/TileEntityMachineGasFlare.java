@@ -157,9 +157,7 @@ public class TileEntityMachineGasFlare extends TileEntityMachineBase implements 
 						this.power = maxPower;
 					}
 
-					world.spawnEntity(new EntityGasFlameFX(world, pos.getX() + 0.5F, pos.getY() + 11F, pos.getZ() + 0.5F, 0.0, 0.0, 0.0));
 					ExplosionThermo.setEntitiesOnFire(world, pos.getX(), pos.getY() + 11, pos.getZ(), 5);
-
 					if(this.world.getTotalWorldTime() % 5 == 0)
 						this.world.playSound(null, pos.getX(), pos.getY() + 11, pos.getZ(), HBMSoundHandler.flamethrowerShoot, SoundCategory.BLOCKS, 1.5F, 1F);
 				} else {
@@ -183,6 +181,12 @@ public class TileEntityMachineGasFlare extends TileEntityMachineBase implements 
 
 			if(prevPower != power || prevAmount != tank.getFluidAmount() || needsUpdate){
 				markDirty();
+			}
+		} else {
+			// spawn particles on the client side only
+			if (isOn && tank.getFluidAmount() >= 10 && doesBurn && cacheEnergy != 0) {
+				cacheEnergy = FluidCombustionRecipes.getFlameEnergy(tankType);
+				world.spawnEntity(new EntityGasFlameFX(world, pos.getX() + 0.5F, pos.getY() + 11F, pos.getZ() + 0.5F, 0.0, 0.0, 0.0));
 			}
 		}
 	}
