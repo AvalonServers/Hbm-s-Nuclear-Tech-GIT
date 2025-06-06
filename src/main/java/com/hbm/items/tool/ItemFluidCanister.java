@@ -40,6 +40,7 @@ public class ItemFluidCanister extends Item implements IHasCustomModel {
 		this.setCreativeTab(MainRegistry.controlTab);
 		this.setMaxStackSize(1);
 		this.setMaxDamage(cap);
+		this.setContainerItem(this);
 		this.cap = cap;
 		
 		ModItems.ALL_ITEMS.add(this);

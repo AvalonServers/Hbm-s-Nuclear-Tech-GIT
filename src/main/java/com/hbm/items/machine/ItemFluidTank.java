@@ -45,6 +45,7 @@ public class ItemFluidTank extends Item implements IHasCustomModel {
 		this.setHasSubtypes(true);
 		this.setMaxDamage(cap);
 		this.setMaxStackSize(1);
+		this.setContainerItem(this);
 		this.cap = cap;
 
 		ModItems.ALL_ITEMS.add(this);
