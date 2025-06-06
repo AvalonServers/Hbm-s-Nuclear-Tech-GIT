@@ -8,7 +8,7 @@ import com.hbm.util.ContaminationUtil;
 
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -34,16 +34,16 @@ public class BlockGasCoal extends BlockGasBase {
 	}
 
 	@Override
-	public ForgeDirection getFirstDirection(World world, int x, int y, int z) {
+	public EnumFacing getFirstDirection(World world, int x, int y, int z) {
 		
 		if(world.rand.nextInt(5) == 0)
-			return ForgeDirection.DOWN;
+			return EnumFacing.DOWN;
 		
-		return ForgeDirection.getOrientation(world.rand.nextInt(6));
+		return EnumFacing.random(world.rand);
 	}
 
 	@Override
-	public ForgeDirection getSecondDirection(World world, int x, int y, int z) {
+	public EnumFacing getSecondDirection(World world, int x, int y, int z) {
 		return this.randomHorizontal(world);
 	}
 

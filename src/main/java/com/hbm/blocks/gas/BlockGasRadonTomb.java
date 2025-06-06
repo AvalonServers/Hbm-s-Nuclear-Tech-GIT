@@ -21,6 +21,7 @@ import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.init.Blocks;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -75,16 +76,16 @@ public class BlockGasRadonTomb extends BlockGasBase {
 	}
 	
 	@Override
-	public ForgeDirection getFirstDirection(World world, int x, int y, int z) {
+	public EnumFacing getFirstDirection(World world, int x, int y, int z) {
 		
 		if(world.rand.nextInt(3) == 0)
-			return ForgeDirection.UP;
+			return EnumFacing.UP;
 		
-		return ForgeDirection.DOWN;
+		return EnumFacing.DOWN;
 	}
 
 	@Override
-	public ForgeDirection getSecondDirection(World world, int x, int y, int z) {
+	public EnumFacing getSecondDirection(World world, int x, int y, int z) {
 		return this.randomHorizontal(world);
 	}
 

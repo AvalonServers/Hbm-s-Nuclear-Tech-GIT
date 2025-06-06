@@ -12,6 +12,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -35,12 +36,12 @@ public class BlockGasMonoxide extends BlockGasBase {
 	}
 	
 	@Override
-	public ForgeDirection getFirstDirection(World world, int x, int y, int z) {
-		return ForgeDirection.DOWN;
+	public EnumFacing getFirstDirection(World world, int x, int y, int z) {
+		return EnumFacing.DOWN;
 	}
 
 	@Override
-	public ForgeDirection getSecondDirection(World world, int x, int y, int z) {
+	public EnumFacing getSecondDirection(World world, int x, int y, int z) {
 		return this.randomHorizontal(world);
 	}
 

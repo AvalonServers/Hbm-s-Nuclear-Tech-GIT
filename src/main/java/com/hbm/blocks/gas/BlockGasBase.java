@@ -3,9 +3,9 @@ package com.hbm.blocks.gas;
 import java.util.Random;
 
 import com.hbm.blocks.ModBlocks;
+import com.hbm.config.GeneralConfig;
 import com.hbm.handler.ArmorUtil;
 import com.hbm.items.ModItems;
-import com.hbm.lib.ForgeDirection;
 import com.hbm.main.MainRegistry;
 
 import net.minecraft.block.Block;
@@ -53,9 +53,25 @@ public abstract class BlockGasBase extends Block {
 	
 	@Override
 	public EnumBlockRenderType getRenderType(IBlockState state){
-		return EnumBlockRenderType.INVISIBLE;
+		return GeneralConfig.enableDebugMode ? EnumBlockRenderType.MODEL : EnumBlockRenderType.INVISIBLE;
 	}
-	
+
+	@Override
+	public void onBlockAdded(World worldIn, BlockPos pos, IBlockState state) {
+		super.onBlockAdded(worldIn, pos, state);
+
+		if (worldIn.isRemote) return;
+		worldIn.scheduleUpdate(pos, this, 20);
+	}
+
+	@Override
+	public void neighborChanged(IBlockState state, World worldIn, BlockPos pos, Block blockIn, BlockPos fromPos) {
+		super.neighborChanged(state, worldIn, pos, blockIn, fromPos);
+
+		if (worldIn.isRemote) return;
+		worldIn.scheduleUpdate(pos, this, 20);
+	}
+
 	@Override
 	public boolean canCollideCheck(IBlockState state, boolean hitIfLiquid){
 		return false;
@@ -78,7 +94,7 @@ public abstract class BlockGasBase extends Block {
 	
 	@Override
 	public boolean shouldSideBeRendered(IBlockState blockState, IBlockAccess blockAccess, BlockPos pos, EnumFacing side){
-		return false;
+		return GeneralConfig.enableDebugMode;
 	}
 	
 	@Override
@@ -94,21 +110,35 @@ public abstract class BlockGasBase extends Block {
 	@Override
 	public void updateTick(World world, BlockPos pos, IBlockState state, Random rand){
 		if(!world.isRemote) {
-			if(world.rand.nextInt(2)==0){
-				if(!tryMove(world, pos.getX(), pos.getY(), pos.getZ(), getFirstDirection(world, pos.getX(), pos.getY(), pos.getZ())))
-					tryMove(world, pos.getX(), pos.getY(), pos.getZ(), getSecondDirection(world, pos.getX(), pos.getY(), pos.getZ()));
+			if (pos.getY() > 250) {
+				world.setBlockToAir(pos);
+				return;
 			}
+
+			if(world.rand.nextInt(2)==0){
+				if(!tryMove(world, pos.getX(), pos.getY(), pos.getZ(), getFirstDirection(world, pos.getX(), pos.getY(), pos.getZ()))) {
+					EnumFacing dir = getSecondDirection(world, pos.getX(), pos.getY(), pos.getZ());
+
+					for (int i = 0; i < 4; i++) {
+						if (tryMove(world, pos.getX(), pos.getY(), pos.getZ(), dir)) break;
+						dir = dir.rotateAround(EnumFacing.Axis.Y);
+					}
+				}
+			}
+
+			world.scheduleUpdate(pos, this, 20);
 		}
 	}
-	
-	public abstract ForgeDirection getFirstDirection(World world, int x, int y, int z);
 
-	public ForgeDirection getSecondDirection(World world, int x, int y, int z) {
+	public abstract EnumFacing getFirstDirection(World world, int x, int y, int z);
+
+	public EnumFacing getSecondDirection(World world, int x, int y, int z) {
 		return getFirstDirection(world, x, y, z);
 	}
 
-	public boolean tryMove(World world, int x, int y, int z, ForgeDirection dir) {
-		BlockPos newPos = new BlockPos(x + dir.offsetX, y + dir.offsetY, z + dir.offsetZ);
+	public boolean tryMove(World world, int x, int y, int z, EnumFacing dir) {
+		BlockPos newPos = new BlockPos(x, y, z);
+		newPos = newPos.offset(dir);
 
 		if (!world.isBlockLoaded(newPos)) {
 			return false;
@@ -125,8 +155,8 @@ public abstract class BlockGasBase extends Block {
 		return 20;
 	}
 
-	public ForgeDirection randomHorizontal(World world) {
-		return ForgeDirection.getOrientation(world.rand.nextInt(4) + 2);
+	public EnumFacing randomHorizontal(World world) {
+		return EnumFacing.getHorizontal(world.rand.nextInt(4));
 	}
 
 	@Override

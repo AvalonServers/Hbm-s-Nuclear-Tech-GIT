@@ -22,16 +22,16 @@ public class BlockGasFlammable extends BlockGasBase {
 	}
 
 	@Override
-	public ForgeDirection getFirstDirection(World world, int x, int y, int z) {
+	public EnumFacing getFirstDirection(World world, int x, int y, int z) {
 		
 		if(world.rand.nextInt(3) == 0)
-			return ForgeDirection.getOrientation(world.rand.nextInt(2));
+			return EnumFacing.getHorizontal(world.rand.nextInt(2));
 		
 		return this.randomHorizontal(world);
 	}
 
 	@Override
-	public ForgeDirection getSecondDirection(World world, int x, int y, int z) {
+	public EnumFacing getSecondDirection(World world, int x, int y, int z) {
 		return this.randomHorizontal(world);
 	}
 

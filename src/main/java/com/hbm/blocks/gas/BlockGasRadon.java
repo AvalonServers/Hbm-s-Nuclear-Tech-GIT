@@ -15,6 +15,7 @@ import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -40,25 +41,12 @@ public class BlockGasRadon extends BlockGasBase {
 	}
 	
 	@Override
-	public ForgeDirection getFirstDirection(World world, int x, int y, int z){
-		if(world.rand.nextInt(5) == 0)
-			return ForgeDirection.UP;
-		
-		return ForgeDirection.DOWN;
+	public EnumFacing getFirstDirection(World world, int x, int y, int z){
+		return EnumFacing.UP;
 	}
 	
 	@Override
-	public ForgeDirection getSecondDirection(World world, int x, int y, int z) {
+	public EnumFacing getSecondDirection(World world, int x, int y, int z) {
 		return this.randomHorizontal(world);
-	}
-	
-	@Override
-	public void updateTick(World world, BlockPos pos, IBlockState state, Random rand){
-		if(!world.isRemote && rand.nextInt(20) == 0) {
-			world.setBlockToAir(pos);
-			return;
-		}
-		
-		super.updateTick(world, pos, state, rand);
 	}
 }
