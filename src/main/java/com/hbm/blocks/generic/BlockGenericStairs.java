@@ -19,7 +19,8 @@ public class BlockGenericStairs extends BlockStairs {
 		super(modelState);
 		this.setUnlocalizedName(s);
 		this.setRegistryName(s);
-		
+		this.useNeighborBrightness = true;
+
 		ModBlocks.ALL_BLOCKS.add(this);
 	}
 

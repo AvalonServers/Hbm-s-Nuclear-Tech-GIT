@@ -17,7 +17,7 @@ public class AudioDynamic extends MovingSound {
 	protected AudioDynamic(SoundEvent loc, SoundCategory cat) {
 		super(loc, cat);
 		this.repeat = true;
-		this.attenuationType = ISound.AttenuationType.NONE;
+		this.attenuationType = AttenuationType.LINEAR;
 		this.intendedVolume = 10;
 	}
 	
