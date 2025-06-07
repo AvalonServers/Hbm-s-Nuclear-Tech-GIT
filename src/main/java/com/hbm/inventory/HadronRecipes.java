@@ -198,7 +198,7 @@ public class HadronRecipes {
 				if(analysisOnly && !r.analysisOnly)	returnCode = EnumHadronState.NORESULT_WRONG_MODE;
 				if(momentum < r.momentum)			returnCode = EnumHadronState.NORESULT_TOO_SLOW;
 
-				if(momentum >= r.momentum && analysisOnly == r.analysisOnly)
+				if(momentum >= r.momentum)
 					return new ItemStack[] {r.out1, r.out2};
 			}
 		}
