@@ -1,7 +1,7 @@
 package com.hbm.items.tool;
 
 import api.hbm.energy.IEnergyUser;
-import com.hbm.interfaces.IFluidPipe;
+import com.hbm.interfaces.IFluidPipeMk2;
 import com.hbm.items.ModItems;
 import com.hbm.tileentity.machine.TileEntityDummy;
 import com.hbm.tileentity.machine.TileEntityLockableBase;
@@ -83,10 +83,10 @@ public class ItemAnalyzer extends Item {
 							"Electricity: " + ((IEnergyUser)te).getPower() + " HE"));
 				}
 
-				if(te instanceof IFluidPipe) {
+				if(te instanceof IFluidPipeMk2) {
 
 					player.sendMessage(new TextComponentString(
-							"Duct Type: " + I18n.format(((IFluidPipe)te).getType().getUnlocalizedName())));
+							"Duct Type: " + I18n.format(((IFluidPipeMk2)te).getType().getUnlocalizedName())));
 				}
 
 				if(te instanceof TileEntityPylonBase) {

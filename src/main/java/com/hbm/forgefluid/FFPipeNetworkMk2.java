@@ -21,10 +21,10 @@ public class FFPipeNetworkMk2 implements IFluidHandler {
 
 	protected static Random rand = new Random();
 	protected boolean valid = true;
-	
+
 	protected Fluid type;
-	protected Map<BlockPos, TileEntity> fillables = new HashMap<>();
-	protected Map<BlockPos, IFluidPipeMk2> pipes = new HashMap<>();
+	public Map<BlockPos, TileEntity> fillables = new HashMap<>();
+	public Map<BlockPos, IFluidPipeMk2> pipes = new HashMap<>();
 
 	public FFPipeNetworkMk2(IFluidPipeMk2 te) {
 		this.type = te.getType();
@@ -47,7 +47,8 @@ public class FFPipeNetworkMk2 implements IFluidHandler {
 		while(itr.hasNext()){
 			TileEntity te = itr.next();
 			if(te.isInvalid()){
-				fillables.remove(te.getPos());
+				// removing this here sometimes breaks filling?
+				//fillables.remove(te.getPos());
 				itr.remove();
 				continue;
 			}
@@ -125,37 +126,38 @@ public class FFPipeNetworkMk2 implements IFluidHandler {
 				if(te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
 					fillables.remove(te.getPos());
 				}
-			} catch(Throwable t){
+			} catch(Throwable ignored){
 			}
 		}
 	}
 
-	public boolean tryAdd(TileEntity te) {
-		if(te == null)
-			return false;
-		if(te instanceof IFluidPipeMk2) {
-			if(!pipes.containsKey(te.getPos()) && ((IFluidPipeMk2) te).getType() == this.type) {
-				pipes.put(te.getPos(), (IFluidPipeMk2) te);
-				return true;
+	public void tryRemovePipe(BlockPos pos) {
+		pipes.remove(pos);
+	}
+
+	public void tryRemoveConsumer(BlockPos pos) {
+		fillables.remove(pos);
+	}
+
+	public void tryAdd(TileEntity tileEntity) {
+		if(tileEntity == null) return;
+
+		if(tileEntity instanceof IFluidPipeMk2) {
+			if(!pipes.containsKey(tileEntity.getPos()) && ((IFluidPipeMk2) tileEntity).getType() == this.type) {
+				pipes.put(tileEntity.getPos(), (IFluidPipeMk2) tileEntity);
 			}
-		} else if(te.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
-			if(!fillables.containsKey(te.getPos())) {
-				fillables.put(te.getPos(), te);
-				return true;
+		} else if(tileEntity.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, null)) {
+			if(!fillables.containsKey(tileEntity.getPos()) || fillables.get(tileEntity.getPos()) != tileEntity) {
+				fillables.put(tileEntity.getPos(), tileEntity);
 			}
 		}
-		return false;
 	}
 	
 	public static FFPipeNetworkMk2 mergeNetworks(FFPipeNetworkMk2 net1, FFPipeNetworkMk2 net2) {
 		if((net1 == null || net2 == null) || net1 == net2)
 			return net1;
 
-		/*net2.pipes.values().forEach(pipe -> {
-			pipe.setNetwork(net1);
-			pipe.setType(net1.type);
-		});*/
-		for(IFluidPipeMk2 pipe : net2.pipes.values()){
+		for(IFluidPipeMk2 pipe : net2.pipes.values()) {
 			pipe.setNetwork(net1);
 		}
 
@@ -181,12 +183,12 @@ public class FFPipeNetworkMk2 implements IFluidHandler {
 			List<FFPipeNetworkMk2> toMerge = new ArrayList<FFPipeNetworkMk2>();
 			iteratePipes(pipes, consumers, toMerge, te, type);
 
-			if(toMerge.size() > 0)
+			if(!toMerge.isEmpty())
 				net = toMerge.remove(0);
 			else
 				net = new FFPipeNetworkMk2(pipe);
 			
-			while(toMerge.size() > 0)
+			while(!toMerge.isEmpty())
 				mergeNetworks(net, toMerge.remove(0));
 			
 			for(IFluidPipeMk2 p : pipes.values())
@@ -194,9 +196,8 @@ public class FFPipeNetworkMk2 implements IFluidHandler {
 				
 			net.pipes.putAll(pipes);
 			net.fillables.putAll(consumers);
-			
-			
 		}
+
 		return net;
 	}
 

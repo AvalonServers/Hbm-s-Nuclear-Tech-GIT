@@ -1,12 +1,9 @@
 package com.hbm.forgefluid;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.base.Predicate;
-import com.hbm.interfaces.IFluidPipe;
 import com.hbm.interfaces.IFluidPipeMk2;
 import com.hbm.interfaces.IFluidVisualConnectable;
 import com.hbm.interfaces.IItemFluidHandler;
@@ -25,7 +22,6 @@ import com.hbm.lib.Library;
 import com.hbm.render.RenderHelper;
 import com.hbm.tileentity.machine.TileEntityDummy;
 
-import com.hbm.util.BobMathUtil;
 import com.hbm.util.I18nUtil;
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -37,11 +33,9 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.NBTTagList;
-import net.minecraft.nbt.NBTTagString;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextFormatting;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.fluids.Fluid;
@@ -135,7 +129,7 @@ public class FFUtils {
 	/**
 	 * Internal method to actually render the fluid
 	 * 
-	 * @param tank
+	 * @param f
 	 * @param guiLeft
 	 * @param guiTop
 	 * @param zLevel
@@ -327,12 +321,8 @@ public class FFUtils {
 	 *            - the fluid tank to fill from
 	 * @param world
 	 *            - the world the filling is taking place in
-	 * @param i
-	 *            - x coord of place to fill
-	 * @param j
-	 *            - y coord of place to fill
-	 * @param k
-	 *            - z coord of place to fill
+	 * @param toFill
+	 *            - toFill of place to fill
 	 * @param maxDrain
 	 *            - the maximum amount that can be drained from the tank at a
 	 *            time
@@ -989,16 +979,6 @@ public class FFUtils {
 		if(tank == null)
 			return null;
 		return new FluidTank(tank.getFluid() != null ? tank.getFluid().copy() : null, tank.getCapacity());
-	}
-
-	public static boolean checkFluidConnectables(World world, BlockPos pos, FFPipeNetwork net, @Nullable EnumFacing facing){
-		TileEntity tileentity = world.getTileEntity(pos);
-		if(tileentity != null && tileentity instanceof IFluidPipe && ((IFluidPipe)tileentity).getNetworkTrue() == net)
-			return true;
-		if(tileentity != null && !(tileentity instanceof IFluidPipe) && tileentity.hasCapability(CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY, facing)) {
-			return true;
-		}
-		return false;
 	}
 
 	public static boolean checkFluidConnectablesMk2(World world, BlockPos pos, Fluid type, @Nullable EnumFacing facing){

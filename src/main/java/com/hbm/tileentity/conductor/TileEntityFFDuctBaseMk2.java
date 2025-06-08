@@ -3,6 +3,7 @@ package com.hbm.tileentity.conductor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.hbm.forgefluid.FFPipeNetworkMk2;
 import com.hbm.forgefluid.FFUtils;
@@ -33,12 +34,13 @@ import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.IFluidTankProperties;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 
+import javax.annotation.Nonnull;
+
 public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2, IFluidHandler {
 
 	public EnumFacing[] connections = new EnumFacing[6];
 	protected Fluid type;
 	protected FFPipeNetworkMk2 network = null;
-	public TileEntity[] tileentityCache = new TileEntity[6];
 	public boolean isBeingDestroyed = false;
 
 	public TileEntityFFDuctBaseMk2() {}
@@ -80,7 +82,7 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 	}
 
 	@Override
-	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
+	public @Nonnull NBTTagCompound writeToNBT(@Nonnull NBTTagCompound compound) {
 		if(type != null)
 			compound.setString("fluidType", type.getName());
 		return super.writeToNBT(compound);
@@ -99,17 +101,17 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 	}
 
 	@Override
-	public NBTTagCompound getUpdateTag() {
+	public @Nonnull NBTTagCompound getUpdateTag() {
 		return this.writeToNBT(new NBTTagCompound());
 	}
 
 	@Override
-		public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity pkt) {
+		public void onDataPacket(@Nonnull NetworkManager net, SPacketUpdateTileEntity pkt) {
 			this.readFromNBT(pkt.getNbtCompound());
 		}
 
 	@Override
-	public void handleUpdateTag(NBTTagCompound tag) {
+	public void handleUpdateTag(@Nonnull NBTTagCompound tag) {
 		Fluid f = this.type;
 		this.readFromNBT(tag);
 		if(f == type)
@@ -125,23 +127,29 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 	// Probably called before neighbor changed
 	@Override
 	public void onLoad() {
-		if(!world.isRemote){
-			world.getMinecraftServer().addScheduledTask(() -> {
-				updateConnections();
-				joinOrMakeNetwork();
-				onNeighborChange();
-			});
-		} else {
-			updateConnections();
-			joinOrMakeNetwork();
-			onNeighborChange();
-		}
+		updateConnections();
+		joinOrMakeNetwork();
+		onNeighborChange();
 	}
-		
 
 	public void onNeighborChange() {
-		rebuildCache();
 		updateConnections();
+
+		if (network != null) {
+			for(EnumFacing e : connections) {
+				if (e == null) continue;
+
+				BlockPos offset = pos.offset(e);
+				TileEntity tileEntity = world.getTileEntity(offset);
+				if (tileEntity != null) {
+					network.tryAdd(tileEntity);
+				} else {
+					network.tryRemovePipe(offset);
+					network.tryRemoveConsumer(offset);
+				}
+			}
+		}
+
 		if(!world.isRemote)
 			PacketDispatcher.wrapper.sendToAllTracking(new PipeUpdatePacket(pos), new TargetPoint(world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), 10));
 	}
@@ -150,34 +158,15 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 	public void onChunkUnload() {
 		if(network == null)
 			return;
-		for(TileEntity te : tileentityCache) {
-			if(te != null) {
-				if(te instanceof IFluidPipeMk2)
-					continue;
-				if(!world.isBlockLoaded(te.getPos())) {
-					network.checkForRemoval(te);
-					continue;
-				}
-				boolean flag = true;
-				for(EnumFacing e : EnumFacing.VALUES) {
-					BlockPos pos = te.getPos().offset(e);
-					if(world.isBlockLoaded(pos)) {
-						TileEntity ent = world.getTileEntity(pos);
-						if(ent instanceof IFluidPipeMk2 && ((IFluidPipeMk2) ent).getNetwork() == network) {
-							flag = false;
-							break;
-						}
-					}
-				}
-				if(flag)
-					network.checkForRemoval(te);
-			}
+
+		// Remove the TEs from the network that this duct is connected to
+		for (EnumFacing e : connections) {
+			if (e == null) continue;
+			BlockPos pos = this.pos.offset(e);
+			network.tryRemoveConsumer(pos);
 		}
+
 		network.checkForRemoval(this);
-
-		// Not sure if I need to do this, but I'll be safe
-		Arrays.fill(tileentityCache, null);
-
 		this.network = null;
 	}
 
@@ -247,10 +236,9 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 		if(otherNetworks.isEmpty()) {
 			network = new FFPipeNetworkMk2(this);
 			network.tryAdd(this);
-			return;
 		} else {
 			FFPipeNetworkMk2 net = otherNetworks.remove(0);
-			while(otherNetworks.size() > 0)
+			while(!otherNetworks.isEmpty())
 				net = FFPipeNetworkMk2.mergeNetworks(net, otherNetworks.remove(0));
 			network = net;
 			net.tryAdd(this);
@@ -265,7 +253,6 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 		player.sendMessage(new TextComponentString("Connections: " + Arrays.toString(connections)));
 		player.sendMessage(new TextComponentString("Type: " + (type == null ? "None" : type.getName())));
 		player.sendMessage(new TextComponentString("Network: " + (network == null ? "None" : network.toString())));
-		player.sendMessage(new TextComponentString("TE cache: " + Arrays.toString(tileentityCache)));
 		player.sendMessage(new TextComponentString("Is being destroyed: " + isBeingDestroyed));
 		player.sendMessage(new TextComponentString("--------------------------------"));
 
@@ -274,47 +261,16 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 			player.sendMessage(new TextComponentString("Valid: " + network.isValid()));
 			player.sendMessage(new TextComponentString("Type: " + (network.getType() == null ? "None" : network.getType().getName())));
 			player.sendMessage(new TextComponentString("Size: " + network.size()));
+			player.sendMessage(new TextComponentString("Pipe Count: " + network.pipes.size()));
+			player.sendMessage(new TextComponentString("Fillables Count: " + network.fillables.size()));
+
+			player.sendMessage(new TextComponentString("Fillables: "));
+			for (Map.Entry<BlockPos, TileEntity> fillable : network.fillables.entrySet()) {
+				player.sendMessage(new TextComponentString("  " + fillable.getKey() + ": " + fillable.getValue()));
+			}
 		} else {
 			player.sendMessage(new TextComponentString("NETWORK DUMP SKIPPED, NO NETWORK"));
 		}
-	}
-
-	protected boolean rebuildCache() {
-		boolean changed = false;
-
-        Arrays.fill(tileentityCache, null);
-		for(EnumFacing e : connections) {
-			if (e == null) continue;
-
-			TileEntity te = world.getTileEntity(pos.offset(e));
-			if(tileentityCache[e.getIndex()] == null) {
-				if(te != null) {
-					if(network != null)
-						network.tryAdd(te);
-					tileentityCache[e.getIndex()] = te;
-					changed = true;
-				}
-			} else {
-				if(te == null) {
-					if(network != null)
-						network.checkForRemoval(tileentityCache[e.getIndex()]);
-					tileentityCache[e.getIndex()] = null;
-					changed = true;
-				} else if(te != tileentityCache[e.getIndex()]) {
-					if(network != null) {
-						network.checkForRemoval(tileentityCache[e.getIndex()]);
-						network.tryAdd(te);
-					}
-					tileentityCache[e.getIndex()] = te;
-					changed = true;
-				}
-			}
-		}
-		if(world.isRemote){
-			//System.out.println(this + " " + this.getPos() + " " + changed);
-			//new Exception().printStackTrace();
-		}
-		return changed;
 	}
 
 	public void updateConnections() {
@@ -385,12 +341,12 @@ public class TileEntityFFDuctBaseMk2 extends TileEntity implements IFluidPipeMk2
 	}
 
 	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing) {
+	public boolean hasCapability(@Nonnull Capability<?> capability, EnumFacing facing) {
 		return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY || super.hasCapability(capability, facing);
 	}
 
 	@Override
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
+	public <T> T getCapability(@Nonnull Capability<T> capability, EnumFacing facing) {
 		return capability == CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY ? CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY.cast(this) : super.getCapability(capability, facing);
 	}
 }
