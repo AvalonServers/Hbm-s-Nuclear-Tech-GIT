@@ -46,6 +46,8 @@ import net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+import javax.annotation.Nonnull;
+
 public class ItemCell extends Item {
 
 	public ItemCell(String s) {
@@ -138,9 +140,11 @@ public class ItemCell extends Item {
 		if(tab == this.getCreativeTab() || tab == CreativeTabs.SEARCH) {
 			for(Fluid f : EnumCell.getFluids()) {
 				ItemStack stack = new ItemStack(this, 1, 0);
-				stack.setTagCompound(new NBTTagCompound());
-				if(f != null)
+				if(f != null) {
+					stack.setTagCompound(new NBTTagCompound());
 					stack.getTagCompound().setTag(HbmFluidHandlerCell.FLUID_NBT_KEY, new FluidStack(f, 1000).writeToNBT(new NBTTagCompound()));
+				}
+
 				items.add(stack);
 			}
 		}
@@ -172,8 +176,6 @@ public class ItemCell extends Item {
 
 	@Override
 	public ICapabilityProvider initCapabilities(ItemStack stack, NBTTagCompound nbt) {
-		if(stack.getTagCompound() == null)
-			stack.setTagCompound(new NBTTagCompound());
 		return new HbmFluidHandlerCell(stack, 1000);
 	}
 
@@ -188,7 +190,7 @@ public class ItemCell extends Item {
 	public static boolean isEmptyCell(ItemStack stack) {
 		if(stack != null) {
 			if(stack.getItem() == ModItems.cell && stack.getTagCompound() != null) {
-				FluidStack s = FluidStack.loadFluidStackFromNBT(stack.getTagCompound().getCompoundTag(HbmFluidHandlerCell.FLUID_NBT_KEY));
+				FluidStack s = FluidStack.loadFluidStackFromNBT(stack.getSubCompound(HbmFluidHandlerCell.FLUID_NBT_KEY));
 				if(s == null || s.amount <= 0)
 					return true;
 			} else if (stack.getItem() == ModItems.cell && stack.getTagCompound() == null){
@@ -196,6 +198,17 @@ public class ItemCell extends Item {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public boolean hasContainerItem(@Nonnull ItemStack stack) {
+		return !isEmptyCell(stack);
+	}
+
+	@Override
+	public @Nonnull ItemStack getContainerItem(@Nonnull ItemStack itemStack) {
+		if (isEmptyCell(itemStack)) return ItemStack.EMPTY;
+		return new ItemStack(this);
 	}
 
 	public static boolean hasFluid(ItemStack stack, Fluid f) {
@@ -222,7 +235,7 @@ public class ItemCell extends Item {
 	
 	public static boolean isFullOrEmpty(ItemStack stack){
 		if(stack.hasTagCompound() && stack.getItem() == ModItems.cell){
-			FluidStack f = FluidStack.loadFluidStackFromNBT(stack.getTagCompound().getCompoundTag(HbmFluidHandlerItemStack.FLUID_NBT_KEY));
+			FluidStack f = FluidStack.loadFluidStackFromNBT(stack.getSubCompound(HbmFluidHandlerItemStack.FLUID_NBT_KEY));
 			if(f == null)
 				return true;
 			return f.amount == 1000 || f.amount == 0;
