@@ -72,7 +72,7 @@ public class TileEntityCoreStabilizer extends TileEntityMachineBase implements I
 						beam = i;
 						
 						long dmg = ItemLens.getLensDamage(inventory.getStackInSlot(0));
-						dmg += watts;
+						dmg += (watts / 100);
 						
 						if(dmg >= lens.maxDamage)
 							inventory.setStackInSlot(0, ItemStack.EMPTY);
