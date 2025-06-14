@@ -167,6 +167,6 @@ public class TileEntityCoreReceiver extends TileEntityMachineBase implements ITi
 
 	@Override
 	public long getMaxPower() {
-		return 0;
+		return this.power;
 	}
 }
