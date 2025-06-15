@@ -155,15 +155,11 @@ public class TileEntityFWatzCore extends TileEntityLoadedBase implements IContro
 			if(this.isOn && inventory.getStackInSlot(2).getItem() instanceof ItemFWatzCore) {
 				ItemFWatzCore itemCore = (ItemFWatzCore)inventory.getStackInSlot(2).getItem();
 				if(cooldown) {
-					
 					tanks[0].fill(new FluidStack(tankTypes[0], itemCore.coolantRefill), true);
-
 					if(tanks[0].getFluidAmount() >= tanks[0].getCapacity()) {
 						cooldown = false;
 					}
-
 				} else {
-
 					if(tanks[1].getFluidAmount() > itemCore.amatDrain && tanks[2].getFluidAmount() > itemCore.aschrabDrain) {
 						tanks[0].drain(itemCore.coolantDrain, true);
 						tanks[1].drain(itemCore.amatDrain, true);
@@ -177,10 +173,8 @@ public class TileEntityFWatzCore extends TileEntityLoadedBase implements IContro
 
 					if(tanks[0].getFluidAmount() <= 0) {
 						cooldown = true;
-					}
-
-					if(world.rand.nextInt(4096) == 0)
 						tryGrowCore();
+					}
 				}
 			}
 
