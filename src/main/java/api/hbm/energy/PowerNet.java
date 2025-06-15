@@ -20,10 +20,6 @@ public class PowerNet {
     }
 
     /// SUBSCRIBER HANDLING ///
-    public boolean isSubscribed(IEnergyUser receiver) {
-        return this.receiverEntries.containsKey(receiver);
-    }
-
     public void addReceiver(IEnergyUser receiver) {
         this.receiverEntries.put(receiver, System.currentTimeMillis());
     }
@@ -33,10 +29,6 @@ public class PowerNet {
     }
 
     /// PROVIDER HANDLING ///
-    public boolean isProvider(IEnergyGenerator provider) {
-        return this.providerEntries.containsKey(provider);
-    }
-
     public void addProvider(IEnergyGenerator provider) {
         this.providerEntries.put(provider, System.currentTimeMillis());
     }
@@ -112,9 +104,9 @@ public class PowerNet {
         if(receiverEntries.isEmpty()) return;
 
         long timestamp = System.currentTimeMillis();
-        long transferCap = 100_000_000_000_000_00L;
+        long transferCap = 10_000_000_000_000_000L;
 
-        List<Tuple.Pair<IEnergyGenerator, Long>> providers = new ArrayList();
+        List<Tuple.Pair<IEnergyGenerator, Long>> providers = new ArrayList<>();
         long powerAvailable = 0;
 
         Iterator<Map.Entry<IEnergyGenerator, Long>> provIt = providerEntries.entrySet().iterator();
@@ -122,14 +114,12 @@ public class PowerNet {
             Map.Entry<IEnergyGenerator, Long> entry = provIt.next();
             if(timestamp - entry.getValue() > timeout) { provIt.remove(); continue; }
             long src = Math.min(entry.getKey().getPower(), entry.getKey().getProviderSpeed());
-            providers.add(new Tuple.Pair(entry.getKey(), src));
-            if(powerAvailable < transferCap) powerAvailable += src;
+            providers.add(new Tuple.Pair<>(entry.getKey(), src));
+            powerAvailable = Math.min(powerAvailable + src, Long.MAX_VALUE);
         }
 
-        powerAvailable = Math.min(powerAvailable, transferCap);
-
         List<Tuple.Pair<IEnergyUser, Long>>[] receivers = new ArrayList[IEnergyUser.ConnectionPriority.values().length];
-        for(int i = 0; i < receivers.length; i++) receivers[i] = new ArrayList();
+        for(int i = 0; i < receivers.length; i++) receivers[i] = new ArrayList<>();
         long[] demand = new long[IEnergyUser.ConnectionPriority.values().length];
         long totalDemand = 0;
 
@@ -140,12 +130,12 @@ public class PowerNet {
             if(timestamp - entry.getValue() > timeout) { recIt.remove(); continue; }
             long rec = Math.min(entry.getKey().getMaxPower() - entry.getKey().getPower(), entry.getKey().getReceiverSpeed());
             int p = entry.getKey().getPriority().ordinal();
-            receivers[p].add(new Tuple.Pair(entry.getKey(), rec));
+            receivers[p].add(new Tuple.Pair<>(entry.getKey(), rec));
             demand[p] += rec;
             totalDemand += rec;
         }
 
-        long toTransfer = Math.min(powerAvailable, totalDemand);
+        long toTransfer = Math.min(Math.min(powerAvailable, transferCap), totalDemand);
         long energyUsed = 0;
 
         for(int i = IEnergyUser.ConnectionPriority.values().length - 1; i >= 0; i--) {
@@ -170,118 +160,6 @@ public class PowerNet {
         }
     }
 
-    @Deprecated public void transferPowerOld() {
-
-        if(providerEntries.isEmpty()) return;
-        if(receiverEntries.isEmpty()) return;
-
-        long timestamp = System.currentTimeMillis();
-        long transferCap = 100_000_000_000_000_00L; // that ought to be enough
-
-        long supply = 0;
-        long demand = 0;
-        long[] priorityDemand = new long[IEnergyUser.ConnectionPriority.values().length];
-
-        Iterator<Map.Entry<IEnergyGenerator, Long>> provIt = providerEntries.entrySet().iterator();
-        while(provIt.hasNext()) {
-            Map.Entry<IEnergyGenerator, Long> entry = provIt.next();
-            if(timestamp - entry.getValue() > timeout) { provIt.remove(); continue; }
-            supply += Math.min(entry.getKey().getPower(), entry.getKey().getProviderSpeed());
-        }
-
-        if(supply <= 0) return;
-
-        Iterator<Map.Entry<IEnergyUser, Long>> recIt = receiverEntries.entrySet().iterator();
-        while(recIt.hasNext()) {
-            Map.Entry<IEnergyUser, Long> entry = recIt.next();
-            if(timestamp - entry.getValue() > timeout) { recIt.remove(); continue; }
-            long rec = Math.min(entry.getKey().getMaxPower() - entry.getKey().getPower(), entry.getKey().getReceiverSpeed());
-            demand += rec;
-            for(int i = 0; i <= entry.getKey().getPriority().ordinal(); i++) priorityDemand[i] += rec;
-        }
-
-        if(demand <= 0) return;
-
-        long toTransfer = Math.min(supply, demand);
-        if(toTransfer > transferCap) toTransfer = transferCap;
-        if(toTransfer <= 0) return;
-
-        List<IEnergyGenerator> buffers = new ArrayList();
-        List<IEnergyGenerator> providers = new ArrayList();
-        Set<IEnergyUser> receiverSet = receiverEntries.keySet();
-        for(IEnergyGenerator provider : providerEntries.keySet()) {
-            if(receiverSet.contains(provider)) {
-                buffers.add(provider);
-            } else {
-                providers.add(provider);
-            }
-        }
-        providers.addAll(buffers); //makes buffers go last
-        List<IEnergyUser> receivers = new ArrayList() {{ addAll(receiverSet); }};
-
-        receivers.sort(COMP);
-
-        int maxIteration = 1000;
-
-        //how much the current sender/receiver have already sent/received
-        long prevSrc = 0;
-        long prevDest = 0;
-
-        while(!receivers.isEmpty() && !providers.isEmpty() && maxIteration > 0) {
-            maxIteration--;
-
-            IEnergyGenerator src = providers.get(0);
-            IEnergyUser dest = receivers.get(0);
-
-            if(src.getPower() <= 0) { providers.remove(0); prevSrc = 0; continue; }
-
-            if(src == dest) { // STALEMATE DETECTED
-                //if this happens, a buffer will waste both its share of transfer and receiving potential and do effectively nothing, essentially breaking
-
-                //try if placing the conflicting provider at the end of the list does anything
-                //we do this first because providers have no priority, so we may shuffle those around as much as we want
-                if(providers.size() > 1) {
-                    providers.add(providers.get(0));
-                    providers.remove(0);
-                    prevSrc = 0; //this might cause slight issues due to the tracking being effectively lost while there still might be pending operations
-                    continue;
-                }
-                //if that didn't work, try shifting the receiver by one place (to minimize priority breakage)
-                if(receivers.size() > 1) {
-                    receivers.add(2, receivers.get(0));
-                    receivers.remove(0);
-                    prevDest = 0; //ditto
-                    continue;
-                }
-
-                //if neither option could be performed, the only conclusion is that this buffer mode battery is alone in the power net, in which case: not my provlem
-            }
-
-            long pd = priorityDemand[dest.getPriority().ordinal()];
-
-            long receiverShare = Math.min((long) Math.ceil((double) Math.min(dest.getMaxPower() - dest.getPower(), dest.getReceiverSpeed()) * (double) supply / (double) pd), dest.getReceiverSpeed()) - prevDest;
-            long providerShare = Math.min((long) Math.ceil((double) Math.min(src.getPower(), src.getProviderSpeed()) * (double) demand / (double) supply), src.getProviderSpeed()) - prevSrc;
-
-            long toDrain = Math.min((long) (src.getPower()), providerShare);
-            long toFill = Math.min(dest.getMaxPower() - dest.getPower(), receiverShare);
-
-            long finalTransfer = Math.min(toDrain, toFill);
-            if(toFill <= 0) { receivers.remove(0); prevDest = 0; continue; }
-
-            finalTransfer -= dest.transferPower(finalTransfer);
-            src.usePower(finalTransfer);
-
-            prevSrc += finalTransfer;
-            prevDest += finalTransfer;
-
-            if(prevSrc >= src.getProviderSpeed()) { providers.remove(0); prevSrc = 0; continue; }
-            if(prevDest >= dest.getReceiverSpeed()) { receivers.remove(0); prevDest = 0; continue; }
-
-            toTransfer -= finalTransfer;
-            this.energyTracker += finalTransfer;
-        }
-    }
-
     public long sendPowerDiode(long power) {
 
         if(receiverEntries.isEmpty()) return power;
@@ -289,7 +167,7 @@ public class PowerNet {
         long timestamp = System.currentTimeMillis();
 
         List<Tuple.Pair<IEnergyUser, Long>>[] receivers = new ArrayList[IEnergyUser.ConnectionPriority.values().length];
-        for(int i = 0; i < receivers.length; i++) receivers[i] = new ArrayList();
+        for(int i = 0; i < receivers.length; i++) receivers[i] = new ArrayList<>();
         long[] demand = new long[IEnergyUser.ConnectionPriority.values().length];
         long totalDemand = 0;
 
@@ -300,7 +178,7 @@ public class PowerNet {
             if(timestamp - entry.getValue() > timeout) { recIt.remove(); continue; }
             long rec = Math.min(entry.getKey().getMaxPower() - entry.getKey().getPower(), entry.getKey().getReceiverSpeed());
             int p = entry.getKey().getPriority().ordinal();
-            receivers[p].add(new Tuple.Pair(entry.getKey(), rec));
+            receivers[p].add(new Tuple.Pair<>(entry.getKey(), rec));
             demand[p] += rec;
             totalDemand += rec;
         }
@@ -324,15 +202,5 @@ public class PowerNet {
         this.energyTracker += energyUsed;
 
         return power - energyUsed;
-    }
-
-    public static final ReceiverComparator COMP = new ReceiverComparator();
-
-    public static class ReceiverComparator implements Comparator<IEnergyUser> {
-
-        @Override
-        public int compare(IEnergyUser o1, IEnergyUser o2) {
-            return o2.getPriority().ordinal() - o1.getPriority().ordinal();
-        }
     }
 }
