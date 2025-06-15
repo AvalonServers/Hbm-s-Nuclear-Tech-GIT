@@ -2,6 +2,7 @@ package com.hbm.items.machine;
 
 import java.util.List;
 
+import com.hbm.config.GeneralConfig;
 import com.hbm.config.MachineConfig;
 import com.hbm.interfaces.IItemHazard;
 import com.hbm.items.ModItems;
@@ -219,7 +220,7 @@ public class ItemRBMKRod extends Item implements IItemHazard {
 		double hullHeat = getHullHeat(stack);
 		double meltdownPercent = getMeltdownPercent(stack);
 		
-		if(hullHeat > this.meltingPoint) {
+		if(hullHeat > this.meltingPoint && !GeneralConfig.enableDebugMode) {
 			meltdownPercent += 0.05D * hullHeat/this.meltingPoint;
 			setMeltdownPercent(stack, meltdownPercent);
 		}
@@ -248,7 +249,7 @@ public class ItemRBMKRod extends Item implements IItemHazard {
 		//metldown! the hull melts so the entire structure stops making sense
 		//hull and fuel core heat, fuel skin heat are instantly averaged,
 		//that average is sent to the component which is always fatal
-		if(getMeltdownPercent(stack) >= 100) {
+		if(getMeltdownPercent(stack) >= 100 && !GeneralConfig.enableDebugMode) {
 			setMeltdownPercent(stack, 100);
 			double coreHeat = getCoreHeat(stack);
 			double avg = (heat + hullHeat + coreHeat) / 3D;
@@ -279,6 +280,7 @@ public class ItemRBMKRod extends Item implements IItemHazard {
 		ARCH("trait.rbmx.flux.arch"),					//x-(x²/archLength) * reactivity
 		LINEAR("trait.rbmx.flux.linear"),				//x * reactivity
 		QUADRATIC("trait.rbmx.flux.quadratic"),			//x^2 / 100 * reactivity
+		CUBIC("trait.rbmx.flux.cubic"), // x^3 / 100 * reactivity
 		EXPERIMENTAL("trait.rbmx.flux.experimental");	//x * (sin(x) + 1)
 		
 		public String title = "";
@@ -305,6 +307,7 @@ public class ItemRBMKRod extends Item implements IItemHazard {
 		case SQUARE_ROOT: return Math.sqrt(flux) * reactivity; //reactivity in decipercent
 		case LINEAR: return flux * reactivity; //reactivity in percent
 		case QUADRATIC: return flux * flux * reactivity; //reactivity in percent
+		case CUBIC: return flux * flux * flux * reactivity; //reactivity in percent
 		case EXPERIMENTAL: return flux * (Math.sin(flux) + 1) * reactivity;
 		}
 		
@@ -331,6 +334,8 @@ public class ItemRBMKRod extends Item implements IItemHazard {
 		case LINEAR: function = "%1$s * %2$s";
 			break;
 		case QUADRATIC: function = "%1$s² * %2$s";
+			break;
+		case CUBIC: function = "%1$s³ * %2$s";
 			break;
 		case EXPERIMENTAL: function = "%1$s * (sin(%1$s) + 1) * %2$s";
 			break;
@@ -409,7 +414,7 @@ public class ItemRBMKRod extends Item implements IItemHazard {
 		
 		list.add(TextFormatting.ITALIC + this.fullName);
 		
-		if(this == ModItems.rbmk_fuel_drx) {
+		if(this == ModItems.rbmk_fuel_drx || this == ModItems.rbmk_fuel_syd) {
 			
 			if(selfRate > 0 || this.function == EnumBurnFunc.SIGMOID) {
 				list.add(TextFormatting.RED + I18nUtil.resolveKey("trait.rbmx.source"));

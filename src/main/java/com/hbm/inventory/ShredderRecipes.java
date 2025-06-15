@@ -232,6 +232,7 @@ public class ShredderRecipes {
 		ShredderRecipes.setRecipe(ModItems.crystal_cobalt, new ItemStack(ModItems.powder_cobalt, 3));
 		ShredderRecipes.setRecipe(ModItems.crystal_cinnebar, new ItemStack(ModItems.cinnebar, 3));
 		ShredderRecipes.setRecipe(ModItems.crystal_asbestos, new ItemStack(ModItems.powder_asbestos, 3));
+		ShredderRecipes.setRecipe(ModItems.crystal_galraite, new ItemStack(ModItems.powder_gr306, 3));
 		
 		ShredderRecipes.setRecipe(ModBlocks.steel_poles, new ItemStack(ModItems.powder_steel_tiny, 3));
 		ShredderRecipes.setRecipe(ModBlocks.pole_top, new ItemStack(ModItems.powder_tungsten, 4));

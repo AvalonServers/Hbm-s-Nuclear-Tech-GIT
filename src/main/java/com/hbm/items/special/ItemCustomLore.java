@@ -302,7 +302,7 @@ public class ItemCustomLore extends Item {
 		}
 		if(this == ModItems.rod_quad_euphemium) {
 			list.add("A quad fuel rod which contains a");
-			list.add("very small ammount of a strange new element.");
+			list.add("very small amount of a strange new element.");
 		}
 		if(this == ModItems.pellet_rtg_polonium)
 		{
@@ -335,6 +335,11 @@ public class ItemCustomLore extends Item {
 		if(this == ModItems.billet_flashlead)
 		{
 			list.add("The lattice decays, causing antimatter-matter annihilation reactions, causing the release of pions, decaying into muons, catalyzing fusion of the nuclei, creating the new element. Please try to keep up.");
+		}
+
+		if(this == ModItems.billet_syd)
+		{
+			list.add("He who fights with monsters might take care lest he thereby become a monster. And if you gaze for long into an abyss, the abyss gazes also into you.");
 		}
 		
 		if(this == ModItems.ingot_tantalium || this == ModItems.nugget_tantalium || this == ModItems.gem_tantalium || this == ModItems.powder_tantalium)
@@ -453,7 +458,14 @@ public class ItemCustomLore extends Item {
 			this == ModItems.rod_quad_euphemium || 
 			this == ModItems.rod_daffergon || 
 			this == ModItems.watch || 
-			this == ModItems.undefined) {
+			this == ModItems.undefined ||
+
+			this == ModItems.billet_gr306 ||
+			this == ModItems.ingot_gr306 ||
+			this == ModItems.nugget_gr306 ||
+			this == ModItems.powder_gr306 ||
+			this == ModItems.powder_gr306_tiny
+		) {
 			return EnumRarity.EPIC;
 		}
 
@@ -529,7 +541,8 @@ public class ItemCustomLore extends Item {
 			this == ModItems.powder_australium || 
 			this == ModItems.powder_weidanium || 
 			this == ModItems.powder_reiium || 
-			this == ModItems.powder_verticium) {
+			this == ModItems.powder_verticium
+		) {
 			return EnumRarity.UNCOMMON;
 		}
 

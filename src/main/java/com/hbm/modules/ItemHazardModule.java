@@ -47,6 +47,7 @@ public class ItemHazardModule {
 	public int coal;
 	public boolean hydro;
 	public float explosive;
+	public boolean infohazard;
 	
 	public float tempMod = 1F;
 
@@ -97,6 +98,8 @@ public class ItemHazardModule {
 	public void addExplosive(float bang) {
 		this.explosive = bang;
 	}
+
+	public void addInfohazard() { this.infohazard = true; }
 
 	public void applyEffects(EntityLivingBase entity, float mod, int slot, boolean currentItem, EnumHand hand) {
 			
@@ -234,6 +237,9 @@ public class ItemHazardModule {
 	}
 	
 	public void addInformation(ItemStack stack, List<String> list, ITooltipFlag flagIn) {
+		if(this.infohazard) {
+			list.add(TextFormatting.DARK_GRAY + "[" + I18nUtil.resolveKey("trait.infohazard") + "]");
+		}
 		
 		if(this.radiation * tempMod > 0) {
 			list.add(TextFormatting.GREEN + "[" + I18nUtil.resolveKey("trait.radioactive") + "]");

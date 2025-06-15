@@ -352,6 +352,10 @@ public class CraftingManager {
 		addRecipeAuto(new ItemStack(ModItems.nugget_ra226, 9), new Object[] { "#", '#', RA226.ingot() });
 		addRecipeAuto(new ItemStack(ModItems.ingot_desh, 1), new Object[] { "###", "###", "###", '#', DESH.nugget() });
 		addRecipeAuto(new ItemStack(ModItems.nugget_desh, 9), new Object[] { "#", '#', DESH.ingot() });
+		addRecipeAuto(new ItemStack(ModItems.ingot_yharonite, 1), new Object[] { "###", "###", "###", '#', YHARONITE.nugget() });
+		addRecipeAuto(new ItemStack(ModItems.nugget_yharonite, 9), new Object[] { "#", '#', YHARONITE.ingot() });
+		addRecipeAuto(new ItemStack(ModItems.ingot_gr306, 1), new Object[] { "###", "###", "###", '#', GR306.nugget() });
+		addRecipeAuto(new ItemStack(ModItems.nugget_gr306, 9), new Object[] { "#", '#', GR306.ingot() });
 
 		addShapelessAuto(new ItemStack(ModItems.powder_radspice, 1), new Object[] { CO60.dust(), SR90.dust(), I131.dust(), CS137.dust(), XE135.dust(), AU198.dust(), PB209.dust(), AT209.dust(), AC227.dust() });
 		addShapelessAuto(new ItemStack(ModItems.powder_radspice_tiny, 1), new Object[] { CO60.dustTiny(), SR90.dustTiny(), I131.dustTiny(), CS137.dustTiny(), XE135.dustTiny(), AU198.dustTiny(), PB209.dustTiny(), AT209.dustTiny(), AC227.dustTiny() });
@@ -571,6 +575,7 @@ public class CraftingManager {
 		addShapelessAuto(new ItemStack(ModItems.billet_zfb_am_mix, 6), new Object[] { ZR.billet(), ZR.billet(), ZR.billet(), PU241.billet(), PU241.billet(), AMRG.billet() });
 
 		addShapelessAuto(new ItemStack(ModItems.billet_unobtainium), new Object[] { ModItems.nugget_radspice, AMRG.nugget(), ModItems.nugget_unobtainium_lesser, ModItems.nugget_unobtainium_greater, ModItems.nugget_unobtainium_greater, ModItems.nugget_unobtainium_greater });
+		addShapelessAuto(new ItemStack(ModItems.billet_syd), new Object[] { ModItems.singularity_spark, ModItems.particle_sparkticle, ModItems.particle_digamma, ModItems.nugget_unobtainium_greater, YHARONITE.nugget(), YHARONITE.nugget() } );
 
 		addShapelessAuto(new ItemStack(ModItems.rod_water, 1), new Object[] { ModItems.rod_empty, Items.WATER_BUCKET });
 		addShapelessAuto(new ItemStack(ModItems.rod_dual_water, 1), new Object[] { ModItems.rod_dual_empty, Items.WATER_BUCKET, Items.WATER_BUCKET });
@@ -2098,6 +2103,7 @@ public class CraftingManager {
 		add1To9Pair(ModItems.powder_pb209, ModItems.powder_pb209_tiny);
 		add1To9Pair(ModItems.powder_at209, ModItems.powder_at209_tiny);
 		add1To9Pair(ModItems.powder_ac227, ModItems.powder_ac227_tiny);
+		add1To9Pair(ModItems.powder_gr306, ModItems.powder_gr306_tiny);
 		add1To9Pair(ModItems.powder_radspice, ModItems.powder_radspice_tiny);
 		
 		add1To9Pair(ModItems.ingot_technetium, ModItems.nugget_technetium);
@@ -2209,6 +2215,8 @@ public class CraftingManager {
 		addRBMKRod(ModItems.billet_zfb_bismuth, ModItems.rbmk_fuel_zfb_bismuth);
 		addRBMKRod(ModItems.billet_zfb_pu241, ModItems.rbmk_fuel_zfb_pu241);
 		addRBMKRod(ModItems.billet_zfb_am_mix, ModItems.rbmk_fuel_zfb_am_mix);
+		addRBMKRod(ModItems.billet_yharonite, ModItems.rbmk_fuel_yharonite);
+		addRBMKRod(ModItems.billet_syd, ModItems.rbmk_fuel_syd);
 		addShapelessAuto(new ItemStack(ModItems.rbmk_fuel_drx, 1), new Object[] { ModItems.rbmk_fuel_balefire, ModItems.particle_digamma });
 
 		addRecipeAuto(new ItemStack(ModItems.rbmk_lid, 4), new Object[] { "PPP", "CCC", "PPP", 'P', STEEL.plate(), 'C', ModBlocks.concrete_asbestos });
@@ -2559,6 +2567,8 @@ public class CraftingManager {
 		addBillet(ModItems.billet_zirconium, ModItems.nugget_zirconium, ZR.nugget());
 		addBillet(ModItems.billet_bismuth, ModItems.nugget_bismuth, ANY_BISMOID.nugget());
 		addBillet(ModItems.billet_nuclear_waste, ModItems.nuclear_waste_tiny);
+		addBillet(ModItems.billet_yharonite, ModItems.nugget_yharonite, YHARONITE.nugget());
+		addBillet(ModItems.billet_gr306, ModItems.nugget_gr306, GR306.nugget());
 
 		addBilletByIngot(ModItems.billet_uranium, ModItems.ingot_uranium, U.ingot());
 		addBilletByIngot(ModItems.billet_u233, ModItems.ingot_u233, U233.ingot());
@@ -2602,7 +2612,8 @@ public class CraftingManager {
 		addBilletByIngot(ModItems.billet_zirconium, ModItems.ingot_zirconium, ZR.ingot());
 		addBilletByIngot(ModItems.billet_bismuth, ModItems.ingot_bismuth, ANY_BISMOID.ingot());
 		addBilletByIngot(ModItems.billet_nuclear_waste, ModItems.nuclear_waste);
-
+		addBilletByIngot(ModItems.billet_yharonite, ModItems.ingot_yharonite, YHARONITE.ingot());
+		addBilletByIngot(ModItems.billet_gr306, ModItems.ingot_gr306, GR306.ingot());
 
 		addShapelessAuto(new ItemStack(ModBlocks.block_thorium_fuel, 3), new Object[] { TH232.block(), TH232.block(), U233.block() });
 		addShapelessAuto(new ItemStack(ModItems.ingot_thorium_fuel, 3), new Object[] { TH232.ingot(), TH232.ingot(), U233.ingot() });
@@ -2898,6 +2909,8 @@ public class CraftingManager {
 		GameRegistry.addSmelting(ModItems.powder_sr90, new ItemStack(ModItems.ingot_sr90), 1.0F);
 		GameRegistry.addSmelting(ModItems.powder_tennessine, new ItemStack(ModItems.ingot_tennessine), 1.0F);
 		GameRegistry.addSmelting(ModItems.powder_niobium, new ItemStack(ModItems.ingot_niobium), 1.0F);
+		GameRegistry.addSmelting(ModItems.powder_yharonite, new ItemStack(ModItems.ingot_yharonite), 1.0F);
+		GameRegistry.addSmelting(ModItems.powder_gr306, new ItemStack(ModItems.ingot_gr306), 1.0F);
 		GameRegistry.addSmelting(ModItems.ball_resin, new ItemStack(ModItems.ingot_biorubber), 0.1F);
 
 		GameRegistry.addSmelting(ModItems.powder_cobalt_tiny, new ItemStack(ModItems.nugget_cobalt), 0.1F);
@@ -2905,6 +2918,7 @@ public class CraftingManager {
 		GameRegistry.addSmelting(ModItems.powder_pb209_tiny, new ItemStack(ModItems.nugget_pb209), 0.1F);
 		GameRegistry.addSmelting(ModItems.powder_sr90_tiny, new ItemStack(ModItems.nugget_sr90), 0.1F);
 		GameRegistry.addSmelting(ModItems.powder_au198_tiny, new ItemStack(ModItems.nugget_au198), 0.1F);
+		GameRegistry.addSmelting(ModItems.powder_gr306_tiny, new ItemStack(ModItems.nugget_gr306), 0.1F);
 		GameRegistry.addSmelting(ModItems.powder_radspice_tiny, new ItemStack(ModItems.nugget_radspice), 0.1F);
 		
 		GameRegistry.addSmelting(ModItems.rag_damp, new ItemStack(ModItems.rag), 0.1F);
@@ -2951,6 +2965,7 @@ public class CraftingManager {
 		GameRegistry.addSmelting(ModItems.crystal_trixite, new ItemStack(ModItems.ingot_plutonium, 4), 2.0F);
 		GameRegistry.addSmelting(ModItems.crystal_cinnebar, new ItemStack(ModItems.cinnebar, 2), 2.0F);
 		GameRegistry.addSmelting(ModItems.crystal_cobalt, new ItemStack(ModItems.ingot_cobalt, 2), 2.0F);
+		GameRegistry.addSmelting(ModItems.crystal_galraite, new ItemStack(ModItems.ingot_gr306, 2), 2.0F);
 
 		GameRegistry.addSmelting(new ItemStack(ModBlocks.gravel_diamond), new ItemStack(Items.DIAMOND), 3.0F);
 		GameRegistry.addSmelting(new ItemStack(ModBlocks.sand_uranium), new ItemStack(ModBlocks.glass_uranium), 0.25F);

@@ -59,6 +59,11 @@ public interface IItemHazard {
 		return this;
 	}
 
+	public default IItemHazard addInfohazard() {
+		this.getModule().addInfohazard();
+		return this;
+	}
+
 	public default boolean isRadioactive(){
 		return this.getModule().isRadioactive();
 	}

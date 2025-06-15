@@ -80,6 +80,7 @@ public class ItemHazard extends ItemCustomLore implements IItemHazard {
 	public static final float mes = 5.25F;
 	public static final float hes = 8.8F;
 	public static final float gh336 = 5.0F; //Ghisorium
+	public static final float gr306 = 20.0F;
 	public static final float radsource_mult = 0.5F;
 	public static final float pobe = po210 * radsource_mult;
 	public static final float rabe = ra226 * radsource_mult;
@@ -89,6 +90,7 @@ public class ItemHazard extends ItemCustomLore implements IItemHazard {
 	public static final float zfb_pu241 = pu241 * 0.5F;
 	public static final float zfb_am_mix = amrg * 0.5F;
 	public static final float bf = 300_000.0F; //Balefire
+	public static final float syd = 2_500_000.0F; // SYD
 
 	public static final float sr = sa326 * 0.1F; //Scharanium
 	public static final float sb = sa326 * 0.2F; //Schrabidate

@@ -610,6 +610,20 @@ public class SILEXRecipes {
 					);
 		}
 
+//		for (int i = 0; i < 5; i++) {
+//			recipes.put(new ComparableStack(ModItems.rbmk_pellet_yharonite, 1, i + 5), new SILEXRecipe(600, 100, EnumWavelengths.DRX)
+//					.addOut(new WeightedRandomObject(new ItemStack(ModItems.nugget_yharonite), 87 - 18 * i)
+//					));
+//		}
+
+		for (int i = 0; i < 5; i++) {
+			recipes.put(new ComparableStack(ModItems.rbmk_pellet_syd, 1, i), new SILEXRecipe(600, 100, EnumWavelengths.DRX)
+					.addOut(new WeightedRandomObject(new ItemStack(ModItems.nugget_yharonite), 50 * i))
+					.addOut(new WeightedRandomObject(new ItemStack(ModItems.nugget_gh336), 10 * i))
+					.addOut(new WeightedRandomObject(new ItemStack(ModItems.powder_gr306_tiny), i)
+					));
+		}
+
 		recipes.put(new ComparableStack(ModItems.nuclear_waste_long, 1, ItemWasteLong.WasteClass.URANIUM235.ordinal()), new SILEXRecipe(900, 100, EnumWavelengths.MICRO)
 				.addOut(new WeightedRandomObject(new ItemStack(ModItems.nugget_neptunium), 20))
 				.addOut(new WeightedRandomObject(new ItemStack(ModItems.nugget_pu239), 45))

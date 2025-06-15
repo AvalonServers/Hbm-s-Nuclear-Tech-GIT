@@ -186,6 +186,9 @@ public class OreDictManager {
 	public static final DictFrame FIBER = new DictFrame("Fiberglass");
 	public static final DictFrame ASBESTOS = new DictFrame("Asbestos");
 	public static final DictFrame OSMIRIDIUM = new DictFrame("Osmiridium");
+	public static final DictFrame YHARONITE = new DictFrame("Yharonite");
+	public static final DictFrame GR306 = new DictFrame("Galraite306", "Gr306");
+
 	/*
 	 * DUST AND GEM ORES
 	 */
@@ -354,7 +357,9 @@ public class OreDictManager {
 		FIBER																												.ingot(ingot_fiberglass)															.block(block_fiberglass);
 		ASBESTOS	.asbestos(1F)																							.ingot(ingot_asbestos)		.dust(powder_asbestos)									.block(block_asbestos)							.crystal(crystal_asbestos)								.ore(ore_asbestos, ore_gneiss_asbestos, basalt_asbestos);
 		OSMIRIDIUM													.nugget(nugget_osmiridium)								.ingot(ingot_osmiridium)	.dust(powder_osmiridium)																				.crystal(crystal_osmiridium);
-		
+		YHARONITE													.nugget(nugget_yharonite)	.billet(billet_yharonite)	.ingot(ingot_yharonite)		.dust(powder_yharonite);
+		GR306														.nugget(nugget_gr306)		.billet(billet_gr306)		.ingot(ingot_gr306)			.dust(powder_gr306)		.dustSmall(powder_gr306_tiny)													.crystal(crystal_galraite);
+
 		//RADIOACTIVE Fuels
 		U		.rad(HazardRegistry.u)								.nugget(nugget_uranium)		.billet(billet_uranium)		.ingot(ingot_uranium)		.dust(powder_uranium)									.block(block_uranium)							.crystal(crystal_uranium)								.ore(ore_uranium, ore_uranium_scorched, ore_gneiss_uranium, ore_gneiss_uranium_scorched, ore_nether_uranium, ore_nether_uranium_scorched, ore_meteor_uranium)	.oreNether(ore_nether_uranium, ore_nether_uranium_scorched);
 		U233	.rad(HazardRegistry.u233)							.nugget(nugget_u233)		.billet(billet_u233)		.ingot(ingot_u233)																	.block(block_u233);
