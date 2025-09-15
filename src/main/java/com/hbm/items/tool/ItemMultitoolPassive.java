@@ -215,7 +215,7 @@ public class ItemMultitoolPassive extends Item {
 		} else if(this == ModItems.multitool_decon) {
 
 			if(!world.isRemote)
-				ExplosionChaos.decontaminate(world, pos);
+				ExplosionChaos.explodeDecon(world, pos.getX(), pos.getY(), pos.getZ(), 15);
 			return EnumActionResult.SUCCESS;
 
 		}

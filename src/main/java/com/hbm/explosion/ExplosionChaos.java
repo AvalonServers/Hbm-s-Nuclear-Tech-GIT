@@ -79,6 +79,28 @@ public class ExplosionChaos {
 		}
 	}
 
+	public static void explodeDecon(World world, int x, int y, int z, int bombStartStrength) {
+		MutableBlockPos pos = new BlockPos.MutableBlockPos();
+		int r = bombStartStrength;
+		int r2 = r * r;
+		int r22 = r2 / 2;
+		for(int xx = -r; xx < r; xx++) {
+			int X = xx + x;
+			int XX = xx * xx;
+			for(int yy = -r; yy < r; yy++) {
+				int Y = yy + y;
+				int YY = XX + yy * yy;
+				for(int zz = -r; zz < r; zz++) {
+					int Z = zz + z;
+					int ZZ = YY + zz * zz;
+					if(ZZ < r22) {
+						decontaminate(world, pos.setPos(X, Y, Z));
+					}
+				}
+			}
+		}
+	}
+
 	public static void destruction(World world, BlockPos pos) {
 
 		Block b = world.getBlockState(pos).getBlock();
