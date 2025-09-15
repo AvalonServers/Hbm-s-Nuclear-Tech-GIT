@@ -21,6 +21,7 @@ import com.hbm.packet.TEChemplantPacket;
 import com.hbm.tileentity.TileEntityMachineBase;
 
 import api.hbm.energy.IEnergyUser;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -213,10 +214,17 @@ public class TileEntityMachineChemplant extends TileEntityMachineAssembler imple
 
 
 		if(!world.isRemote) {
+			IBlockState state = world.getBlockState(pos);
+			if (!(state.getBlock() instanceof MachineChemplant)) {
+				world.removeTileEntity(pos);
+				return;
+			}
+
 			if(needsUpdate) {
 				needsUpdate = false;
 			}
-			int meta = world.getBlockState(pos).getValue(MachineChemplant.FACING);
+
+			int meta = state.getValue(MachineChemplant.FACING);
 			isProgressing = false;
 
 			if(world.getTotalWorldTime() % 10 == 0) {
@@ -559,9 +567,14 @@ public class TileEntityMachineChemplant extends TileEntityMachineAssembler imple
 	}
 
 	public void fillFluidInit(FluidTank tank) {
-		int meta = world.getBlockState(pos).getValue(MachineChemplant.FACING);
+		IBlockState state = world.getBlockState(pos);
+		if (!(state.getBlock() instanceof MachineChemplant))
+			return;
+
+		int meta = state.getValue(MachineChemplant.FACING);
 		MutableBlockPos fill = new BlockPos.MutableBlockPos();
-		boolean update = false || needsUpdate;
+
+		boolean update = false;
 		if(meta == 5) {
 			update = FFUtils.fillFluid(this, tank, world, fill.setPos(pos.getX() - 2, pos.getY(), pos.getZ()), 2000) || update;
 			update = FFUtils.fillFluid(this, tank, world, fill.setPos(pos.getX() - 2, pos.getY(), pos.getZ() + 1), 2000) || update;
@@ -589,7 +602,8 @@ public class TileEntityMachineChemplant extends TileEntityMachineAssembler imple
 			update = FFUtils.fillFluid(this, tank, world, fill.setPos(pos.getX() - 3, pos.getY(), pos.getZ()), 2000) || update;
 			update = FFUtils.fillFluid(this, tank, world, fill.setPos(pos.getX() - 3, pos.getY(), pos.getZ() - 1), 2000) || update;
 		}
-		needsUpdate = update;
+
+		needsUpdate = needsUpdate || update;
 	}
 
 	@Override

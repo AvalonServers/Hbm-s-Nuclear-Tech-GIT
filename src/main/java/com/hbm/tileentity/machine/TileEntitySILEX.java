@@ -119,6 +119,7 @@ public class TileEntitySILEX extends TileEntityMachineBase implements ITickable,
 	}
 	
 	public void handleButtonPacket(int value, int meta) {
+		super.handleButtonPacket(value, meta);
 		
 		this.currentFill = 0;
 		this.current = null;

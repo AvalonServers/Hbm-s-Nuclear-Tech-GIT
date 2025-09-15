@@ -14,6 +14,7 @@ import java.util.Random;
 public abstract class TileEntityTickingBase extends TileEntityLoadedBase implements ITickable, INBTPacketReceiver {
 	public static final Random rand = new Random();
 	public final int updateOffset = rand.nextInt(20);
+	private boolean networkDirty = false;
 
 	public abstract String getInventoryName();
 	
@@ -29,8 +30,20 @@ public abstract class TileEntityTickingBase extends TileEntityLoadedBase impleme
 	
 	public void networkUnpack(NBTTagCompound nbt) { }
 
+	public void setNetworkDirty() {
+		if (world.isRemote) return;
+		networkDirty = true;
+	}
+
 	public boolean shouldSendNetworkUpdate() {
+		if (world.isRemote) return false;
+
+		if (networkDirty) {
+			networkDirty = false;
+			return true;
+		}
+
 		// VERTEX: Testing sending updates to the client only once per second for perf, TODO make this use wall clock time? doesn't really matter though since it's tq excluded
-		return (!world.isRemote && (world.getTotalWorldTime() + updateOffset) % 20 == 0);
+		return (world.getTotalWorldTime() + updateOffset) % 20 == 0;
 	}
 }

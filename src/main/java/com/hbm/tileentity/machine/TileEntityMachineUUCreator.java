@@ -104,6 +104,8 @@ public class TileEntityMachineUUCreator extends TileEntityMachineBase implements
 
 	@Override
 	public void handleButtonPacket(int value, int meta) {
+		super.handleButtonPacket(value, meta);
+
 		if(meta == 0) {
 			this.isOn = !this.isOn;
 		}

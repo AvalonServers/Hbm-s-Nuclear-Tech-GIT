@@ -248,67 +248,10 @@ public class TileEntityMachineCyclotron extends TileEntityMachineBase implements
 
 	private void exportIntoContainers(TileEntity tile, int slot){
 		int meta = this.getBlockMetadata();
-		if(tile != null && tile instanceof ICapabilityProvider) {
-			ICapabilityProvider capte = (ICapabilityProvider) tile;
-			if(capte.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, MultiblockHandler.intToEnumFacing(meta).rotateY())) {
-				IItemHandler cap = capte.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, MultiblockHandler.intToEnumFacing(meta).rotateY());
-				tryFillContainerCap(cap, slot);
-			}
+		if(tile != null && tile.hasCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, MultiblockHandler.intToEnumFacing(meta).rotateY())) {
+			IItemHandler cap = tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, MultiblockHandler.intToEnumFacing(meta).rotateY());
+			tryFillContainerCap(cap, slot);
 		}
-	}
-
-	//Unloads output into chests. Capability version.
-	public boolean tryFillContainerCap(IItemHandler inv, int slot) {
-
-		int size = inv.getSlots();
-
-		for(int i = 0; i < size; i++) {
-			if(inv.getStackInSlot(i) != null) {
-
-				if(inventory.getStackInSlot(slot).getItem() == Items.AIR)
-					return false;
-
-				ItemStack sta1 = inv.getStackInSlot(i).copy();
-				ItemStack sta2 = inventory.getStackInSlot(slot).copy();
-				if(sta1 != null && sta2 != null) {
-					sta1.setCount(1);
-					sta2.setCount(1);
-
-					if(isItemAcceptable(sta1, sta2) && inv.getStackInSlot(i).getCount() < inv.getStackInSlot(i).getMaxStackSize()) {
-						inventory.getStackInSlot(slot).shrink(1);
-
-						if(inventory.getStackInSlot(slot).isEmpty())
-							inventory.setStackInSlot(slot, ItemStack.EMPTY);
-
-						ItemStack sta3 = inv.getStackInSlot(i).copy();
-						sta3.setCount(1);
-						inv.insertItem(i, sta3, false);
-
-						return true;
-					}
-				}
-			}
-		}
-		for(int i = 0; i < size; i++) {
-
-			if(inventory.getStackInSlot(slot).getItem() == Items.AIR)
-				return false;
-
-			ItemStack sta2 = inventory.getStackInSlot(slot).copy();
-			if(inv.getStackInSlot(i).getItem() == Items.AIR && sta2 != null) {
-				sta2.setCount(1);
-				inventory.getStackInSlot(slot).shrink(1);
-
-				if(inventory.getStackInSlot(slot).isEmpty())
-					inventory.setStackInSlot(slot, ItemStack.EMPTY);
-
-				inv.insertItem(i, sta2, false);
-
-				return true;
-			}
-		}
-
-		return false;
 	}
 	
 	@Override
@@ -426,6 +369,8 @@ public class TileEntityMachineCyclotron extends TileEntityMachineBase implements
 	
 	@Override
 	public void handleButtonPacket(int value, int meta) {
+		super.handleButtonPacket(value, meta);
+
 		isOn = !isOn;
 	}
 

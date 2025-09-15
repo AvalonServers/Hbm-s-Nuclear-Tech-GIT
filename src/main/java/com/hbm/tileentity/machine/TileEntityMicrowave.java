@@ -90,6 +90,8 @@ public class TileEntityMicrowave extends TileEntityMachineBase implements ITicka
 	
 	@Override
 	public void handleButtonPacket(int value, int meta) {
+		super.handleButtonPacket(value, meta);
+
 		if(value == 0)
 			speed++;
 

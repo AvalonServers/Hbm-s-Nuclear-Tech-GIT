@@ -260,12 +260,14 @@ public abstract class TileEntityTurretBaseNT extends TileEntityMachineBase imple
 	
 	@Override
 	public void handleButtonPacket(int value, int meta){
+		super.handleButtonPacket(value, meta);
+
 		switch(meta) {
-		case 0:this.isOn = !this.isOn; break;
-		case 1:this.targetPlayers = !this.targetPlayers; break;
-		case 2:this.targetAnimals = !this.targetAnimals; break;
-		case 3:this.targetMobs = !this.targetMobs; break;
-		case 4:this.targetMachines = !this.targetMachines; break;
+			case 0:this.isOn = !this.isOn; break;
+			case 1:this.targetPlayers = !this.targetPlayers; break;
+			case 2:this.targetAnimals = !this.targetAnimals; break;
+			case 3:this.targetMobs = !this.targetMobs; break;
+			case 4:this.targetMachines = !this.targetMachines; break;
 		}
 	}
 

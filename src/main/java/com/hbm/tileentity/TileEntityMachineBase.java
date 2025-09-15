@@ -16,6 +16,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fluids.FluidTank;
 import net.minecraftforge.fml.common.network.NetworkRegistry.TargetPoint;
 import net.minecraftforge.items.CapabilityItemHandler;
+import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.ItemStackHandler;
 
 import java.util.Random;
@@ -24,6 +25,7 @@ import java.util.Random;
 public abstract class TileEntityMachineBase extends TileEntityLoadedBase implements INBTPacketReceiver {
 	public static final Random rand = new Random();
 	public final int updateOffset = rand.nextInt(20);
+	private boolean networkDirty = false;
 	public int networkUpdateFrequency = 20;
 
 	public ItemStackHandler inventory;
@@ -83,20 +85,34 @@ public abstract class TileEntityMachineBase extends TileEntityLoadedBase impleme
 	public int getGaugeScaled(int i, FluidTank tank) {
 		return tank.getFluidAmount() * i / tank.getCapacity();
 	}
-	
+
 	public void networkPack(NBTTagCompound nbt, int range) {
 		if(!world.isRemote)
 			PacketDispatcher.wrapper.sendToAllAround(new NBTPacket(nbt, pos), new TargetPoint(this.world.provider.getDimension(), pos.getX(), pos.getY(), pos.getZ(), range));
 	}
 
+	public void setNetworkDirty() {
+		if (world.isRemote) return;
+		networkDirty = true;
+	}
+
 	public boolean shouldSendNetworkUpdate() {
+		if (world.isRemote) return false;
+
+		if (networkDirty) {
+			networkDirty = false;
+			return true;
+		}
+
 		// VERTEX: Testing sending updates to the client only once per second for perf, TODO make this use wall clock time? doesn't really matter though since it's tq excluded
-		return (!world.isRemote && (world.getTotalWorldTime() + updateOffset) % networkUpdateFrequency == 0);
+		return (world.getTotalWorldTime() + updateOffset) % 20 == 0;
 	}
 	
 	public void networkUnpack(NBTTagCompound nbt) { }
 	
-	public void handleButtonPacket(int value, int meta) { }
+	public void handleButtonPacket(int value, int meta) {
+		setNetworkDirty();
+	}
 	
 	@Override
 	public NBTTagCompound writeToNBT(NBTTagCompound compound) {
@@ -139,6 +155,28 @@ public abstract class TileEntityMachineBase extends TileEntityLoadedBase impleme
 		float volume = 1 - (countMufflers() / (float)toSilence);
 
 		return Math.max(volume, 0);
+	}
+
+	//Unloads output into chests. Capability version.
+	public boolean tryFillContainerCap(IItemHandler chest, int slot) {
+		//Check if we have something to output
+		if(inventory.getStackInSlot(slot).isEmpty())
+			return false;
+
+		for(int i = 0; i < chest.getSlots(); i++) {
+			ItemStack outputStack = inventory.getStackInSlot(slot);
+			if(outputStack.isEmpty())
+				return false;
+
+			ItemStack chestItem = chest.getStackInSlot(i);
+			if(chestItem.isEmpty() || (Library.areItemStacksCompatible(outputStack, chestItem, false) && chestItem.getCount() < chestItem.getMaxStackSize())) {
+				// VERTEX: what the fuck was the old version of this code? what the actual fuck?
+				inventory.setStackInSlot(slot, chest.insertItem(i, outputStack, false));
+				if (outputStack.isEmpty()) return true;
+			}
+		}
+
+		return false;
 	}
 	
 	@Override

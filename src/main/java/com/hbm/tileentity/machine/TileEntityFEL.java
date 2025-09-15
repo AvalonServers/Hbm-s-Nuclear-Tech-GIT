@@ -264,7 +264,8 @@ public class TileEntityFEL extends TileEntityMachineBase implements ITickable, I
 
 	@Override
 	public void handleButtonPacket(int value, int meta) {
-		
+		super.handleButtonPacket(value, meta);
+
 		if(meta == 2){
 			this.isOn = !this.isOn;
 		}

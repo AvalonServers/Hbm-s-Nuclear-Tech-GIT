@@ -115,6 +115,7 @@ public class TileEntityMachineRadar extends TileEntityTickingBase implements ITi
 
 
 	public void handleButtonPacket(int value, int meta) {
+		setNetworkDirty();
 		
 		switch(meta) {
 		case 0: this.scanMissiles = !this.scanMissiles; break;

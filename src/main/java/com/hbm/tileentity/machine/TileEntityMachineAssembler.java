@@ -390,28 +390,6 @@ public class TileEntityMachineAssembler extends TileEntityMachineBase implements
 		return stack;
 	}
 
-	//Unloads output into chests. Capability version.
-	public boolean tryFillContainerCap(IItemHandler chest, int slot) {
-		//Check if we have something to output
-		if(inventory.getStackInSlot(slot).isEmpty())
-			return false;
-
-		for(int i = 0; i < chest.getSlots(); i++) {
-			ItemStack outputStack = inventory.getStackInSlot(slot);
-			if(outputStack.isEmpty())
-				return false;
-
-			ItemStack chestItem = chest.getStackInSlot(i);
-			if(chestItem.isEmpty() || (Library.areItemStacksCompatible(outputStack, chestItem, false) && chestItem.getCount() < chestItem.getMaxStackSize())) {
-				// VERTEX: what the fuck was the old version of this code? what the actual fuck?
-				inventory.setStackInSlot(slot, chest.insertItem(i, outputStack, false));
-				if (outputStack.isEmpty()) return true;
-			}
-		}
-
-		return false;
-	}
-
 	// min = 6, max, 18 for assembler
 	protected int getValidSlot(AStack nextIngredient, int minSlot, int maxSlot) {
 		int firstFreeSlot = -1;

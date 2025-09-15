@@ -182,6 +182,8 @@ public class TileEntityMachineIGenerator extends TileEntityMachineBase implement
 	
 	@Override
 	public void handleButtonPacket(int value, int meta) {
+		super.handleButtonPacket(value, meta);
+		
 		if(meta == 0)
 			pushPellet();
 		if(meta == 1)

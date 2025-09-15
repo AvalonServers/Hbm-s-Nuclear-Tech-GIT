@@ -285,6 +285,7 @@ public class TileEntityITER extends TileEntityMachineBase implements ITickable, 
 
 	@Override
 	public void handleButtonPacket(int value, int meta) {
+		super.handleButtonPacket(value, meta);
 
 		if(meta == 0) {
 			this.isOn = !this.isOn;

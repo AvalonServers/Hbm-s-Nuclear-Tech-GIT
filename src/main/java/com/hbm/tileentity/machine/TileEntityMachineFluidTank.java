@@ -105,6 +105,8 @@ public class TileEntityMachineFluidTank extends TileEntityMachineBase implements
 	
 	@Override
 	public void handleButtonPacket(int value, int meta) {
+		super.handleButtonPacket(value, meta);
+
 		mode = (short) ((mode + 1) % modes);
 		if (!world.isRemote) {
 			broadcastControlEvt();

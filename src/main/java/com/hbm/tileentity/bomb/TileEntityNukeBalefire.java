@@ -61,6 +61,7 @@ public class TileEntityNukeBalefire extends TileEntityMachineBase implements ITi
 	}
 	
 	public void handleButtonPacket(int value, int meta) {
+		super.handleButtonPacket(value, meta);
 
 		if(meta == 0 && this.isLoaded()) {
 			world.playSound(null, pos.getX(), pos.getY(), pos.getZ(), HBMSoundHandler.fstbmbStart, SoundCategory.BLOCKS, 5.0F, 1.0F);
