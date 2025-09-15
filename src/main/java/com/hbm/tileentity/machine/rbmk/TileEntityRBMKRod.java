@@ -3,6 +3,7 @@ package com.hbm.tileentity.machine.rbmk;
 import java.util.List;
 import java.util.Map;
 
+import com.hbm.config.GeneralConfig;
 import com.hbm.config.MobConfig;
 import com.hbm.blocks.ModBlocks;
 import com.hbm.blocks.machine.rbmk.RBMKBase;
@@ -18,6 +19,7 @@ import com.hbm.inventory.control_panel.DataValueString;
 import com.hbm.tileentity.machine.rbmk.TileEntityRBMKConsole.ColumnType;
 import com.hbm.tileentity.machine.rbmk.IRBMKLoadable;
 
+import net.minecraft.item.Item;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.player.EntityPlayer;
@@ -319,10 +321,11 @@ public class TileEntityRBMKRod extends TileEntityRBMKSlottedBase implements IRBM
 		
 		if(world.rand.nextInt(3) == 0)
 			reduce++;
+
+		Item rod = inventory.getStackInSlot(0).getItem();
+		boolean corium = rod instanceof ItemRBMKRod;
 		
-		boolean corium = inventory.getStackInSlot(0).getItem() instanceof ItemRBMKRod;
-		
-		if(corium && inventory.getStackInSlot(0).getItem() == ModItems.rbmk_fuel_drx) 
+		if(corium && (rod == ModItems.rbmk_fuel_drx || rod == ModItems.rbmk_fuel_syd))
 			RBMKBase.digamma = true;
 		
 		inventory.setStackInSlot(0, ItemStack.EMPTY);
