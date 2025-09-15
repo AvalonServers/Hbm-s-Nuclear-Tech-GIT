@@ -37,13 +37,8 @@ public class DFCRecipes {
 		DFCRecipes.setRecipe(2000000L, REDSTONE.block(), new ItemStack(ModItems.bottle_mercury));
 		
 		DFCRecipes.setRecipe(10000000L, W.dust(), new ItemStack(ModItems.powder_magnetized_tungsten));
-		DFCRecipes.setRecipe(10000000L, W.ingot(), new ItemStack(ModItems.ingot_magnetized_tungsten));
-		
 		DFCRecipes.setRecipe(60000000L, MAGTUNG.dust(), new ItemStack(ModItems.powder_chlorophyte));
-		DFCRecipes.setRecipe(60000000L, MAGTUNG.ingot(), new ItemStack(ModItems.powder_chlorophyte));
-		
 		DFCRecipes.setRecipe(200000000L, ModItems.powder_chlorophyte, new ItemStack(ModItems.powder_balefire));
-		
 		DFCRecipes.setRecipe(600000000L, ModItems.powder_balefire, new ItemStack(ModItems.egg_balefire_shard));
 
 		DFCRecipes.setRecipe(800000000L, ModItems.billet_thorium_fuel, new ItemStack(ModItems.billet_zfb_bismuth));
