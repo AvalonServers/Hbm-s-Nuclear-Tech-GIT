@@ -368,10 +368,9 @@ public class ModBlocks {
 	public static final Block tile_lab_slab = new BlockGenericSlab(Material.ROCK, false, "tile_lab_slab").setSoundType(SoundType.GLASS).setCreativeTab(MainRegistry.blockTab).setHardness(1.0F).setResistance(10.0F);
 	public static final Block tile_lab_cracked_slab = new BlockGenericSlab(Material.ROCK, false, "tile_lab_cracked_slab").setSoundType(SoundType.GLASS).setCreativeTab(MainRegistry.blockTab).setHardness(1.0F).setResistance(10.0F);
 	public static final Block tile_lab_broken_slab = new BlockGenericSlab(Material.ROCK, false, "tile_lab_broken_slab").setSoundType(SoundType.GLASS).setCreativeTab(MainRegistry.blockTab).setHardness(1.0F).setResistance(10.0F);
-		
 
-	
 	public static final Block lamp_demon = new DemonLamp(SoundType.METAL, "lamp_demon").addRadiation(10000000F).addFire(25).toBlock().setCreativeTab(MainRegistry.blockTab).setLightLevel(1F).setHardness(3.0F);
+	public static final Block lamp_demon_safe = new DemonLampSafe(SoundType.METAL, "lamp_demon_safe").addRadiation(5F).toBlock().setCreativeTab(MainRegistry.blockTab).setLightLevel(1F).setHardness(3.0F);
 	public static final Block block_scrap = new BlockFallingBase(Material.SAND, "block_scrap", SoundType.GROUND).setCreativeTab(MainRegistry.blockTab).setHardness(2.5F).setResistance(5.0F);
 	public static final Block block_electrical_scrap = new BlockFallingBase(Material.IRON, "block_electrical_scrap", SoundType.METAL).setCreativeTab(MainRegistry.blockTab).setHardness(2.5F).setResistance(5.0F);
 	

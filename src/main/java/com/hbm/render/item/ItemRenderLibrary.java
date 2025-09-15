@@ -13,6 +13,7 @@ import com.hbm.items.ModItems;
 import com.hbm.main.ResourceManager;
 import com.hbm.render.amlfrom1710.Tessellator;
 import com.hbm.render.tileentity.RenderDemonLamp;
+import com.hbm.render.tileentity.RenderDemonLampSafe;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
@@ -1129,6 +1130,18 @@ public class ItemRenderLibrary {
 				GlStateManager.shadeModel(GL11.GL_SMOOTH);
 				bindTexture(RenderDemonLamp.tex);
 				RenderDemonLamp.demon_lamp.renderAll();
+				GlStateManager.shadeModel(GL11.GL_FLAT);
+			}});
+
+		renderers.put(Item.getItemFromBlock(ModBlocks.lamp_demon_safe), new ItemRenderBase() {
+			public void renderInventory() {
+				GL11.glTranslated(0, -3, 0);
+				GL11.glScaled(8, 8, 8);
+			}
+			public void renderCommon() {
+				GlStateManager.shadeModel(GL11.GL_SMOOTH);
+				bindTexture(RenderDemonLampSafe.tex);
+				RenderDemonLampSafe.demon_lamp.renderAll();
 				GlStateManager.shadeModel(GL11.GL_FLAT);
 			}});
 

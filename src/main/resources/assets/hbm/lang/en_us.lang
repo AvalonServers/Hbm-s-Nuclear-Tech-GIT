@@ -4385,6 +4385,7 @@ tile.ladder_sturdy.name=Sturdy Wooden Ladder
 tile.ladder_titanium.name=Titanium Ladder
 tile.ladder_tungsten.name=Tungsten Ladder
 tile.lamp_demon.name=Demon Core Lamp
+tile.lamp_demon_safe.name=Demon Core Lamp (Safe)
 tile.large_vehicle_door.name=Large Vehicle Door
 tile.launch_pad.name=Missile Launch Pad
 tile.launch_table.name=Large Launch Pad
