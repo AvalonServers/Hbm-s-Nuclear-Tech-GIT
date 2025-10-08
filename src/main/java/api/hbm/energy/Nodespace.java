@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * The "Nodespace" is an intermediate, "ethereal" layer of abstraction that tracks nodes (i.e. cables) even when they are no longer loaded, allowing continued operation even when unloaded
@@ -43,7 +44,7 @@ public class Nodespace {
             if (node != null) {
                 nodeWorld.pushNode(node);
             } else {
-                nodeWorld.nodes.put(pos, null);
+                nodeWorld.nodes.remove(pos);
             }
         }
 
@@ -75,7 +76,7 @@ public class Nodespace {
             if(nodes == null)
                 continue;
 
-            for(Map.Entry<BlockPos, PowerNode> entry : new HashMap<>(nodes.nodes).entrySet()) {
+            for(Map.Entry<BlockPos, PowerNode> entry : nodes.nodes.entrySet()) {
                 PowerNode node = entry.getValue();
                 if (node == null) continue;
 
@@ -147,7 +148,7 @@ public class Nodespace {
 
         /** Contains a map showing where each node is, a node is every spot that a cable exists at.
          * Instead of the old proxy system, things like substation now create multiple nodes at their connection points */
-        public HashMap<BlockPos, PowerNode> nodes = new HashMap<>();
+        public ConcurrentHashMap<BlockPos, PowerNode> nodes = new ConcurrentHashMap<>();
 
         /** Adds a node at all its positions to the nodespace */
         public void pushNode(PowerNode node) {
