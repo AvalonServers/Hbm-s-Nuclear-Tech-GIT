@@ -12,8 +12,11 @@ public class ParticleManager {
 	private static Random rand = new Random();
 	
 	public static void spawnParticles(double x, double y, double z, int count) {
+        Minecraft mc = Minecraft.getMinecraft();
+        if (mc.world == null) return;
+
 		for (int i = 0; i < count; i++) {
-			ParticleDSmokeFX fx = new ParticleDSmokeFX(Minecraft.getMinecraft().world, x, y, z, 0.0, 0.0, 0.0);
+			ParticleDSmokeFX fx = new ParticleDSmokeFX(mc.world, x, y, z, 0.0, 0.0, 0.0);
 			// fx.posX = x;
 			// fx.posY = y;
 			// fx.posZ = z;
@@ -21,7 +24,7 @@ public class ParticleManager {
 			double motionX = rand.nextGaussian() * (1 + (count / 150));
 			double motionZ = rand.nextGaussian() * (1 + (count / 150));
 			fx.setMotion(motionX, motionY, motionZ);
-			Minecraft.getMinecraft().effectRenderer.addEffect(fx);
+			mc.effectRenderer.addEffect(fx);
 		}
 	}
 }

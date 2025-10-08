@@ -42,7 +42,7 @@ public class BlockCableGauge extends BlockContainer implements ILookOverlay, ITo
 
 	public BlockCableGauge(Material materialIn, String s) {
 		super(materialIn);
-		this.setUnlocalizedName(s);
+		this.setTranslationKey(s);
 		this.setRegistryName(s);
 		this.setCreativeTab(MainRegistry.blockTab);
 
@@ -61,7 +61,7 @@ public class BlockCableGauge extends BlockContainer implements ILookOverlay, ITo
 
 	@Override
 	public IBlockState getStateFromMeta(int meta) {
-		EnumFacing enumfacing = EnumFacing.getFront(meta);
+		EnumFacing enumfacing = EnumFacing.byIndex(meta);
 		if (enumfacing.getAxis() == EnumFacing.Axis.Y) {
 			enumfacing = EnumFacing.NORTH;
 		}
@@ -117,7 +117,7 @@ public class BlockCableGauge extends BlockContainer implements ILookOverlay, ITo
 		List<String> text = new ArrayList();
 		text.add(Library.getShortNumber(diode.deltaLastSecond) + "HE/s");
 
-		ILookOverlay.printGeneric(event, I18nUtil.resolveKey(getUnlocalizedName() + ".name"), 0xffff00, 0x404000, text);
+		ILookOverlay.printGeneric(event, I18nUtil.resolveKey(getTranslationKey() + ".name"), 0xffff00, 0x404000, text);
 	}
 
 	@Optional.InterfaceList({@Optional.Interface(iface = "li.cil.oc.api.network.SimpleComponent", modid = "OpenComputers")})

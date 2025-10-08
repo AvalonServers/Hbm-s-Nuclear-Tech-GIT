@@ -95,7 +95,10 @@ public class CommandHbm extends CommandBase {
 				return;
 			} else if("reloadCollada".equals(args[0])){
 				if(FMLCommonHandler.instance().getSide() == Side.CLIENT){
-					Minecraft.getMinecraft().addScheduledTask(() -> {
+                    Minecraft minecraft = Minecraft.getMinecraft();
+                    minecraft.addScheduledTask(() -> {
+                        if (minecraft.world == null) return;
+
 						ResourceManager.loadAnimatedModels();
 						ResourceManager.lit_particles = HbmShaderManager2.loadShader(new ResourceLocation(RefStrings.MODID, "shaders/lit_particles"), shader -> {
 							GLCompat.bindAttribLocation(shader, 0, "pos");

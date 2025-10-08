@@ -3211,19 +3211,19 @@ public class CraftingManager {
 		if(shouldUseOD){
 			recipe = new ShapelessOreRecipe(loc, output, args);
 		}else{
-			recipe = new ShapelessRecipes(loc.getResourceDomain(), output, buildInput(args));
+			recipe = new ShapelessRecipes(loc.getNamespace(), output, buildInput(args));
 		}
 		recipe.setRegistryName(loc);
 		hack.getRegistry().register(recipe);
 	}
 
 	public static ResourceLocation getRecipeName(ItemStack output){
-		ResourceLocation loc = new ResourceLocation(RefStrings.MODID, output.getItem().getRegistryName().getResourcePath());
+		ResourceLocation loc = new ResourceLocation(RefStrings.MODID, output.getItem().getRegistryName().getPath());
 		int i = 0;
 		ResourceLocation r_loc = loc;
 		while(net.minecraft.item.crafting.CraftingManager.REGISTRY.containsKey(r_loc)) {
 			i++;
-			r_loc = new ResourceLocation(RefStrings.MODID, loc.getResourcePath() + "_" + i);
+			r_loc = new ResourceLocation(RefStrings.MODID, loc.getPath() + "_" + i);
 		}
 		return r_loc;
 	}

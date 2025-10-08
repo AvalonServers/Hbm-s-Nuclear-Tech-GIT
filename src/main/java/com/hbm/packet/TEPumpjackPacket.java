@@ -57,12 +57,13 @@ public class TEPumpjackPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(TEPumpjackPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
 				try {
-					TileEntity te = Minecraft.getMinecraft().world.getTileEntity(new BlockPos(m.x, m.y, m.z));
+                    if (minecraft.world == null) return;
+					TileEntity te = minecraft.world.getTileEntity(new BlockPos(m.x, m.y, m.z));
 
-					if (te != null && te instanceof TileEntityMachinePumpjack) {
-							
+					if (te instanceof TileEntityMachinePumpjack) {
 						TileEntityMachinePumpjack gen = (TileEntityMachinePumpjack) te;
 						gen.rotation = m.spin;
 						gen.isProgressing = m.progress;

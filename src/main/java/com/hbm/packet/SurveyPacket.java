@@ -37,9 +37,10 @@ public class SurveyPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(SurveyPacket m, MessageContext ctx){
-
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
 				try {
+                    if (minecraft.world == null) return;
 					TileEntityRBMKBase.rbmkHeight = m.rbmkHeight;
 				} catch(Exception x) {
 				}

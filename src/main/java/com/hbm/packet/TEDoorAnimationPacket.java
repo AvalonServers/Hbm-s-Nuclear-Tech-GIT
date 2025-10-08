@@ -61,10 +61,12 @@ public class TEDoorAnimationPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(TEDoorAnimationPacket m, MessageContext ctx) {
-			
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+
 				BlockPos pos = new BlockPos(m.x, m.y, m.z);
-				TileEntity te = Minecraft.getMinecraft().world.getTileEntity(pos);
+				TileEntity te = minecraft.world.getTileEntity(pos);
 				if(te instanceof IAnimatedDoor){
 					((IAnimatedDoor) te).handleNewState(IDoor.DoorState.values()[m.state]);
 					((IAnimatedDoor) te).setTextureState(m.texture);

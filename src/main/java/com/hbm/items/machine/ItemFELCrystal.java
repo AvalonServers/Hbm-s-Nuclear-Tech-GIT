@@ -18,7 +18,7 @@ public class ItemFELCrystal extends Item {
 	public ItemFELCrystal(EnumWavelengths wavelength, String s) {
 		this.wavelength = wavelength;
 		this.setMaxStackSize(1);
-		this.setUnlocalizedName(s);
+		this.setTranslationKey(s);
 		this.setRegistryName(s);
 		
 		ModItems.ALL_ITEMS.add(this);
@@ -26,7 +26,7 @@ public class ItemFELCrystal extends Item {
 
 	@Override
 	public void addInformation(ItemStack stack, World worldIn, List<String> list, ITooltipFlag flagIn) {
-		String desc = (stack.getItem() == ModItems.laser_crystal_digamma) ? (TextFormatting.OBFUSCATED + "THERADIANCEOFATHOUSANDSUNS") : (this.getUnlocalizedNameInefficiently(stack) + ".desc");
+		String desc = (stack.getItem() == ModItems.laser_crystal_digamma) ? (TextFormatting.OBFUSCATED + "THERADIANCEOFATHOUSANDSUNS") : (this.getTranslationKey(stack) + ".desc");
 		list.add(I18nUtil.resolveKey(desc));
 		list.add(wavelength.textColor + I18nUtil.resolveKey(wavelength.name) + " - " + wavelength.textColor + I18nUtil.resolveKey(this.wavelength.wavelengthRange));
 	}

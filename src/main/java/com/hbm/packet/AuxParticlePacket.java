@@ -48,15 +48,14 @@ public class AuxParticlePacket implements IMessage {
 		
 		@Override
 		public IMessage onMessage(AuxParticlePacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
 				try {
-					
+					if (minecraft.world == null) return;
 					MainRegistry.proxy.particleControl(m.x, m.y, m.z, m.type);
-					
 				} catch(Exception x) { }
 			});
-			
-			
+
 			return null;
 		}
 	}

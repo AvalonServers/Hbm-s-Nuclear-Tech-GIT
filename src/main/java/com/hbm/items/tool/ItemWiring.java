@@ -24,7 +24,7 @@ import java.util.List;
 public class ItemWiring extends Item {
 
 	public ItemWiring(String s) {
-		this.setUnlocalizedName(s);
+		this.setTranslationKey(s);
 		this.setRegistryName(s);
 
 		ModItems.ALL_ITEMS.add(this);

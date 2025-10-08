@@ -67,13 +67,15 @@ public class TEPylonSenderPacket implements IMessage {
 
 		@Override
 		public IMessage onMessage(TEPylonSenderPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+
 				BlockPos pos = new BlockPos(m.x, m.y, m.z);
-				TileEntity te = Minecraft.getMinecraft().world.getTileEntity(pos);
+				TileEntity te = minecraft.world.getTileEntity(pos);
 
 				try {
-					if (te != null && te instanceof TileEntityPylonBase) {
-
+					if (te instanceof TileEntityPylonBase) {
 						TileEntityPylonBase pyl = (TileEntityPylonBase) te;
 						if(m.addOrRemove){
 							pyl.addConnection(m.conX, m.conY, m.conZ);

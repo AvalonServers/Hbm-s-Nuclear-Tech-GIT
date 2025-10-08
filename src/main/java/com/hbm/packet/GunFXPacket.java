@@ -49,25 +49,29 @@ public class GunFXPacket implements IMessage {
 	}
 	
 	public static class Handler implements IMessageHandler<GunFXPacket, IMessage> {
-
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(GunFXPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				EntityPlayer player = Minecraft.getMinecraft().world.getPlayerEntityByUUID(UUID.fromString(m.playerUUID));
+            Minecraft minecraft = Minecraft.getMinecraft();
+            minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+
+				EntityPlayer player = minecraft.world.getPlayerEntityByUUID(UUID.fromString(m.playerUUID));
+                if (player == null) return;
+
 				ItemStack stack = player.getHeldItem(m.hand);
 				if(stack.getItem() instanceof ItemGunBase){
-					boolean isThirdPerson = Minecraft.getMinecraft().gameSettings.thirdPersonView > 0 || player != Minecraft.getMinecraft().player;
+					boolean isThirdPerson = minecraft.gameSettings.thirdPersonView > 0 || player != minecraft.player;
 					if(m.type == FXType.FIRE)
 						((ItemGunBase)stack.getItem()).onFireClient(stack, player, isThirdPerson);
 				}
 			});
+
 			return null;
 		}
-		
 	}
-	
-	public static enum FXType {
-		FIRE;
+
+	public enum FXType {
+		FIRE
 	}
 }

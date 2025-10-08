@@ -204,7 +204,10 @@ public class AssemblerRecipeSyncPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(AssemblerRecipeSyncPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+            minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+
 				AssemblerRecipes.backupRecipes = AssemblerRecipes.recipes;
 				AssemblerRecipes.backupTime = AssemblerRecipes.time;
 				AssemblerRecipes.backupRecipeList = AssemblerRecipes.recipeList;

@@ -111,9 +111,12 @@ public class ControlPanelUpdatePacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(ControlPanelUpdatePacket m, MessageContext ctx){
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+            minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+
 				BlockPos pos = new BlockPos(m.x, m.y, m.z);
-				TileEntity te = Minecraft.getMinecraft().world.getTileEntity(pos);
+				TileEntity te = minecraft.world.getTileEntity(pos);
 				if(te instanceof TileEntityControlPanel) {
 					ControlPanel control = ((TileEntityControlPanel)te).panel;
 					if(m.toUpdate == null){

@@ -60,9 +60,11 @@ public class AuxLongPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(AuxLongPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+            minecraft.addScheduledTask(() -> {
 				try {
-					TileEntity te = Minecraft.getMinecraft().world.getTileEntity(new BlockPos(m.x, m.y, m.z));
+                    if (minecraft.world == null) return;
+					TileEntity te = minecraft.world.getTileEntity(new BlockPos(m.x, m.y, m.z));
 					if(te instanceof TileEntityCoreEmitter){
 						if(m.id == 0)
 							((TileEntityCoreEmitter) te).prev = m.value;

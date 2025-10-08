@@ -45,7 +45,7 @@ public class JetpackSyncPacket implements IMessage {
 		@Override
 		public IMessage onMessage(JetpackSyncPacket message, MessageContext ctx) {
 			if(ctx.side == Side.SERVER) {
-				ctx.getServerHandler().player.mcServer.addScheduledTask(() -> {
+				ctx.getServerHandler().player.server.addScheduledTask(() -> {
 					EntityPlayer player = ctx.getServerHandler().player;
 					JetpackInfo info = JetpackHandler.get(player);
 					if(info == null) {
@@ -61,9 +61,11 @@ public class JetpackSyncPacket implements IMessage {
 
 		@SideOnly(Side.CLIENT)
 		public void handleMessageClient(JetpackSyncPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				World world = Minecraft.getMinecraft().world;
-				Entity ent = world.getEntityByID(m.playerId);
+            Minecraft minecraft = Minecraft.getMinecraft();
+            minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+
+				Entity ent = minecraft.world.getEntityByID(m.playerId);
 				if(ent instanceof EntityPlayer) {
 					EntityPlayer player = (EntityPlayer) ent;
 					JetpackInfo info = JetpackHandler.get(player);

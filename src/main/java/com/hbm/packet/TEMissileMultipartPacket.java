@@ -57,23 +57,21 @@ public class TEMissileMultipartPacket implements IMessage {
 		
 		@Override
 		public IMessage onMessage(TEMissileMultipartPacket m, MessageContext ctx) {
+            Minecraft minecraft = Minecraft.getMinecraft();
+            if (minecraft.world == null) return null;
 
-			TileEntity te = Minecraft.getMinecraft().world.getTileEntity(new BlockPos(m.x, m.y, m.z));
-
-			if (te != null && te instanceof TileEntityCompactLauncher) {
-				
+			TileEntity te = minecraft.world.getTileEntity(new BlockPos(m.x, m.y, m.z));
+			if (te instanceof TileEntityCompactLauncher) {
 				TileEntityCompactLauncher launcher = (TileEntityCompactLauncher) te;
 				launcher.load = m.missile;
 			}
 
-			if (te != null && te instanceof TileEntityLaunchTable) {
-				
+			if (te instanceof TileEntityLaunchTable) {
 				TileEntityLaunchTable launcher = (TileEntityLaunchTable) te;
 				launcher.load = m.missile;
 			}
 
-			if (te != null && te instanceof TileEntityMachineMissileAssembly) {
-				
+			if (te instanceof TileEntityMachineMissileAssembly) {
 				TileEntityMachineMissileAssembly rack = (TileEntityMachineMissileAssembly) te;
 				rack.load = m.missile;
 			}

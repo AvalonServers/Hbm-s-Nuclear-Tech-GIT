@@ -65,19 +65,19 @@ public class TEPressPacket implements IMessage {
 		
 		@Override
 		public IMessage onMessage(TEPressPacket m, MessageContext ctx) {
-			
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				TileEntity te = Minecraft.getMinecraft().world.getTileEntity(new BlockPos(m.x, m.y, m.z));
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+				TileEntity te = minecraft.world.getTileEntity(new BlockPos(m.x, m.y, m.z));
 
-				if (te != null && te instanceof TileEntityMachinePress) {
-						
+				if (te instanceof TileEntityMachinePress) {
 					TileEntityMachinePress gen = (TileEntityMachinePress) te;
 					gen.item = m.item;
 					gen.meta = m.meta;
 					gen.progress = m.progress;
 				}
-				if (te != null && te instanceof TileEntityMachineEPress) {
-						
+
+				if (te instanceof TileEntityMachineEPress) {
 					TileEntityMachineEPress gen = (TileEntityMachineEPress) te;
 					gen.item = m.item;
 					gen.meta = m.meta;
@@ -88,5 +88,4 @@ public class TEPressPacket implements IMessage {
 			return null;
 		}
 	}
-
 }

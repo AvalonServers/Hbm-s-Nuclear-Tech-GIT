@@ -79,7 +79,7 @@ public class MachineFENSU extends BlockDummyableMBB implements ILookOverlay {
 				NBTTagCompound nbt = new NBTTagCompound();
 				battery.writeNBT(nbt);
 
-				if(!nbt.hasNoTags()) {
+				if(!nbt.isEmpty()) {
 					drop.setTagCompound(nbt);
 				}
 			}

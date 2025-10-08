@@ -56,7 +56,7 @@ public class TileEntityCore extends TileEntityMachineBase implements ITickable {
 	public void update() {
 		if(!world.isRemote) {
 			if(heat > 0 && heat >= field) {
-				if(safeTimer > 20){
+				if(safeTimer > 200){
 					int fill = tanks[0].getFluidAmount() + tanks[1].getFluidAmount();
 					int max = tanks[0].getCapacity() + tanks[1].getCapacity();
 					int mod = heat * 10;

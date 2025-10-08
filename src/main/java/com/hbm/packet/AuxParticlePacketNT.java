@@ -52,22 +52,18 @@ public class AuxParticlePacketNT implements IMessage {
 		
 		@Override
 		public IMessage onMessage(AuxParticlePacketNT m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				if(Minecraft.getMinecraft().world == null)
-					return;
-				
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
 				try {
-					
+                    if (minecraft.world == null) return;
 					NBTTagCompound nbt = m.buffer.readCompoundTag();
-					
 					if(nbt != null)
 						MainRegistry.proxy.effectNT(nbt);
-					
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
 			});
-			
+
 			return null;
 		}
 	}

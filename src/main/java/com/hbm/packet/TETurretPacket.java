@@ -49,9 +49,12 @@ public class TETurretPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(TETurretPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+
 				BlockPos pos = new BlockPos(m.x, m.y, m.z);
-				World world = Minecraft.getMinecraft().world;
+				World world = minecraft.world;
 				if(world.isBlockLoaded(pos)){
 					TileEntity te = world.getTileEntity(pos);
 					if(te instanceof TileEntityTurretBase){

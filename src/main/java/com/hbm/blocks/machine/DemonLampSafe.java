@@ -21,7 +21,7 @@ public class DemonLampSafe extends BlockContainer implements IItemHazard {
 
     public DemonLampSafe(SoundType st, String s) {
         super(Material.IRON);
-        this.setUnlocalizedName(s);
+        this.setTranslationKey(s);
         this.setRegistryName(s);
         this.setSoundType(st);
         this.module = new ItemHazardModule();

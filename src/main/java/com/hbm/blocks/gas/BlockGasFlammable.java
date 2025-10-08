@@ -25,7 +25,7 @@ public class BlockGasFlammable extends BlockGasBase {
 	public EnumFacing getFirstDirection(World world, int x, int y, int z) {
 		
 		if(world.rand.nextInt(3) == 0)
-			return EnumFacing.getHorizontal(world.rand.nextInt(2));
+			return EnumFacing.byHorizontalIndex(world.rand.nextInt(2));
 		
 		return this.randomHorizontal(world);
 	}

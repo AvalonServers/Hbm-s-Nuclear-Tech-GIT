@@ -37,7 +37,7 @@ public abstract class BlockDummyable extends BlockContainer {
 	
 	public BlockDummyable(Material materialIn, String s) {
 		super(materialIn);
-		this.setUnlocalizedName(s);
+		this.setTranslationKey(s);
 		this.setRegistryName(s);
 		this.setTickRandomly(true);
 		

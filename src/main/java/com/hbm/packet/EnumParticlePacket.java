@@ -60,7 +60,10 @@ public class EnumParticlePacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(EnumParticlePacket message, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+            minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+
 				switch(message.particle){
 				case PARTICLES:
 					ParticleManager.spawnParticles(message.x, message.y, message.z, message.count);

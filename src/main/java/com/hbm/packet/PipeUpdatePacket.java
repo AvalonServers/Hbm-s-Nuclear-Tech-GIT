@@ -51,11 +51,10 @@ public class PipeUpdatePacket implements IMessage {
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(PipeUpdatePacket message, MessageContext ctx) {
 			Minecraft minecraft = Minecraft.getMinecraft();
-			if (minecraft.world == null) return null;
-
 			minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
 				TileEntity te = minecraft.world.getTileEntity(message.pos);
-				
+
 				if(te instanceof TileEntityFFDuctBaseMk2){
 					switch(message.id){
 					case 0:
@@ -63,7 +62,7 @@ public class PipeUpdatePacket implements IMessage {
 						//((TileEntityFFDuctBaseMk2)te).onNeighborChange();
 						break;
 					case 1:
-						TileEntityFFDuctBaseMk2.rebuildNetworks(Minecraft.getMinecraft().world, message.pos);
+						TileEntityFFDuctBaseMk2.rebuildNetworks(minecraft.world, message.pos);
 						break;
 					default:
 						break;

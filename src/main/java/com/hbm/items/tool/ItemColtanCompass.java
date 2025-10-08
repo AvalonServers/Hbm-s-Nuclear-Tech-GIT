@@ -29,7 +29,7 @@ public class ItemColtanCompass extends Item {
 	public long lease = 0;
 	
 	public ItemColtanCompass(String s){
-		this.setUnlocalizedName(s);
+		this.setTranslationKey(s);
 		this.setRegistryName(s);
 		this.addPropertyOverride(new ResourceLocation("angle"), new IItemPropertyGetter(){
 

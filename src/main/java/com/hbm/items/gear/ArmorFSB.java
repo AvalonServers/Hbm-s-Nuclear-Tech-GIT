@@ -87,7 +87,7 @@ public class ArmorFSB extends ItemArmor {
 	
 	public ArmorFSB(ArmorMaterial materialIn, int renderIndexIn, EntityEquipmentSlot equipmentSlotIn, String texture, String name) {
 		super(materialIn, renderIndexIn, equipmentSlotIn);
-		this.setUnlocalizedName(name);
+		this.setTranslationKey(name);
 		this.setRegistryName(name);
 		this.texture = texture;
 		

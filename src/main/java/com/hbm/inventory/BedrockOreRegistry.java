@@ -75,7 +75,7 @@ public class BedrockOreRegistry {
             if (item == null) continue;
 
 			ResourceLocation location = item.getRegistryName();
-			if (location != null && location.getResourceDomain().equals(RefStrings.MODID)) {
+			if (location != null && location.getNamespace().equals(RefStrings.MODID)) {
 				internal = true;
 				break;
 			}

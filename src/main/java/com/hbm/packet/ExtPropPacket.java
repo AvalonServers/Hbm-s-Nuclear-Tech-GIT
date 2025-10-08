@@ -50,20 +50,18 @@ public class ExtPropPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(ExtPropPacket m, MessageContext ctx){
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				if(Minecraft.getMinecraft().world == null)
-					return;
+            Minecraft minecraft = Minecraft.getMinecraft();
+            minecraft.addScheduledTask(() -> {
 				try {
-
+                    if (minecraft.world == null) return;
 					NBTTagCompound nbt = m.buffer.readCompoundTag();
-					IEntityHbmProps props = HbmLivingProps.getData(Minecraft.getMinecraft().player);
+					IEntityHbmProps props = HbmLivingProps.getData(minecraft.player);
 					props.loadNBTData(nbt);
-
 				} catch(IOException e) {
 					e.printStackTrace();
 				}
 			});
-			
+
 			return null;
 		}
 	}

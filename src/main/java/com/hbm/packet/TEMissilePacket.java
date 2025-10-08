@@ -114,8 +114,10 @@ public class TEMissilePacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(TEMissilePacket message, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				World world = Minecraft.getMinecraft().world;
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+				World world = minecraft.world;
 				BlockPos pos = new BlockPos(message.x, message.y, message.z);
 				if(world.isBlockLoaded(pos)){
 					TileEntity te = world.getTileEntity(pos);

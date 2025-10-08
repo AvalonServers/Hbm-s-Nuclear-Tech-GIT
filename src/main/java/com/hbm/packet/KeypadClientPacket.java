@@ -50,7 +50,10 @@ public class KeypadClientPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(KeypadClientPacket m, MessageContext ctx) {
-			TileEntity te = Minecraft.getMinecraft().world.getTileEntity(new BlockPos(m.x, m.y, m.z));
+            Minecraft minecraft = Minecraft.getMinecraft();
+            if (minecraft.world == null) return null;
+
+			TileEntity te = minecraft.world.getTileEntity(new BlockPos(m.x, m.y, m.z));
 			if(te instanceof IKeypadHandler){
 				KeypadClient pad = ((IKeypadHandler) te).getKeypad().client();
 				for(int i = 0; i < 12; i ++){

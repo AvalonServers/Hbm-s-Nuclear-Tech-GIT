@@ -53,10 +53,12 @@ public class ParticleBurstPacket implements IMessage {
 		@SuppressWarnings("deprecation")
 		@Override
 		public IMessage onMessage(ParticleBurstPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+            minecraft.addScheduledTask(() -> {
 				try {
 					//If minecraft uses this depreciated method to render block effects I will, too.
-					Minecraft.getMinecraft().effectRenderer.addBlockDestroyEffects(new BlockPos(m.x, m.y, m.z), Block.getBlockById(m.block).getStateFromMeta(m.meta));
+                    if (minecraft.world == null) return;
+                    minecraft.effectRenderer.addBlockDestroyEffects(new BlockPos(m.x, m.y, m.z), Block.getBlockById(m.block).getStateFromMeta(m.meta));
 				} catch(Exception x) { }
 			});
 			

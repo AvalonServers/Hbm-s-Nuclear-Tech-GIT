@@ -50,11 +50,12 @@ public class TEChemplantPacket implements IMessage {
 		
 		@Override
 		public IMessage onMessage(TEChemplantPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				TileEntity te = Minecraft.getMinecraft().world.getTileEntity(new BlockPos(m.x, m.y, m.z));
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+				TileEntity te = minecraft.world.getTileEntity(new BlockPos(m.x, m.y, m.z));
 
-				if (te != null && te instanceof TileEntityMachineChemplant) {
-						
+				if (te instanceof TileEntityMachineChemplant) {
 					TileEntityMachineChemplant gen = (TileEntityMachineChemplant) te;
 					gen.isProgressing = m.isProgressing;
 				}

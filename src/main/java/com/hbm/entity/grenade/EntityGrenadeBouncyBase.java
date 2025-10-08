@@ -308,7 +308,7 @@ public abstract class EntityGrenadeBouncyBase extends Entity implements IProject
 				
 				bounce = true;
 				Vec3d mot = new Vec3d(motionX, motionY, motionZ);
-				if (mot.lengthVector() > 0.05)
+				if (mot.length() > 0.05)
 					world.playSound(null, this.posX, this.posY, this.posZ, HBMSoundHandler.grenadeBounce, SoundCategory.HOSTILE, 2.0F, 1.0F);
 
 				motionX *= getBounceMod()*1.5;

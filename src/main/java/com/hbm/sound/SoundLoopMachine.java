@@ -24,7 +24,7 @@ public class SoundLoopMachine extends PositionedSound implements ITickableSound 
 
 	@Override
 	public void update() {
-		if(te == null || (te != null && te.isInvalid()))
+		if(te == null || te.isInvalid())
 			donePlaying = true;
 	}
 

@@ -61,10 +61,12 @@ public class TESirenPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(TESirenPacket m, MessageContext ctx) {
-			TileEntity te = Minecraft.getMinecraft().world.getTileEntity(new BlockPos(m.x, m.y, m.z));
+            Minecraft minecraft = Minecraft.getMinecraft();
+            if (minecraft.world == null) return null;
 
-			if (te != null && te instanceof TileEntityMachineSiren) {
-				
+			TileEntity te = minecraft.world.getTileEntity(new BlockPos(m.x, m.y, m.z));
+
+			if (te instanceof TileEntityMachineSiren) {
 				SoundLoopSiren sound = null;
 				for(int i = 0; i < SoundLoopSiren.list.size(); i++)  {
 					if(SoundLoopSiren.list.get(i).getTE() == te)
@@ -80,7 +82,7 @@ public class TESirenPacket implements IMessage {
 							SoundLoopSiren s = new SoundLoopSiren(TrackType.getEnum(m.id).getSoundLocation(), te, TrackType.getEnum(m.id).getType());
 							s.setRepeat(b);
 							s.intendedVolume = TrackType.getEnum(m.id).getVolume();
-							Minecraft.getMinecraft().getSoundHandler().playSound(s);
+							minecraft.getSoundHandler().playSound(s);
 						}
 					} else {
 						SoundEvent loc = TrackType.getEnum(m.id).getSoundLocation();
@@ -92,15 +94,13 @@ public class TESirenPacket implements IMessage {
 								//Track switched, stop and restart
 								sound.endSound();
 								if(m.id > 0)
-									Minecraft.getMinecraft().getSoundHandler().playSound(new SoundLoopSiren(TrackType.getEnum(m.id).getSoundLocation(), te, TrackType.getEnum(m.id).getType()));
+									minecraft.getSoundHandler().playSound(new SoundLoopSiren(TrackType.getEnum(m.id).getSoundLocation(), te, TrackType.getEnum(m.id).getType()));
 							}
 						}
 						
 						sound.intendedVolume = TrackType.getEnum(m.id).getVolume();
 					}
-					
 				} else {
-					
 					if(sound != null) {
 						//Stop sound
 						sound.endSound();
@@ -108,6 +108,7 @@ public class TESirenPacket implements IMessage {
 					}
 				}
 			}
+
 			return null;
 		}
 	}

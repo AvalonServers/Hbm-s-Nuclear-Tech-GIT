@@ -60,9 +60,10 @@ public class SatPanelPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(SatPanelPacket m, MessageContext ctx) {
-			
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
 				try {
+                    if (minecraft.world == null) return;
 					NBTTagCompound nbt = m.buffer.readCompoundTag();
 					ItemSatInterface.currentSat = Satellite.create(m.type);
 					

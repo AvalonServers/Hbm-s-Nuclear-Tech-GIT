@@ -42,9 +42,11 @@ public class GunAnimationPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(GunAnimationPacket m, MessageContext ctx) {
-
 			try {
-				EntityPlayer player = Minecraft.getMinecraft().player;
+                Minecraft minecraft = Minecraft.getMinecraft();
+                if (minecraft.world == null) return null;
+
+				EntityPlayer player = minecraft.player;
 				ItemStack stack = player.getHeldItem(m.hand);
 				int slot = player.inventory.currentItem;
 				if(m.hand == EnumHand.OFF_HAND)
@@ -58,11 +60,9 @@ public class GunAnimationPacket implements IMessage {
 
 				if(m.type < 0 || m.type >= AnimType.values().length)
 					return null;
-				
-				
+
 				AnimType type = AnimType.values()[m.type];
 				((ItemGunBase) stack.getItem()).startAnim(player, stack, slot, type);
-
 			} catch(Exception x) { }
 
 			return null;

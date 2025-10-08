@@ -107,8 +107,10 @@ public class TEControlPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(TEControlPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				TileEntity te = Minecraft.getMinecraft().world.getTileEntity(new BlockPos(m.x, m.y, m.z));
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+				TileEntity te = minecraft.world.getTileEntity(new BlockPos(m.x, m.y, m.z));
 
 				try {
 					

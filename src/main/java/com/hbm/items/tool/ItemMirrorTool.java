@@ -27,7 +27,7 @@ import net.minecraft.world.World;
 public class ItemMirrorTool extends Item {
 
 	public ItemMirrorTool(String s) {
-		this.setUnlocalizedName(s);
+		this.setTranslationKey(s);
 		this.setRegistryName(s);
 		
 		ModItems.ALL_ITEMS.add(this);
@@ -51,7 +51,7 @@ public class ItemMirrorTool extends Item {
 				stack.getTagCompound().setInteger("posY", pos[1] + 1);
 				stack.getTagCompound().setInteger("posZ", pos[2]);
 
-				player.sendMessage(new TextComponentTranslation(this.getUnlocalizedName() + ".linked").setStyle(new Style().setColor(TextFormatting.YELLOW)));
+				player.sendMessage(new TextComponentTranslation(this.getTranslationKey() + ".linked").setStyle(new Style().setColor(TextFormatting.YELLOW)));
 			}
 
 			return EnumActionResult.SUCCESS;
@@ -77,7 +77,7 @@ public class ItemMirrorTool extends Item {
 	
 	@Override
 	public void addInformation(ItemStack stack, World worldIn, List<String> tooltip, ITooltipFlag flagIn) {
-		for(String s : I18nUtil.resolveKeyArray(this.getUnlocalizedName() + ".desc"))
+		for(String s : I18nUtil.resolveKeyArray(this.getTranslationKey() + ".desc"))
 			tooltip.add(TextFormatting.YELLOW + s);
 	}
 }

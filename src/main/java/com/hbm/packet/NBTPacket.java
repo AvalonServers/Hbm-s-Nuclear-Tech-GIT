@@ -71,21 +71,17 @@ public class NBTPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(NBTPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				if(Minecraft.getMinecraft().world == null)
-					return;
-
-				TileEntity te = Minecraft.getMinecraft().world.getTileEntity(new BlockPos(m.x, m.y, m.z));
-
+            Minecraft minecraft = Minecraft.getMinecraft();
+            minecraft.addScheduledTask(() -> {
 				try {
+                    if (minecraft.world == null) return;
 
+                    TileEntity te = minecraft.world.getTileEntity(new BlockPos(m.x, m.y, m.z));
 					NBTTagCompound nbt = m.buffer.readCompoundTag();
-
 					if(nbt != null) {
 						 if(te instanceof INBTPacketReceiver)
 								((INBTPacketReceiver) te).networkUnpack(nbt);
 					}
-
 				} catch(IOException e) {
 					e.printStackTrace();
 				}

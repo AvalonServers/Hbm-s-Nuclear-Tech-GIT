@@ -51,9 +51,12 @@ public class TETurretCIWSPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(TETurretCIWSPacket message, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+
 				BlockPos pos = new BlockPos(message.x, message.y, message.z);
-				TileEntity te = Minecraft.getMinecraft().world.getTileEntity(pos);
+				TileEntity te = minecraft.world.getTileEntity(pos);
 				if(te instanceof TileEntityTurretCIWS){
 					((TileEntityTurretCIWS)te).rotationYaw = message.rotY;
 					((TileEntityTurretCIWS)te).rotationPitch = message.rotP;

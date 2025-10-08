@@ -45,8 +45,10 @@ public class LoopedEntitySoundPacket implements IMessage {
 		//Tamaized, I love you!
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(LoopedEntitySoundPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				Entity e = Minecraft.getMinecraft().world.getEntityByID(m.entityID);
+            Minecraft minecraft = Minecraft.getMinecraft();
+            minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+				Entity e = minecraft.world.getEntityByID(m.entityID);
 
 				if(e instanceof EntityMissileCustom || e instanceof EntityMissileBaseAdvanced){
 					boolean startNew = true;
@@ -57,10 +59,10 @@ public class LoopedEntitySoundPacket implements IMessage {
 						}
 					}
 					if(startNew){
-						Minecraft.getMinecraft().getSoundHandler().playSound(new MovingSoundRocket(HBMSoundHandler.rocketEngine, e));
+                        minecraft.getSoundHandler().playSound(new MovingSoundRocket(HBMSoundHandler.rocketEngine, e));
 					}
 				}
-						
+
 				if(e instanceof EntityBomber) {
 
 					int n = 1;
@@ -95,8 +97,8 @@ public class LoopedEntitySoundPacket implements IMessage {
 					}
 				}
 			});
-			
-			
+
+
 			return null;
 		}
 	}

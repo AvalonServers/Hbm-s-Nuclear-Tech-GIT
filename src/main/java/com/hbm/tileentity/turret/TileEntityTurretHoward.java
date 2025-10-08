@@ -134,7 +134,7 @@ public class TileEntityTurretHoward extends TileEntityTurretBaseNT {
 				loaded--;
 
 				if(world.rand.nextInt(100) + 1 <= WeaponConfig.ciwsHitrate)
-					EntityDamageUtil.attackEntityFromIgnoreIFrame(this.target, ModDamageSource.shrapnel, 2F + world.rand.nextInt(2));
+					EntityDamageUtil.attackEntityFromIgnoreIFrame(this.target, ModDamageSource.shrapnel, 5F + world.rand.nextInt(2));
 
 				Vec3 pos = new Vec3(this.getTurretPos());
 				Vec3 vec = Vec3.createVectorHelper(this.getBarrelLength(), 0, 0);

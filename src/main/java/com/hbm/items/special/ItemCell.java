@@ -51,7 +51,7 @@ import javax.annotation.Nonnull;
 public class ItemCell extends Item {
 
 	public ItemCell(String s) {
-		this.setUnlocalizedName(s);
+		this.setTranslationKey(s);
 		this.setRegistryName(s);
 		this.setMaxDamage(1000);
 		this.setContainerItem(this);

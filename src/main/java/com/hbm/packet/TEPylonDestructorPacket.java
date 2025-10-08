@@ -46,11 +46,12 @@ public class TEPylonDestructorPacket implements IMessage {
 		
 		@Override
 		public IMessage onMessage(TEPylonDestructorPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				TileEntity te = Minecraft.getMinecraft().world.getTileEntity(new BlockPos(m.x, m.y, m.z));
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+				TileEntity te = minecraft.world.getTileEntity(new BlockPos(m.x, m.y, m.z));
 
-				if (te != null && te instanceof TileEntityPylonBase) {
-						
+				if (te instanceof TileEntityPylonBase) {
 					TileEntityPylonBase pyl = (TileEntityPylonBase) te;
 					pyl.disconnectAll();
 				}

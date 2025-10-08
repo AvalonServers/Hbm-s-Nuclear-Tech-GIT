@@ -59,11 +59,12 @@ public class AuxElectricityPacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(AuxElectricityPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft =  Minecraft.getMinecraft();
+            minecraft.addScheduledTask(() -> {
 				BlockPos pos = new BlockPos(m.x, m.y, m.z);
 				try {
-					TileEntity te = Minecraft.getMinecraft().world.getTileEntity(pos);
-
+                    if (minecraft.world == null) return;
+					TileEntity te = minecraft.world.getTileEntity(pos);
 					if (te != null && te instanceof IEnergyHandler) {
 
 						IEnergyHandler gen = (IEnergyHandler) te;

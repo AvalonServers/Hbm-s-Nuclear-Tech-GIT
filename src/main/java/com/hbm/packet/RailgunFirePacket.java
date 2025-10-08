@@ -46,17 +46,15 @@ public class RailgunFirePacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(RailgunFirePacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+            minecraft.addScheduledTask(() -> {
 				try {
-					TileEntity te = Minecraft.getMinecraft().world.getTileEntity(new BlockPos(m.x, m.y, m.z));
-		
-					if (te != null && te instanceof TileEntityRailgun) {
-							
+                    if (minecraft.world == null) return;
+					TileEntity te = minecraft.world.getTileEntity(new BlockPos(m.x, m.y, m.z));
+					if (te instanceof TileEntityRailgun) {
 						TileEntityRailgun gun = (TileEntityRailgun) te;
-						
 						gun.fireTime = System.currentTimeMillis();
 					}
-					
 				} catch (Exception x) { }
 			});
 			

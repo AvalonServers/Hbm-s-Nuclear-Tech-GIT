@@ -50,12 +50,14 @@ public class TEAssemblerPacket implements IMessage {
 		
 		@Override
 		public IMessage onMessage(TEAssemblerPacket m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
+            Minecraft minecraft = Minecraft.getMinecraft();
+			minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+
 				BlockPos pos = new BlockPos(m.x, m.y, m.z);
 				TileEntity te = Minecraft.getMinecraft().world.getTileEntity(pos);
 
-				if (te != null && te instanceof TileEntityMachineAssembler) {
-						
+				if (te instanceof TileEntityMachineAssembler) {
 					TileEntityMachineAssembler gen = (TileEntityMachineAssembler) te;
 					gen.isProgressing = m.progress;
 				}

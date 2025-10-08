@@ -20,7 +20,7 @@ public class ItemFusionShield extends Item {
 	public ItemFusionShield(long maxDamage, int maxTemp, String s) {
 		this.maxDamage = (int) (maxDamage * MachineConfig.fusionBlanketMultiplier);
 		this.maxTemp = maxTemp;
-		this.setUnlocalizedName(s);
+		this.setTranslationKey(s);
 		this.setRegistryName(s);
 		
 		ModItems.ALL_ITEMS.add(this);

@@ -74,8 +74,11 @@ public class FluidTypePacketTest implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(FluidTypePacketTest m, MessageContext ctx) {
-			Minecraft.getMinecraft().addScheduledTask(() -> {
-				TileEntity te = Minecraft.getMinecraft().world.getTileEntity(new BlockPos(m.x, m.y, m.z));
+            Minecraft minecraft = Minecraft.getMinecraft();
+            minecraft.addScheduledTask(() -> {
+                if (minecraft.world == null) return;
+
+				TileEntity te = minecraft.world.getTileEntity(new BlockPos(m.x, m.y, m.z));
 				if (te instanceof TileEntityMachineTurbine) {
 					((TileEntityMachineTurbine)te).tankTypes[0] = m.fluids[0];
 					((TileEntityMachineTurbine)te).tankTypes[1] = m.fluids[1];

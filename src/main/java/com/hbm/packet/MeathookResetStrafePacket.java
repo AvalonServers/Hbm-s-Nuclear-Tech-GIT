@@ -30,7 +30,10 @@ public class MeathookResetStrafePacket implements IMessage {
 		@Override
 		@SideOnly(Side.CLIENT)
 		public IMessage onMessage(MeathookResetStrafePacket message, MessageContext ctx) {
-			EntityPlayer p = Minecraft.getMinecraft().player;
+            Minecraft minecraft = Minecraft.getMinecraft();
+            if (minecraft.world == null) return null;
+
+			EntityPlayer p = minecraft.player;
 			if(p.getHeldItemMainhand().getItem() == ModItems.gun_supershotgun){
 				ItemGunShotty.motionStrafe = 0;
 			}
