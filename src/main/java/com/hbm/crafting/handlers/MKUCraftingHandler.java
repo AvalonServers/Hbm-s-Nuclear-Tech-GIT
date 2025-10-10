@@ -6,12 +6,11 @@ import java.util.List;
 import java.util.Random;
 
 import com.hbm.items.ModItems;
+import com.hbm.util.HbmWorldUtility;
 
 import net.minecraft.inventory.InventoryCrafting;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.IRecipe;
-import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.HbmWorldUtility;
 import net.minecraft.world.World;
 
 public class MKUCraftingHandler extends net.minecraftforge.registries.IForgeRegistryEntry.Impl<IRecipe> implements IRecipe {

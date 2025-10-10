@@ -3,10 +3,10 @@ package com.hbm.particle;
 import org.lwjgl.opengl.GL11;
 
 import com.hbm.lib.RefStrings;
+import com.hbm.util.HbmParticleUtility;
 
 import net.minecraft.block.Block;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.HbmParticleUtility;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleBlockDust;
 import net.minecraft.client.renderer.BufferBuilder;

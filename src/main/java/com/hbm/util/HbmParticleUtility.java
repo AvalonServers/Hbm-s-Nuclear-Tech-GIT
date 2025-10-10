@@ -1,4 +1,7 @@
-package net.minecraft.client.particle;
+package com.hbm.util;
+
+import net.minecraft.client.particle.Particle;
+import net.minecraft.client.particle.ParticleSmokeNormal;
 
 //Stupid minecraft particles have all their fields protected. Solution? Make a class in the same package!
 public class HbmParticleUtility {

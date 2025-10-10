@@ -596,6 +596,7 @@ import com.hbm.tileentity.turret.TileEntityTurretSpitfire;
 import com.hbm.tileentity.turret.TileEntityTurretTau;
 import com.hbm.tileentity.turret.TileEntityTurretTauon;
 import com.hbm.util.BobMathUtil;
+import com.hbm.util.HbmParticleUtility;
 import com.hbm.util.I18nUtil;
 
 import net.minecraft.block.Block;
@@ -605,7 +606,6 @@ import net.minecraft.block.BlockStone;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.HbmParticleUtility;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleBlockDust;
 import net.minecraft.client.particle.ParticleCloud;

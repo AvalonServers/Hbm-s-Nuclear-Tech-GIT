@@ -1,4 +1,7 @@
-package net.minecraft.world;
+package com.hbm.util;
+
+import net.minecraft.world.World;
+import net.minecraft.world.WorldProvider;
 
 public class HbmWorldUtility {
 
