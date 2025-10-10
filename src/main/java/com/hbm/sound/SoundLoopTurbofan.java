@@ -24,9 +24,6 @@ public class SoundLoopTurbofan extends SoundLoopMachine {
 		if(te instanceof TileEntityMachineTurbofan) {
 			TileEntityMachineTurbofan drill = (TileEntityMachineTurbofan)te;
 			
-			if(this.volume != 10)
-				volume = 10;
-			
 			if(!drill.isRunning)
 				this.donePlaying = true;
 		}

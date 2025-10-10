@@ -26,18 +26,12 @@ public class SoundLoopCentrifuge extends SoundLoopMachine {
 		if(te instanceof TileEntityMachineCentrifuge) {
 			TileEntityMachineCentrifuge plant = (TileEntityMachineCentrifuge)te;
 			
-			if(this.volume != 1)
-				volume = 1;
-			
 			if(!plant.isProgressing)
 				this.donePlaying = true;
 		}
 		
 		if(te instanceof TileEntityMachineGasCent) {
 			TileEntityMachineGasCent plant = (TileEntityMachineGasCent)te;
-			
-			if(this.volume != 1)
-				volume = 1;
 			
 			if(!plant.isProgressing)
 				this.donePlaying = true;

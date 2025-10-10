@@ -25,9 +25,6 @@ public class SoundLoopAssembler extends SoundLoopMachine {
 		if(te instanceof TileEntityMachineAssembler) {
 			TileEntityMachineAssembler drill = (TileEntityMachineAssembler)te;
 			
-			if(this.volume != 3)
-				volume = 3;
-			
 			if(!drill.isProgressing)
 				this.donePlaying = true;
 		}
