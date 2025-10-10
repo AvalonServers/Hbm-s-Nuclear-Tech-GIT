@@ -157,7 +157,7 @@ dependencies {
 // Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
-        attributes 'FMLAT': 'META-INF/hbm_at.cfg'
+        attributes 'FMLAT': 'accesstransformer.cfg'
     }
 }
 
